@@ -1,0 +1,46 @@
+{
+"general": {"session_name": "- null for an automatic format like 'version_parameters'\n- or type wanted-name for folder",
+               "search_data": "- true to make automatic query with Obspy\n- false for data in 'Data' folder\n- or dir to the folder with data",
+               "keep_data": "- 'all' to keep all data\n- 'used' for only used signals\n- null (default) remove all data for minimum space",
+               "saved_results": "- 'all' to save everything in files\n- 'plot' to redo plots later\n- 'detailed' saves all stations contribution over time\n- 'minimum' for files with general results, station contribution and energy growth\n- 'fastest' only write in the general results file",
+               "do_plot": "- 'format' (.png,.pdf, etc...) for wanted figures\n- null for no figures",
+               "do_report": "- true to put everything in a pdf file (will overwrite other option to minimum report level)\n- false if no pdf file wanted"
+            },
+
+"plot": {"level": "- 'minimum' : energy growth and raw traces\n- 'report' : 'minimum' level + map of stations deviation + results in a graphic text\n- 'all' : output every possible plots\n- 'personalized' : select following parameters with true or false",
+         "details":{"results": "graphic text of the results (energy, energy magnitude, slowness, in BroadBand and HighFrequencies",
+                      "signal": "raw data ploted along azimuth and arrival time and colored by distance",
+                      "signal_stack": "superposed raw data against relative arrival time and colored by distance",
+                      "postsignal_stack": "superposed data after correction for amplifications",
+                      "spectrum": "spectrum of corrected data used for energy estimations colored by azimuthal angle",
+                      "growth": "energy growth in BroadBand and HighFrequencies band + rupture time estimation",
+                      "station_dev": "deviation of the stations + threshold of correction",
+                      "station_dev_corrected": "remaining deviations after correction",
+                      "map_network": "map of the used networks",
+                      "map_sta_dev": "map of the stations and respective deviation",
+                      "stream_list": "write a list of all the data references"}
+         },
+
+"time_max": "- int for maximum time\n- null will set a value based on magnitude",
+"time_stop": "- true for an automatic time stop\n- false will run the full time_max window",
+"time_eval_method": "- 'tacer' for the time-averaged cumulative energy rate\n- 'trend' for start and end trend lines\n- 'both' for a joint method",
+
+"distance_min": "int above 25deg",
+"distance_max": {"max": "int under 80deg",
+                  "step": "- int in degree to request data with an increseasing range (by value) over time\n- or null to make one general data request"
+                },
+
+
+"channel_code": "list of desired data channels among [BH,SH,HH]\n- https://ds.iris.edu/ds/nodes/dmc/data/formats/seed-channel-naming/",
+"deviation_correction": {"type": "- 'station' to correct known station with deviaiton\n- 'result' to remove deviatoric stations after energy estimation on this event ONLY",
+                          "threshold": "float accepted for the deviation (in log10 of the energy)"
+                        },
+
+"redoing_results": {"force_results": "bool to redo the estimation if the results already exists\n- doesn't overwrite in the general results file\n- if no data are saved, will perform the query",
+                    "force_signal": "bool to research data again if they already exists\n- false by default if 'keep-data' is false",
+                    "force_plot": "bool to redo the plots if they already exists\n- if results are saved, only do the plots\n- if no results exists and no data are saved, do all the those steps"
+                   }
+
+
+}
+

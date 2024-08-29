@@ -1,0 +1,48 @@
+{
+    "general": {
+        "session_name": "v1.0.RT",
+        "search_data": true,
+        "keep_data": "used",
+        "saved_results": "all",
+        "do_plot": ".pdf",
+        "do_report": true
+    },
+    "plot": {
+        "level": "report",
+        "details": {
+            "results": false,
+            "signal": false,
+            "signal_stack": false,
+            "postsignal_stack": false,
+            "spectrum": false,
+            "growth": false,
+            "station_dev": false,
+            "station_dev_corrected": false,
+            "map_network": false,
+            "map_sta_dev": false,
+            "stream_list": false
+        }
+    },
+    "time_max": null,
+    "time_stop": false,
+    "time_eval_method": "tacer",
+    "distance_min": 25.0,
+    "distance_max": {
+        "max": 80.0,
+        "step": 10.0
+    },
+    "channel_code": [
+        "BH",
+        "HH"
+    ],
+    "deviation_correction": {
+        "type": "result",
+        "threshold": 1.0
+    },
+    "redoing_results": {
+        "force_results": false,
+        "force_signal": false,
+        "force_plot": false
+    }
+}
+
