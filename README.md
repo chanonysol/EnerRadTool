@@ -73,8 +73,8 @@ python main_single_event.py path2folder -rt
 | -------:|:------- |:----------------------------------:|:-------------------:|
 | CHANONY | Solen   | solen.chanony@postgrad.otago.ac.nz | Dunedin, Geol dept. |
 |     FRY | Bill    |          b.fry@gns.cri.nz          |  LowerHutt, Avalon  |
-| ANDREWS | Jen     |                                    |  LowerHutt, Avalon  |
-|         | Chris   |                                    |  LowerHutt, Avalon  |
+| ANDREWS | Jen     |       jen.andrews@gns.cri.nz       |  LowerHutt, Avalon  |
+|   ZWECK | Chris   |          c.zweck@gns.cri.nz        |  LowerHutt, Avalon  |
 
 ## License
 ask Jen
