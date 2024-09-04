@@ -5,12 +5,12 @@
   <Sender>IRIS-DMC</Sender>
   <Module>IRIS WEB SERVICE: fdsnws-station | version: 1.1.52</Module>
   <ModuleURI></ModuleURI>
-  <Created>2024-08-16T02:44:00.6115</Created>
+  <Created>2024-09-04T02:37:51.1530</Created>
   <Network code="AU" startDate="1994-01-01T00:00:00.0000" restrictedStatus="open">
    <Description>Australian National Seismograph Network (ANSN)</Description>
    <Identifier type="DOI">10.26186/144675
    </Identifier>
-   <TotalNumberStations>261</TotalNumberStations>
+   <TotalNumberStations>260</TotalNumberStations>
    <SelectedNumberStations>1</SelectedNumberStations>
    <Station code="MGBR" startDate="2018-06-12T00:00:00.0000" restrictedStatus="open" iris:alternateNetworkCodes="_FDSN-ALL,_REALTIME,.UNRESTRICTED">
     <Latitude>-37.726299</Latitude>

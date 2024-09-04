@@ -5,7 +5,7 @@
   <Sender>IRIS-DMC</Sender>
   <Module>IRIS WEB SERVICE: fdsnws-station | version: 1.1.52</Module>
   <ModuleURI></ModuleURI>
-  <Created>2024-08-16T02:48:37.3612</Created>
+  <Created>2024-09-04T02:44:09.1333</Created>
   <Network code="MY" startDate="2003-01-01T00:00:00.0000" restrictedStatus="open">
    <Description>Malaysian National Seismic Network ()</Description>
    <TotalNumberStations>14</TotalNumberStations>

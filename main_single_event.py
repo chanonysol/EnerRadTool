@@ -112,7 +112,7 @@ if __name__ == "__main__":
         iter_st_bb.sort(['distance'])
         iter_st_hf.sort(['distance'])
 
-        update_results(results,data_time=50, pre_time=37)
+        #update_results(results,data_time=50, pre_time=37)
 
         update_results(results,estimate = [iteration, dist_list[:iteration+2],
                                            (iter_st_bb,iter_st_hf),

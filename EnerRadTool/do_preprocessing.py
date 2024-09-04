@@ -26,7 +26,6 @@ def do_preprocessing(ev, path, param, current_dist, dist_list, rt=False):
     #Creating folder to avoid errors
     if ("Data" not in os.listdir(path)):
         os.mkdir(f"{path}/Data")
-        os.mkdir(f"{path}/Data/stations")
         sys.stdout.write(f"{Fore.YELLOW + Style.DIM}"
                          +f"\n > Data folder has been created"
                          +f"{Style.RESET_ALL}\n")
@@ -43,6 +42,8 @@ def do_preprocessing(ev, path, param, current_dist, dist_list, rt=False):
         #real time and data already exist
         if isinstance(rt,int) and len(glob(f"{path}/Data/iter{rt}/*.mseed"))!=0:
             #sys.stdout.write(f"{Fore.CYAN}------> real time processing\n")
+            os.mkdir(f"{path}/Data/iter{rt}")
+            os.mkdir(f"{path}/Data/iter{rt}/stations")
             sys.stdout.write(f"{Fore.YELLOW + Style.DIM}"
                               +f" > Already collected - skipping to preprocessing"
                               +f"{Style.RESET_ALL}\n")
@@ -52,7 +53,7 @@ def do_preprocessing(ev, path, param, current_dist, dist_list, rt=False):
             return preprocessing(f"{path}/Data/iter{rt}",ev,channels,dist_list)
 
         #real time and data doesn't exist
-        if not rt:
+        if not isinstance(rt,int):
             sys.stdout.write(f"{Fore.CYAN}single event ")
             sys.stdout.write(f"{Back.RED + Fore.BLACK}>> IN DEVELOPMENT "
                              +f"{Style.RESET_ALL + Fore.RED} CODE NOT DONE YET"
@@ -61,6 +62,7 @@ def do_preprocessing(ev, path, param, current_dist, dist_list, rt=False):
         if isinstance(rt,int) and len(glob(f"{path}/Data/iter{rt}/*.mseed"))==0:
             if (f"iter{rt}" not in os.listdir(f"{path}/Data/")):
                os.mkdir(f"{path}/Data/iter{rt}")
+               os.mkdir(f"{path}/Data/iter{rt}/stations")
             #sys.stdout.write(f"{Fore.CYAN}------> real time processing\n")
             #Entering query
             sys.stdout.write(f"{Fore.YELLOW + Style.DIM}"

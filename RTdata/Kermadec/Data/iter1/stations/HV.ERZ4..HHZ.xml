@@ -5,7 +5,7 @@
   <Sender>IRIS-DMC</Sender>
   <Module>IRIS WEB SERVICE: fdsnws-station | version: 1.1.52</Module>
   <ModuleURI></ModuleURI>
-  <Created>2024-08-16T02:47:38.3665</Created>
+  <Created>2024-09-04T02:42:18.2468</Created>
   <Network code="HV" startDate="1956-01-01T00:00:00.0000" restrictedStatus="open">
    <Description>Hawaiian Volcano Observatory Network (HVO)</Description>
    <Identifier type="DOI">10.7914/SN/HV

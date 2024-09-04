@@ -5,7 +5,7 @@
   <Sender>IRIS-DMC</Sender>
   <Module>IRIS WEB SERVICE: fdsnws-station | version: 1.1.52</Module>
   <ModuleURI></ModuleURI>
-  <Created>2024-08-16T02:47:42.4391</Created>
+  <Created>2024-09-04T02:42:22.2664</Created>
   <Network code="HV" startDate="1956-01-01T00:00:00.0000" restrictedStatus="open">
    <Description>Hawaiian Volcano Observatory Network (HVO)</Description>
    <Identifier type="DOI">10.7914/SN/HV
@@ -20,7 +20,7 @@
      <Name>Uwekahuna Vault Hawaii</Name>
     </Site>
     <CreationDate>1959-10-01T00:00:00.0000</CreationDate>
-    <TotalNumberChannels>12</TotalNumberChannels>
+    <TotalNumberChannels>18</TotalNumberChannels>
     <SelectedNumberChannels>1</SelectedNumberChannels>
     <Channel code="HHZ" locationCode="" startDate="2006-01-02T00:00:00.0000" endDate="2021-10-27T21:00:00.0000" restrictedStatus="open">
      <Comment>

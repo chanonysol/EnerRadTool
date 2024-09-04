@@ -5,14 +5,14 @@
   <Sender>IRIS-DMC</Sender>
   <Module>IRIS WEB SERVICE: fdsnws-station | version: 1.1.52</Module>
   <ModuleURI></ModuleURI>
-  <Created>2024-08-16T02:45:36.1763</Created>
+  <Created>2024-09-04T02:37:53.1350</Created>
   <Network code="GT" startDate="1993-01-01T00:00:00.0000" restrictedStatus="open">
    <Description>Global Telemetered Seismograph Network (USAF/USGS) (GTSN)</Description>
    <Identifier type="DOI">10.7914/SN/GT
    </Identifier>
    <TotalNumberStations>15</TotalNumberStations>
    <SelectedNumberStations>1</SelectedNumberStations>
-   <Station code="VNDA" startDate="1993-12-28T00:00:00.0000" restrictedStatus="open" iris:alternateNetworkCodes="_ANTARCTICA,_FDSN-ALL,_GSN,_GSN-BROADBAND,.UNRESTRICTED">
+   <Station code="VNDA" startDate="1993-12-28T00:00:00.0000" restrictedStatus="open" iris:alternateNetworkCodes="_ANTARCTICA,_FDSN-ALL,_GSN,_GSN-BROADBAND,_REALTIME,.UNRESTRICTED">
     <Comment>
      <Value>Time Uncertain.</Value>
      <BeginEffectiveTime>1999-02-17T20:00:00.0000</BeginEffectiveTime>

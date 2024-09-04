@@ -5,7 +5,7 @@
   <Sender>IRIS-DMC</Sender>
   <Module>IRIS WEB SERVICE: fdsnws-station | version: 1.1.52</Module>
   <ModuleURI></ModuleURI>
-  <Created>2024-08-16T02:46:18.5497</Created>
+  <Created>2024-09-04T02:39:05.8455</Created>
   <Network code="2H" startDate="2016-01-01T00:00:00.0000" endDate="2025-12-31T23:59:59.9999" restrictedStatus="open">
    <Description>Interim Broadband Monitoring of the Mount Erebus Volcano (Erebus Interim)</Description>
    <Identifier type="DOI">10.7914/SN/2H_2016

@@ -5,14 +5,14 @@
   <Sender>IRIS-DMC</Sender>
   <Module>IRIS WEB SERVICE: fdsnws-station | version: 1.1.52</Module>
   <ModuleURI></ModuleURI>
-  <Created>2024-08-16T02:47:42.5773</Created>
+  <Created>2024-09-04T02:42:22.1101</Created>
   <Network code="PT" startDate="1965-01-01T00:00:00.0000" restrictedStatus="open">
    <Description>Pacific Tsunami Warning Seismic System ()</Description>
    <Identifier type="DOI">10.7914/SN/PT
    </Identifier>
    <TotalNumberStations>19</TotalNumberStations>
    <SelectedNumberStations>1</SelectedNumberStations>
-   <Station code="HPAH" startDate="2007-12-04T00:20:00.0000" endDate="2045-01-01T00:00:00.0000" restrictedStatus="open" iris:alternateNetworkCodes="_HAWAII,.UNRESTRICTED,_US-REGIONAL">
+   <Station code="HPAH" startDate="2007-12-04T00:20:00.0000" endDate="2045-01-01T00:00:00.0000" restrictedStatus="open" iris:alternateNetworkCodes="_HAWAII,_REALTIME,.UNRESTRICTED,_US-REGIONAL">
     <Latitude>20.0303</Latitude>
     <Longitude>-155.697296</Longitude>
     <Elevation>753.0</Elevation>

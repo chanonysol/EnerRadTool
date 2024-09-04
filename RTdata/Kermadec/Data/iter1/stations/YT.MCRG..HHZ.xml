@@ -5,7 +5,7 @@
   <Sender>IRIS-DMC</Sender>
   <Module>IRIS WEB SERVICE: fdsnws-station | version: 1.1.52</Module>
   <ModuleURI></ModuleURI>
-  <Created>2024-08-16T02:47:44.6961</Created>
+  <Created>2024-09-04T02:42:24.8752</Created>
   <Network code="YT" startDate="2007-01-01T00:00:00.0000" endDate="2025-12-31T23:59:59.9999" restrictedStatus="open">
    <Description>IPY POLENET-Antarctica: Investigating links between geodynamics and ice sheets (POLENET)</Description>
    <Identifier type="DOI">10.7914/SN/YT_2007

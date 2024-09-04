@@ -104,7 +104,7 @@ def selected_query(ev,path,minrad,maxrad,startime,endtime,channels,nbiter):
     stationxml_storage=get_stationxml_storage
 
     if "BH" in channels:
-        STARTIME = time()
+        STARTTIME = time()
         restrictions = Restrictions(
             starttime=origin_time + startime - 60,
             endtime=origin_time + endtime + 60,
@@ -115,12 +115,12 @@ def selected_query(ev,path,minrad,maxrad,startime,endtime,channels,nbiter):
 
         MDL.download(domain, restrictions, mseed_storage=mseed_storage,
                       stationxml_storage=stationxml_storage,print_report=True)
-        sys.stdout.write(f"      ¤ SHZ channels done "
+        sys.stdout.write(f"      ¤ BHZ channels done "
                          +f"{Style.RESET_ALL}"
                          +f" (lasted {time()-STARTTIME: 3.0f}s) \n")
 
     if "HH" in channels:
-        STARTIME = time()
+        STARTTIME = time()
         restrictions = Restrictions(
             starttime=origin_time + startime - 60,
             endtime=origin_time + endtime + 60,
@@ -130,12 +130,12 @@ def selected_query(ev,path,minrad,maxrad,startime,endtime,channels,nbiter):
 
         MDL.download(domain, restrictions, mseed_storage=mseed_storage,
                       stationxml_storage=stationxml_storage,print_report=True)
-        sys.stdout.write(f"      ¤ SHZ channels done "
+        sys.stdout.write(f"      ¤ HHZ channels done "
                          +f"{Style.RESET_ALL}"
                          +f" (lasted {time()-STARTTIME: 3.0f}s) \n")
 
     if "SH" in channels:
-        STARTIME = time()
+        STARTTIME = time()
         restrictions = Restrictions(
             starttime=origin_time + startime - 60,
             endtime=origin_time + endtime + 60,

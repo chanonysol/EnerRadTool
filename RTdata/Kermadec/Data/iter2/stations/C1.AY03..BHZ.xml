@@ -5,7 +5,7 @@
   <Sender>IRIS-DMC</Sender>
   <Module>IRIS WEB SERVICE: fdsnws-station | version: 1.1.52</Module>
   <ModuleURI></ModuleURI>
-  <Created>2024-08-16T02:48:38.2785</Created>
+  <Created>2024-09-04T02:44:13.5706</Created>
   <Network code="C1" startDate="2012-01-01T00:00:00.0000" restrictedStatus="open">
    <Description>Red Sismologica Nacional (RSN)</Description>
    <Identifier type="DOI">10.7914/SN/C1

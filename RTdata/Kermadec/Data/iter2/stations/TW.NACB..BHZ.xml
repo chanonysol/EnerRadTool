@@ -5,7 +5,7 @@
   <Sender>IRIS-DMC</Sender>
   <Module>IRIS WEB SERVICE: fdsnws-station | version: 1.1.52</Module>
   <ModuleURI></ModuleURI>
-  <Created>2024-08-16T02:48:37.7528</Created>
+  <Created>2024-09-04T02:44:08.5864</Created>
   <Network code="TW" startDate="1994-01-01T00:00:00.0000" restrictedStatus="open">
    <Description>Broadband Array in Taiwan for Seismology (BATS)</Description>
    <Identifier type="DOI">10.7914/SN/TW

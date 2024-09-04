@@ -5,14 +5,14 @@
   <Sender>IRIS-DMC</Sender>
   <Module>IRIS WEB SERVICE: fdsnws-station | version: 1.1.52</Module>
   <ModuleURI></ModuleURI>
-  <Created>2024-08-16T02:44:52.9782</Created>
+  <Created>2024-09-04T02:39:08.5440</Created>
   <Network code="S1" startDate="2011-01-01T00:00:00.0000" restrictedStatus="open">
    <Description>Australian Seismometers in Schools (AuSIS)</Description>
    <Identifier type="DOI">10.7914/SN/S1
    </Identifier>
    <TotalNumberStations>50</TotalNumberStations>
    <SelectedNumberStations>1</SelectedNumberStations>
-   <Station code="AUHPC" startDate="2013-05-24T00:00:00.0000" restrictedStatus="open" iris:alternateNetworkCodes=".UNRESTRICTED">
+   <Station code="AUHPC" startDate="2013-05-24T00:00:00.0000" restrictedStatus="open" iris:alternateNetworkCodes="_REALTIME,.UNRESTRICTED">
     <Latitude>-38.1068</Latitude>
     <Longitude>142.318298</Longitude>
     <Elevation>11.3</Elevation>

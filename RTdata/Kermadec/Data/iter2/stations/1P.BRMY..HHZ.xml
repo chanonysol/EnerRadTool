@@ -5,7 +5,7 @@
   <Sender>IRIS-DMC</Sender>
   <Module>IRIS WEB SERVICE: fdsnws-station | version: 1.1.52</Module>
   <ModuleURI></ModuleURI>
-  <Created>2024-08-16T02:49:16.1016</Created>
+  <Created>2024-09-04T02:44:55.6159</Created>
   <Network code="1P" startDate="2018-01-01T00:00:00.0000" endDate="2021-12-31T23:59:59.9999" restrictedStatus="open">
    <Description>Solid Earth response of the Patagonia Andes to post-Little Ice Age glacial retreat (Patagonia GIA)</Description>
    <Identifier type="DOI">10.7914/SN/1P_2018
