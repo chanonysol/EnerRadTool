@@ -1,6 +1,6 @@
 {
 "general": {"session_name": "- null for an automatic format like 'version_parameters'\n- or type wanted-name for folder",
-               "search_data": "- true to make automatic query with Obspy\n- false for data in 'Data' folder\n- or dir to the folder with data",
+               "search_data": "- true to make automatic query with Obspy\n- fixed if want a fixed list of station\n- false for data in 'Data' folder\n- or dir to the folder with data",
                "keep_data": "- 'all' to keep all data\n- 'used' for only used signals\n- null (default) remove all data for minimum space",
                "saved_results": "- 'all' to save everything in files\n- 'plot' to redo plots later\n- 'detailed' saves all stations contribution over time\n- 'minimum' for files with general results, station contribution and energy growth\n- 'fastest' only write in the general results file",
                "do_plot": "- 'format' (.png,.pdf, etc...) for wanted figures\n- null for no figures",
@@ -20,15 +20,24 @@
                       "map_sta_dev": "map of the stations and respective deviation",
                       "stream_list": "write a list of all the data references"}
          },
-
-"time_max": "- int for maximum time\n- null will set a value based on magnitude",
+"waves": {
+    "network_fixed": "- true for selected network\n- false if every station possible",
+    "P_teleseismic": "- true for P waves from 25° (default for rt)\n- false if no",
+    "P_regional": "- true for P waves from 5° to 30°\n- false if no",
+    "S_near": "- true impedance added to p waves for s waves comparison\n- false if no"
+    },
+"time_max": "- int for maximum time p waves\n- null will set a value based on travel times",
+"time_max_s": "- int for maximum time s waves\n- null will set default 60s",
 "time_stop": "- true for an automatic time stop\n- false will run the full time_max window",
 "time_eval_method": "- 'tacer' for the time-averaged cumulative energy rate\n- 'trend' for start and end trend lines\n- 'both' for a joint method",
 
-"distance_min": "int above 25deg",
-"distance_max": {"max": "int under 80deg",
-                  "step": "- int in degree to request data with an increseasing range (by value) over time\n- or null to make one general data request"
-                },
+"distance": {
+        "min": "- float minimum epicentral distance (min 5°)",
+        "max": "- float maximum epicentral distance (max 80°)",
+        "include_near": "-true add iteration for close S waves\n false will do only p waves",
+        "totalstep": "- float of how many iterations to do for p waves (min 1.0)"
+    },
+
 
 
 "channel_code": "list of desired data channels among [BH,SH,HH]\n- https://ds.iris.edu/ds/nodes/dmc/data/formats/seed-channel-naming/",
@@ -36,9 +45,9 @@
                           "threshold": "float accepted for the deviation (in log10 of the energy)"
                         },
 
-"redoing_results": {"force_results": "bool to redo the estimation if the results already exists\n- doesn't overwrite in the general results file\n- if no data are saved, will perform the query",
-                    "force_signal": "bool to research data again if they already exists\n- false by default if 'keep-data' is false",
-                    "force_plot": "bool to redo the plots if they already exists\n- if results are saved, only do the plots\n- if no results exists and no data are saved, do all the those steps"
+"redoing_results": {"force_signal": "bool to research data again if they already exists\n- false by default if 'keep-data' is false",
+                    "force_results": "bool to redo the estimation if the results already exists\n- doesn't overwrite in the general results file\n- if no data are saved, will perform the query",
+		    "force_plot": "bool to redo the plots if they already exists\n- if results are saved, only do the plots\n- if no results exists and no data are saved, do all the those steps"
                    }
 
 
