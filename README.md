@@ -56,8 +56,8 @@ python main_single_event.py path2folder -rt
 
 |    Name | Surname |               Email                |        Site         |
 | -------:|:------- |:----------------------------------:|:-------------------:|
-| CHANONY | Solen   | chanonysol@gmail.com		 | Dunedin, Geol dept. |
-|     FRY | Bill    | b.fry@gns.cri.nz 			 |  LowerHutt, Avalon  |
+| CHANONY | Solen   | chanonysol@gmail.com		           | Dunedin, Geol dept. |
+|     FRY | Bill    | b.fry@gns.cri.nz 			             |  LowerHutt, Avalon  |
 | ANDREWS | Jen     |                                    |  LowerHutt, Avalon  |
 |         | Chris   |                                    |  LowerHutt, Avalon  |
 
