@@ -10,7 +10,9 @@ import inspect
 import subprocess
 
 from numpy import array, floor, abs, log10, concatenate, nan, ceil, argwhere
+from numpy.linalg import norm
 from copy import deepcopy
+from glob import glob
 
 from obspy.core.utcdatetime import UTCDateTime
 from obspy.imaging.beachball import MomentTensor, mt2plane, aux_plane, mt2axes,\
@@ -18,6 +20,8 @@ from obspy.imaging.beachball import MomentTensor, mt2plane, aux_plane, mt2axes,\
 
 from colorama import init as colorama_init
 from colorama import Fore, Back, Style
+
+from data_utils import name_reg_event
 
 MON = ['jan', 'feb', 'mar', 'apr', 'may', 'jun',
        'jul', 'aug', 'sep', 'oct', 'nov', 'dec']
@@ -36,29 +40,32 @@ def moment(M,exponent = None):
     M = deepcopy(M)
     if exponent :
         M*=float(f"1e{exponent}")
-    return sum(M**2)**0.5/2**0.5
+    Mrr,Mtt,Mpp,Mrt,Mrp,Mtp = M
+    M = array([[Mrr,Mrt,Mrp],[Mrt,Mtt,Mtp],[Mrp,Mtp,Mpp]])
+    return norm(M)*2**-0.5
 
 def mw(M):
-    if all(M) == 0.:
+    if not M.any!= 0.:
         return 0.
     M0 = moment(M)
-    return round(2/3*log10(M0)-10.7+0.05,1)
+    return round(2/3*log10(M0)-10.73,1)
 
 def write_psmeca_ind(path,ev):
-    with open(f"{path}temp_psmeca.dat","w") as file:
-        file.write(f"{ev.lon} {ev.lat} {ev.depth} "
-                   +f"{' '.join(ev.moment.astype(str))} "
-                   +f"{ev.exponent+7} X Y {ev.id}")
+    if not f"{path}temp_psmeca.dat" in [p.replace('\\','/') for p in glob(f"{path}/*.dat")]:
+        with open(f"{path}temp_psmeca.dat","w") as file:
+            file.write(f"{ev.lon} {ev.lat} {ev.depth} "
+                       +f"{' '.join(ev.moment.astype(str))} "
+                       +f"{ev.exponent+7} X Y {ev.id}")
 
-def write_psmeca_cat(path,ev):
-    if not f"{path}../psmeca.dat" in os.listdir(f"{path}.."):
+def write_psmeca_cat(path,ev,filename):
+    if not f"{path}/cat_psmeca.dat" in [p.replace('\\','/') for p in glob(f"{path}/*.dat")]:
         mod = "w"
     else :
         mod ="a"
-    with open(f"{path}../psmeca.dat",mod) as file:
+    with open(f"{path}/psmeca_{filename}.dat",mod) as file:
         file.write(f"{ev.lon} {ev.lat} {ev.depth} "
                    +f"{' '.join(ev.moment.astype(str))} "
-                   +f"{ev.exponent+7} X Y {ev.id}")
+                   +f"{ev.exponent+7} X Y {ev.id}\n")
 
 class Event:
     def __init__(self, path):
@@ -106,14 +113,18 @@ class Event:
             M /= 10.**expon
             M.round(3)
             if expon >21 : expon-=7
+        reg,sreg = name_reg_event(evla,evlo)
         self.lat = evla
         self.lon = evlo
         self.depth = evdp
+        self.reg = reg
+        self.sreg = sreg
         self.mag = mag
         self.moment = M
         # self.moment = dict(mrr=M[0], mtt=M[1], mff=M[2],
         #                    mrt=M[3], mrf=M[4], mtf=M[5])
         self.exponent = expon
+        self.m0 = moment(self.moment,exponent = self.exponent)
         self.name = evname
         self.id = evid
         self.date = date
@@ -138,7 +149,7 @@ class Event:
 
     def mechanism_type(self,path):
         write_psmeca_ind(path, self)
-        write_psmeca_cat(path, self)
+        # write_psmeca_cat(path, self)
         #https://github.com/Jose-Alvarez/FMC
         cmd = f"python {EVENT_PATH}/FMC.py {path}temp_psmeca.dat -o K ".split()
         proc = subprocess.run(cmd, stdout=subprocess.PIPE, universal_newlines=True)
@@ -158,10 +169,3 @@ class Event:
             print(f"{' '*space}" + col + f"{arg[0]}" + Style.RESET_ALL
                   + f" : {arg[1]}")
 
-
-
-# TODO Event Class
-# TODO Method get dip/type mechanism based on t,n,p
-# TODO Method write new file (manual and auto)
-# TODO Method read based on file type
-# TODO Affichage
