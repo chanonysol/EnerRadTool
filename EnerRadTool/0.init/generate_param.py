@@ -392,46 +392,23 @@ class ParamGeneral(Parameters):
         super().__init__(path)
     def arglist(self,col = Fore.MAGENTA, space = 2):
         super().arglist(col,space)
+    def items(self):
+        args = [i for i in inspect.getmembers(self) if not i[0].startswith('_')
+                and not inspect.ismethod(i[1])]
+        return [i[0] for i in args if i[1]]
 
-class ParamPlot(Parameters):
-    def __init__(self,path,dic):
-        self.__original__ = dic
-        super().__init__(path)
-    def arglist(self,col = Fore.MAGENTA, space = 2):
-        super().arglist(col,space)
-
-class ParamPlotDetails(ParamPlot):
+class ParamPlotDetails(ParamGeneral):
     def __init__(self,path,dic):
         self.__original__ = dic
         super().__init__(path,dic)
     def arglist(self,col = Fore.CYAN, space = 5):
         super().arglist(col,space)
 
-class ParamDistanceMax(Parameters):
-    def __init__(self,path,dic):
-        self.__original__ = dic
-        super().__init__(path)
-    def arglist(self,col = Fore.MAGENTA, space = 2):
-        super().arglist(col,space)
-
-class ParamDeviationCorrection(Parameters):
-    def __init__(self,path,dic):
-        self.__original__ = dic
-        super().__init__(path)
-    def arglist(self,col = Fore.MAGENTA, space = 2):
-        super().arglist(col,space)
-
-class ParamRedoingResults(Parameters):
-    def __init__(self,path,dic):
-        self.__original__ = dic
-        super().__init__(path)
-    def arglist(self,col = Fore.MAGENTA, space = 2):
-        super().arglist(col,space)
 
 decorators = {}
-for name,Class in zip(["general","plot","details","distance_max",
+for name,Class in zip(["general","plot","waves","details","distance",
                        "deviation_correction","redoing_results"],
-                      [ParamGeneral,ParamPlot,ParamPlotDetails,
-                       ParamDistanceMax,ParamDeviationCorrection,
-                       ParamRedoingResults]):
+                      [ParamGeneral,ParamGeneral,ParamGeneral,ParamPlotDetails,
+                       ParamGeneral,ParamGeneral,
+                       ParamGeneral]):
     decorators[name] = Class

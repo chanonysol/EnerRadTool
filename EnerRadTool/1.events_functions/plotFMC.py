@@ -23,15 +23,16 @@
 # The scale of the symbols now is adjusted to the magnitude range of the input data
 
 import matplotlib.pyplot as plt
-from numpy import zeros, sqrt, arcsin, pi, sin, squeeze, round, mean
+from numpy import zeros, sqrt, arcsin, pi, sin, squeeze, round
 from functionsFMC import kave
 
 plt.rc('pdf', fonttype=3)
 
-def baseplot(spacing, plotname):
+def baseplot(spacing, plotname, size = (10,10), ax=None):
     # border
-    fig = plt.figure()
-    plt.axes().set_aspect('equal')
+    if not ax:
+        fig,ax = plt.subplots(1,figsize=size)
+        plt.axes().set_aspect('equal')
 
     X = zeros((1, 101))
     Y = zeros((1, 101))
@@ -42,20 +43,18 @@ def baseplot(spacing, plotname):
         X[0][a], Y[0][a] = kave(T, B, P)
 
     tickx, ticky = kave(range(90, -1, -10), zeros((1, 10)), range(0, 91, 10))
-    plt.plot(X[0], Y[0], color='black', linewidth=2)
-    plt.scatter(tickx, ticky, marker=3, c='black', linewidth=2)
+    ax.plot(X[0], Y[0], color='black', linewidth=2)
+    ax.scatter(tickx, ticky, marker=3, c='black', linewidth=2)
     for i in range(0, 10):
-        plt.text(
+        ax.text(
             tickx[0][i],
             ticky[0][i] - 0.04,
             i * 10,
-            fontsize=8,
             verticalalignment='top')
-    plt.text(
+    ax.text(
         0,
         -0.76,
      'P axis plunge',
-     fontsize=9,
      horizontalalignment='center')
 
     X = zeros((1, 101))
@@ -67,20 +66,18 @@ def baseplot(spacing, plotname):
         X[0][a], Y[0][a] = kave(T, B, P)
 
     tickx, ticky = kave(zeros((1, 10)), range(0, 91, 10), range(90, -1, -10))
-    plt.plot(X[0], Y[0], color='black', linewidth=2)
-    plt.scatter(tickx, ticky, marker=0, c='black', linewidth=2)
+    ax.plot(X[0], Y[0], color='black', linewidth=2)
+    ax.scatter(tickx, ticky, marker=0, c='black', linewidth=2)
     for i in range(0, 10):
-        plt.text(
+        ax.text(
             tickx[0][i] - 0.04,
             ticky[0][i],
             i * 10,
-            fontsize=8,
             horizontalalignment='right')
-    plt.text(
+    ax.text(
         -0.7,
         0.2,
      'B axis plunge',
-     fontsize=9,
      horizontalalignment='center',
      rotation=60)
 
@@ -93,20 +90,18 @@ def baseplot(spacing, plotname):
         X[0][a], Y[0][a] = kave(T, B, P)
 
     tickx, ticky = kave(range(0, 91, 10), range(90, -1, -10), zeros((1, 10)))
-    plt.plot(X[0], Y[0], color='black', linewidth=2)
-    plt.scatter(tickx + 0.025, ticky, marker=0, c='black', linewidth=2)
+    ax.plot(X[0], Y[0], color='black', linewidth=2)
+    ax.scatter(tickx + 0.025, ticky, marker=0, c='black', linewidth=2)
     for i in range(0, 10):
-        plt.text(
+        ax.text(
             tickx[0][i] + 0.04,
             ticky[0][i],
             i * 10,
-            fontsize=8,
             horizontalalignment='left')
-    plt.text(
+    ax.text(
         0.7,
         0.2,
      'T axis plunge',
-     fontsize=9,
      horizontalalignment='center',
      rotation=-60)
 
@@ -118,7 +113,7 @@ def baseplot(spacing, plotname):
         B = arcsin(sqrt(1 - (a / 100.0))) / (pi / 180)
         X[0][a], Y[0][a] = kave(T, B, P)
 
-    plt.plot(X[0], Y[0], color='black', linewidth=2)
+    ax.plot(X[0], Y[0], color='black', linewidth=2)
 
     # inner lines
     # class fields
@@ -132,8 +127,8 @@ def baseplot(spacing, plotname):
 
     xf = X[0][25]
     yf = Y[0][25]
-    plt.plot([0, xf], [0, yf], color='grey', linewidth=1)
-    plt.plot(X[0][25:51], Y[0][25:51], color='grey', linewidth=1)
+    ax.plot([0, xf], [0, yf], color='grey', linewidth=1)
+    ax.plot(X[0][25:51], Y[0][25:51], color='grey', linewidth=1)
 
     X = zeros((1, 51))
     Y = zeros((1, 51))
@@ -145,8 +140,8 @@ def baseplot(spacing, plotname):
 
     xf = X[0][25]
     yf = Y[0][25]
-    plt.plot([0, xf], [0, yf], color='grey', linewidth=1)
-    plt.plot(X[0][25:51], Y[0][25:51], color='grey', linewidth=1)
+    ax.plot([0, xf], [0, yf], color='grey', linewidth=1)
+    ax.plot(X[0][25:51], Y[0][25:51], color='grey', linewidth=1)
 
     X = zeros((1, 51))
     Y = zeros((1, 51))
@@ -156,32 +151,33 @@ def baseplot(spacing, plotname):
         P = arcsin(sqrt((1 - (a / 50.0)) * 0.14645)) / (pi / 180)
         X[0][a], Y[0][a] = kave(T, B, P)
 
-    plt.plot(X[0], Y[0], color='grey', linewidth=1)
+    ax.plot(X[0], Y[0], color='grey', linewidth=1)
 
-    plt.plot([0, 0], [0.555221438, -0.605810893], color='grey', linewidth=1)
-    plt.plot([0, 0.52481139], [0, 0.303], color='grey', linewidth=1)
-    plt.plot([0, -0.52481139], [0, 0.303], color='grey', linewidth=1)
+    ax.plot([0, 0], [0.555221438, -0.605810893], color='grey', linewidth=1)
+    ax.plot([0, 0.52481139], [0, 0.303], color='grey', linewidth=1)
+    ax.plot([0, -0.52481139], [0, 0.303], color='grey', linewidth=1)
     # Labels
-    plt.text(0, -0.9, plotname, horizontalalignment='center', fontsize=16)
-    plt.text(-0.9, -0.5, 'Normal', horizontalalignment='right', fontsize=14)
-    plt.text(0.9, -0.5, 'Reverse', horizontalalignment='left', fontsize=14)
-    plt.text(0, 1, 'Strike-slip', horizontalalignment='center', fontsize=14)
+    ax.text(0, -0.9, plotname, horizontalalignment='center')
+    ax.text(-0.9, -0.5, 'Normal', horizontalalignment='right')
+    ax.text(0.9, -0.5, 'Reverse', horizontalalignment='left')
+    ax.text(0, 1, 'Strike-slip', horizontalalignment='center')
 
-    plt.axis('off')
+    ax.axis('off')
     if spacing != 0:
         fig = grids(spacing, plotname)
 
     return fig
 
 
-def adapt_ternary(X, Y, size, color, plotname, label, spacing, cmap, vi, va):
+def circles(X, Y, size, color, plotname, label, spacing=25,cmap = "seismic"):
     # working on it
     # computes min and max size to provide adecuate symbol scaling
-    minval = min([size,5])
-    maxval = max([size,9])
+    minval = min(size)
+    maxval = max(size)
     minscale=20
-    maxscale=100
-    symb_size = [(minscale + (valor - minval) * (maxscale - minscale) / (maxval - minval)) for valor in size]
+    maxscale=140
+    symb_size = [(minscale + (valor - minval) * (maxscale - minscale) / (maxval - minval)) 
+                 for valor in size]
 
     fig = baseplot(spacing, plotname)
     if str(color) == 'white':
@@ -191,23 +187,22 @@ def adapt_ternary(X, Y, size, color, plotname, label, spacing, cmap, vi, va):
             X,
             Y,
             s=symb_size,
-            c=color,
+            c=color, # AQUI HAY UN PROBLEMA AL UTILIZAR NUMEROS EN ID PARA COLOREAR PROBLEMA EN LA FUNCION COLOR DE matplotlib 3
             alpha=0.7,
             linewidth=0.5,
             edgecolors='black',
-            cmap=cmap,
-            vmin = vi, vmax = va)
+            cmap=cmap)
         cbar = plt.colorbar(sc, shrink=0.5)
         cbar.set_label(label)
     # legend
     plt.scatter(0.4, 0.9, s=20, c='white', linewidth=0.5, edgecolors='black')
-    plt.scatter(0.5, 0.9, s=40, c='white', linewidth=0.5, edgecolors='black')
-    plt.scatter(0.6, 0.9, s=60, c='white', linewidth=0.5, edgecolors='black')
-    plt.scatter(0.7, 0.9, s=80, c='white', linewidth=0.5, edgecolors='black')
-    plt.scatter(0.8, 0.9, s=100, c='white', linewidth=0.5, edgecolors='black')
-    plt.text(0.4, .95, str(round(minval,1)).strip("'[]'"), fontsize=9, ha='center')
-    plt.text(0.8, .95, str(round(maxval,1)).strip("'[]'"), fontsize=9, ha='center')
-    plt.text(0.9, .95, 'Mw', fontsize=9)
+    plt.scatter(0.5, 0.9, s=50, c='white', linewidth=0.5, edgecolors='black')
+    plt.scatter(0.6, 0.9, s=80, c='white', linewidth=0.5, edgecolors='black')
+    plt.scatter(0.7, 0.9, s=110, c='white', linewidth=0.5, edgecolors='black')
+    plt.scatter(0.8, 0.9, s=140, c='white', linewidth=0.5, edgecolors='black')
+    plt.text(0.4, .95, str(round(minval,1)).strip("'[]'"), ha='center')
+    plt.text(0.8, .95, str(round(maxval,1)).strip("'[]'"), ha='center')
+    plt.text(0.9, .95, 'Mw')
     return fig
 
 

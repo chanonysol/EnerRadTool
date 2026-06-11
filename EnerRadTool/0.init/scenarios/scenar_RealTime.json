@@ -1,10 +1,10 @@
 {
     "general": {
-        "session_name": "v1.0.RT",
+        "session_name": null,
         "search_data": true,
         "keep_data": "used",
         "saved_results": "all",
-        "do_plot": ".pdf",
+        "do_plot": ".png",
         "do_report": true
     },
     "plot": {
@@ -23,25 +23,32 @@
             "stream_list": false
         }
     },
+    "waves": {
+        "network_fixed": true,
+        "P_teleseismic": true,
+        "P_regional": true,
+        "S_near": false
+    },
     "time_max": null,
+    "time_max_s":60,
     "time_stop": false,
-    "time_eval_method": "tacer",
-    "distance_min": 25.0,
-    "distance_max": {
+    "time_eval_method": "both",
+    "distance": {
+        "min": 5.0,
         "max": 80.0,
-        "step": 10.0
+        "include_near": false,
+        "totalstep": 3.0
     },
     "channel_code": [
-        "BH",
-        "HH"
+        "BH","HH"
     ],
     "deviation_correction": {
         "type": "result",
         "threshold": 1.0
     },
     "redoing_results": {
-        "force_results": false,
         "force_signal": false,
+        "force_results": false,
         "force_plot": false
     }
 }

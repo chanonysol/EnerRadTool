@@ -1,0 +1,56 @@
+#station K0 dk/dR
+#Fjordland
+DCZ  0.013 3.34e-4
+PYZ  0.014 3.34e-4
+#Otago
+WHZ  0.009 1.79e-4
+SYZ  0.012 2.51e-4
+TUZ  0.006 2.51e-4
+OPZ  0.010 2.51e-4
+#Canterbury
+EAZ  0.016 3.33e-4
+JCZ  0.027 2.94e-4
+LBZ  0.022 2.14e-4
+RPZ  0.021 2.93e-4
+LTZ  0.016 3.85e-4
+KHZ  0.031 5.16e-4
+#Banks Peninsula
+CRLZ 0.032 0.00e-4
+MQZ  0.030 0.00e-4
+AKSS 0.033 0.00e-4
+D14C 0.025 0.00e-4
+MTPS 0.031 0.00e-4
+#West Coast
+FOZ  0.019 1.63e-4
+WVZ  0.009 4.08e-4 
+INZ  0.022 3.91e-4
+DSZ  0.023 1.91e-4
+THZ  0.012 4.18e-4
+NNZ  0.021 5.78e-4
+#Forearc/East Coast
+PAWZ 0.052 5.93e-4
+BFZ  0.050 5.27e-4
+PXZ  0.044 3.87e-4
+KNZ  0.042 9.67e-4
+CKHZ 0.053 7.35e-4
+PUZ  0.048 1.61e-4
+MWZ  0.050 2.82e-4
+MXZ  0.030 1.49e-4
+#Arc
+WEL  0.032 3.73e-4
+BHW  0.034 3.73e-4
+BKZ  0.029 3.38e-4
+URZ  0.030 3.64e-4
+#Taupo Volcanic Zone
+WHTZ 0.055 4.34e-4
+UTU  0.053 4.46e-4
+MARZ 0.052 6.59e-4
+#Northern Districts
+WAZ  0.019 2.10e-4
+VRZ  0.017 2.10e-4
+HIZ  0.015 2.38e-4
+TLZ  0.016 3.24e-4
+TGRZ 0.024 2.80e-4
+TOZ  0.027 1.63e-4
+WIAZ 0.030 2.20e-4
+WCZ  0.029 5.39e-4
