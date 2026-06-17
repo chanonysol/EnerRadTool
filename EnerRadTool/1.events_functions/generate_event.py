@@ -113,7 +113,7 @@ class Event:
             M /= 10.**expon
             M.round(3)
             if expon >21 : expon-=7
-        reg,sreg = name_reg_event(evla,evlo)
+        reg,sreg = name_reg_event(evla,evlo,new_zone=True)
         self.lat = evla
         self.lon = evlo
         self.depth = evdp
