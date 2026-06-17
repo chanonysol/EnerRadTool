@@ -85,7 +85,8 @@ def check4fixed_stations(path,min_dist,max_dist):
     L = L[ind]
     if L.size==0: return False
     else :
-        Lsta = concatenate([glob(f"{path}Data/Stations/{n}*") for n in [p.split("\\")[-1][:-10] for p in L]])
+        Lsta = concatenate([glob(f"{path}Data/Stations/{n}*") 
+                            for n in [os.path.split(p)[-1][:-10] for p in L]])
         for p in L:
             copyfile(p,p.replace("Records","FixedRecords"))
         for p in Lsta:

@@ -236,7 +236,7 @@ def fixed_network_selection(inv,st,logpath,logfile):
     return inv_fixed, st_fixed
 
 def check_inv_files(invpath,inv):
-    names_xml = [i.split("\\")[-1][:-4] for i in glob(f"{invpath}/*.xml")]
+    names_xml = [os.path.split(i)[-1][:-4] for i in glob(f"{invpath}/*.xml")]
     names_inv = [f"{net.code}.{sta.code}.{cha.location_code}.{cha.code}" 
                  for net in inv for sta in net for cha in sta]
     for i in names_inv:
@@ -365,7 +365,7 @@ def clean_data(datapath,invpath,ev,save,ext = ".mseed"):
     
     clear_data_file(datapath,
                     invpath = [j for j in glob(f"{invpath}/*") 
-                               if ".".join(j.split('\\')[-1].split(".")[:-1]) 
+                               if ".".join(os.path.split(j)[-1].split(".")[:-1]) 
                                not in [i for i 
                                 in [f"{net.code}.{sta.code}.{chan.location_code}.{chan.code}" 
                                 for net in inv  for sta in net  for chan in sta] 
@@ -511,7 +511,7 @@ def clean_close_data(datapath,invpath,ev,save):
     
     clear_data_file(datapath,
                     invpath = [j for j in glob(f"{invpath}/*") 
-                                           if ".".join(j.split('\\')[-1].split(".")[:-1])[:-1] 
+                                           if ".".join(os.path.split(j)[-1].split(".")[:-1])[:-1] 
                                            not in [i for 
                                                    i in unique([f"{net.code}.{sta.code}.{chan.location_code}.{chan.code[:-1]}" 
                                                          for net in inv  for sta in net  for chan in sta])

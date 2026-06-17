@@ -167,7 +167,7 @@ def plot_stations_contrib_map(resultpath, ev, inv, st_bb,st_hf,
                          +f" ... {'BB' if j==0 else 'HF'} already done ")
             return
         stalog = read_log(resultpath,
-                              glob(f"{resultpath.replace(']','?').replace('[','?')}/log_keptdata_*{'BB' if j==0 else 'HF'}*")[-1].split("\\")[-1][:-4],
+                              os.path.split(glob(f"{resultpath.replace(']','?').replace('[','?')}/log_keptdata_*{'BB' if j==0 else 'HF'}*")[-1])[-1][:-4],
                               return_mat=True)
         keep_names=stalog[:,1][argwhere(array([i.find(f"REMAIN ITER")!=-1 for i in stalog[:,0]]))[:,0]]
         remove_names=stalog[:,1][argwhere(array([i.find(f"dev")!=-1 for i in stalog[:,0]]))[:,0]]

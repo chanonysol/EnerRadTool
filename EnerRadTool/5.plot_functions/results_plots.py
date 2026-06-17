@@ -82,13 +82,13 @@ def plot_growth(resultpath, correct = False, rt= False,savefile= False, ext =".p
        
     if correct or isinstance(rt,int):
         stalog_bb = read_log(resultpath,
-                              glob(f"{resultpath.replace(']','?').replace('[','?')}/log_keptdata_*BB*")[-1].split("\\")[-1][:-4],
+                              os.path.split(glob(f"{resultpath.replace(']','?').replace('[','?')}/log_keptdata_*BB*")[-1])[-1][:-4],
                               return_mat=True)
         keep_names_bb=stalog_bb[:,1][argwhere(array([any(i.find(f"{'REMAIN ITER' if correct and j else ''}{' ' if isinstance(j,int) else ''}{j}")!=-1 
                                                          for j in (range(rt+1) if not isinstance(rt,bool) else " ")) 
                                                      for i in stalog_bb[:,0]]))[:,0]]
         stalog_hf = read_log(resultpath,
-                              glob(f"{resultpath.replace(']','?').replace('[','?')}/log_keptdata_*HF*")[-1].split("\\")[-1][:-4],
+                              os.path.split(glob(f"{resultpath.replace(']','?').replace('[','?')}/log_keptdata_*HF*")[-1])[-1][:-4],
                               return_mat=True)
         keep_names_hf=stalog_hf[:,1][argwhere(array([any(i.find(f"{'REMAIN ITER' if correct and j else ''}{' ' if isinstance(j,int) else ''}{j}")!=-1 
                                                          for j in (range(rt+1) if not isinstance(rt,bool) else " ")) 
