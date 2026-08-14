@@ -4,9 +4,6 @@ Created on Fri Aug  9 09:51:52 2024
 
 @author: solen
 """
-#TODO json file for extra station information + function to add in xml file or st
-# with open(pathdata, encoding="utf-8") as file : data = AttribDict(json.load(file))
-#TODO precalc angles etc
 # =============================================================================
 # LIBRARIES IMPORT
 # =============================================================================
@@ -37,7 +34,7 @@ from results_writing import results_dictionnary_init, update_results,\
 from time_rupture_functions import find_tr_tacer
 from do_plot import do_plots
 
-from numpy import linspace, arange, concatenate
+from numpy import linspace, arange, concatenate, unique
 from numpy.linalg import norm
 import matplotlib.pyplot as plt
 import matplotlib as mpl
@@ -184,6 +181,11 @@ def main(path,real_time=True, new_param=False, show_parameters=False, parameters
             
         update_results(results,estimate = [iteration, 
                                            dist_list[:iteration+2] if iteration!=-1 else array([0,2]),
+                                           unique([sta.extra.station_param.az 
+                                                   for net in general_inv for sta in net]),
+                                           unique([sta.extra.station_param.distance
+                                                   for net in general_inv for sta in net]),
+                                            dist_list,
                                             (general_st_bb,general_st_hf),
                                             parameters.time_max if iteration!=-1 else parameters.time_max_s])
         stadist = array([inv.select(station=tr.stats.station)[0][0].extra.station_param.distance

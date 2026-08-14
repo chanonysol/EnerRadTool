@@ -15,6 +15,7 @@ sys.path.insert(0, DIR)
 from results_plots import plot_growth, result_in_cat, plot_theta_depth_apparent, plot_s_int, plot_s_map
 from data_plots import plot_preprocessed_data_az, plot_preprocessed_data_dist, plot_preprocessed_spectrum
 from results_writing import make_report
+from other_plots import certain_report
 from do_estimation import folder_name
 from colorama import Back, Fore, Style
 from numpy import array, argwhere
@@ -80,6 +81,13 @@ def do_plots(ev,param,resultpath,data):
     #     savefile= True if (param.plot.level in ["report","all"]
     #                     or param.plot.details.spectrum) else False,
     #     ext = param.general.do_plot)
+    
+    for i in range(int(param.distance.totalstep)):
+        certain_report(resultpath,ev, correct = correct, rt=i,
+                       savefile= True if (param.plot.level in ["minimum","report","all"] 
+                                      or param.plot.details.growth) else False, 
+                       ext = param.general.do_plot, 
+                       redo=param.redoing_results.force_plot)
     
     if (param.plot.level in ["report","all"] or param.plot.details.map_sta_dev) :
         from map_plots import plot_stations_contrib_map
