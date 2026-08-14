@@ -130,7 +130,7 @@ def plot_stations_contrib_map(resultpath, ev, inv, st_bb,st_hf,
     sys.stdout.write(f"\n{Fore.GREEN + Style.BRIGHT}"
                      +"> Map stations contribution")
     if (os.path.exists(f"{resultpath}/station_contrib_map_BB.{ext}") 
-        and os.path.exists(f"{resultpath}/station_contrib_map_BB.{ext}")
+        and os.path.exists(f"{resultpath}/station_contrib_map_HF.{ext}")
         and not redo):
         sys.stdout.write(f"\n{Fore.GREEN + Style.BRIGHT}"
                      +" ... Already Done ")
