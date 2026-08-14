@@ -131,6 +131,49 @@ def ener_flux_station(disp_trace,depth, spectra=False, imp_cor = False):
     disp_trace.stats.freq_npts = len(freq)
     disp_trace.spec = spec
 
+# from scipy.integrate import cumulative_simpson
+# figure = plt.figure(figsize=(12,8))
+# freqs,specs,eners=[],[],[]
+# for j,disp_trace in enumerate(st+st_hf):
+#     c="silver"
+#     if j>len(st):c="pink"
+#     sta = inv.select(station=disp_trace.stats.station)[0][0].extra.correction
+#     spec = rfft(disp_trace.data) * disp_trace.stats.delta #disp_trace is the VEL
+#     freq = rfftfreq(disp_trace.stats.npts, d=disp_trace.stats.delta)  # .round(4)
+#     # Limit to the Broband frequencies limit
+#     index = argwhere((freq >= 1/70) & (freq <= 2))[:, 0]
+#     spec, freq = spec[index], freq[index]
+#     t_star = 0.5-0.5*log10(freq)# for 0.1 <= freq <= 1 Hz
+#     t_star[argwhere(freq <= 0.1)[:, 0]] = 0.9-0.1 * \
+#         log10(freq[argwhere(freq <= 0.1)[:, 0]]) # for 0.1Hz <= freq
+#     t_star[argwhere(freq >= 1)[:, 0]] = 0.5-0.1 * \
+#         log10(freq[argwhere(freq >= 1)[:, 0]]) # for freq <= 1 Hz
+
+#     gamma = (0.55 if depth>=450 
+#               else 0.6 if depth >=300
+#               else 0.75 if depth >=200
+#               else 0.8 if depth >=80
+#               else 1)
+    
+#     func = (abs(spec))**2*exp(freq*2*pi*t_star*gamma)
+#     ener = cumulative_simpson(y=func,x=freq*2*pi,initial=0)*sta.ener
+#     # integration in m²/s
+#     plt.loglog(freq,abs(spec),c=c,alpha=0.1,zorder=-10)
+#     freqs.append(freq);eners.append(ener);specs.append(abs(spec))
+# plt.loglog(mean(freqs,axis=0),median(specs[:len(st)],axis=0),c="k",alpha=0.5)
+# plt.loglog(mean(freqs,axis=0),median(specs[len(st):],axis=0),c="r",alpha=0.5)
+# plt.grid()
+# plt.axvline(0.5,c="firebrick",lw=2,zorder=-20)
+
+# def inv_mw(Mw):
+#     return 10**((Mw+10.73)*3/2)
+# mags = arange(5,9)
+# mags=ev.mag
+# M0 = inv_mw(mags)*1e-7
+# E = 5e-5*M0
+# k=0.372; a=(mags/4)**3; rho,alp,bet=find_vel(15); mu = 3.3e4
+# fc = k*bet/a ; gamma=2
+# spec_brune = [M/(1+(freq/f)**gamma) for M,f in zip(M0,fc)]
 # =============================================================================
 # ---- Ener flux S
 # =============================================================================

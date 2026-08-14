@@ -182,10 +182,10 @@ def plot_growth(resultpath, correct = False, rt= False,savefile= False, ext =".p
                      horizontalalignment='left',
                      bbox={'facecolor': 'silver', 'alpha': 0.6, 'pad': 10}, fontsize=12)
             
-            axi.text(res.Tr_tacer-10,-bothf*3,
-                     f"{res.Tr_tacer:.0f}s",c='lightseagreen')
-            axi.text(res.Tr_lines+2,-bothf*3,
-                     f"{res.Tr_lines:.0f}s",c='sandybrown')
+            axi.text(res.Tr_tacer-10,-bothf*3,f"{res.Tr_tacer:.0f}s",
+                     backgroundcolor="w",c='lightseagreen')
+            axi.text(res.Tr_lines+2,-bothf*3,f"{res.Tr_lines:.0f}s",
+                     backgroundcolor="w",c='sandybrown')
     if savefile :
         plt.savefig(f"{resultpath}/EnerOverTime_{'raw' if not correct else 'corrected'}{ext}",
                     dpi = 300, transparent=True)

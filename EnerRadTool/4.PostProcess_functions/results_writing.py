@@ -127,7 +127,8 @@ def update_results(results,**kwargs):
         results['information'].update({"event":ev_info})
 
     if "estimate" in kwargs.keys():
-        rt, dist, (stbb,sthf), time = kwargs["estimate"]
+        rt, dist, azlist, stadist, dist_list, (stbb,sthf), time = kwargs["estimate"]
+        azlist = concatenate(((azlist[1:]-azlist[:-1]),[360-azlist[-1]+azlist[0]]))
         if "estimate" not in results["information"].keys() or rt==0:
             ener_info={"version":"v2.0.RT" ,"iter": rt if isinstance(rt, int) else None ,
                        "mindist": dist.min(),
@@ -136,6 +137,8 @@ def update_results(results,**kwargs):
                        "channel_list_bb":list(set([f"{tr.stats.channel}" for tr in stbb])),
                        "nsta_hf":len(list(set([f"{tr.stats.network}.{tr.stats.station}.{tr.stats.location}" for tr in sthf]))),
                        "channel_list_hf":list(set([f"{tr.stats.channel}" for tr in sthf])),
+                       "max_az_gap":azlist.max(),
+                       "max_dist_gap":(stadist[1:] - stadist[:-1]).max(),
                        "duration":time,"ref_ratio":25}
         elif rt!=results['information']['estimate']['iter']:
             ener_info = results['information']["estimate"]
@@ -143,7 +146,8 @@ def update_results(results,**kwargs):
                        "nsta_bb":len(list(set([f"{tr.stats.network}.{tr.stats.station}.{tr.stats.location}" for tr in stbb]))),
                        "channel_list_bb":list(set([f"{tr.stats.channel}" for tr in stbb])),
                        "nsta_hf":len(list(set([f"{tr.stats.network}.{tr.stats.station}.{tr.stats.location}" for tr in sthf]))),
-                       "channel_list_hf":list(set([f"{tr.stats.channel}" for tr in sthf]))})
+                       "channel_list_hf":list(set([f"{tr.stats.channel}" for tr in sthf])),
+                       "max_az_gap":azlist.max()})
         results['information'].update({"estimate":ener_info})
 
     if any([i in kwargs.keys()
@@ -180,12 +184,14 @@ def complete_from_template(results, path = None, name = None, S=False):
         file.write(f"#----------- Raw estimation -----------\n")
         file.write(f"Ebb = {Ebb:7.2e}J ; MeBB = {MeBB:4.2f} ; dEbb = {dEBB:.1f}%\n")
         file.write(f"Ehf = {Ehf:7.2e}J ; MeHF = {MeHF:4.2f} ; dEhf = {dEHF:.1f}%\n")
+        
         file.write(f"\n")
         file.write(f"Tr = {Tr:3.0f}s; theta = {theta:3.1f}\n")
         file.write(f"(Tr_tacer = {Tr_tacer:3.0f}s)\n")
         file.write(f"(Tr_lines = {Tr_lines:3.0f}s)\n")
         file.write(f"\n")
         file.write(f"E_HF/Tr3 = {EhfTr3:7.2e}J\n")
+        file.write(f"E_HF/E_BB = {Ehf/Ebb*100:4.1e}%\n")
         file.write(f"\n")
 
     if not all(array(list(results['raw_smooth'].values()))==-9999):
@@ -200,6 +206,7 @@ def complete_from_template(results, path = None, name = None, S=False):
         file.write(f"(Tr_lines = {Tr_lines:3.0f}s)\n")
         file.write(f"\n")
         file.write(f"E_HF/Tr3 = {EhfTr3:7.2e}J\n")
+        file.write(f"E_HF/E_BB = {Ehf/Ebb*100:4.1e}%\n")
         file.write(f"\n")
 
     if not all(array(list(results['corrected'].values()))==-9999):
@@ -214,6 +221,7 @@ def complete_from_template(results, path = None, name = None, S=False):
         file.write(f"(Tr_lines = {Tr_lines:3.0f}s)\n")
         file.write(f"\n")
         file.write(f"E_HF/Tr3 = {EhfTr3:7.2e}J\n")
+        file.write(f"E_HF/E_BB = {Ehf/Ebb*100:4.1e}%\n")
         file.write(f"\n")
 
     if not all(array(list(results['corrected_smooth'].values()))==-9999):
@@ -228,6 +236,7 @@ def complete_from_template(results, path = None, name = None, S=False):
         file.write(f"(Tr_lines = {Tr_lines:3.0f}s)\n")
         file.write(f"\n")
         file.write(f"E_HF/Tr3 = {EhfTr3:7.2e}J\n")
+        file.write(f"E_HF/E_BB = {Ehf/Ebb*100:4.1e}%\n")
         file.write(f"\n")
         
     if S :
@@ -278,7 +287,7 @@ def complete_from_template(results, path = None, name = None, S=False):
     file.write(f"\n")
 
     version, iter, mindist, maxdist, nsta_bb, channel_list_bb, nsta_hf, \
-        channel_list_hf, duration, ref_ratio=\
+        channel_list_hf, az_gap, dist_gap, duration, ref_ratio=\
         list(results['information']['estimate'].values())
     file.write(f"#------- Estimation information -------\n")
     file.write(f"# {version}\n")
