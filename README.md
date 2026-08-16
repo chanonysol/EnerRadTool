@@ -57,10 +57,10 @@ python main_single_event.py -rt "path2folder" -sp
 ## Roadmap
 #### Current version : 2.0.2
 #### Planed version
-- [ ] 2.0 : Added the S-wave iteration into the real-time code
+- [x] 2.0 : Added the S-wave iteration into the real-time code
 	- [x] 2.0.X Minor corrections and adaptation for the RCET Kafka server
 	- [x] 2.0.3 Extension of raw results output information
-	- [ ] 2.0.4 Correction of the processing time
+	- [x] 2.0.4 Correction of the processing time
 - [ ] 2.1 : Uncertainty evaluation
 	- [ ] 2.1.1 Incorporating uncertainty into raw output
 	- [ ] 2.1.2 Showing evolution of quality over multiple iterations
