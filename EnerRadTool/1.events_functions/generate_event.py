@@ -164,8 +164,16 @@ class Event:
         """
         args = [i for i in inspect.getmembers(self) if not i[0].startswith('_')
                 and not inspect.ismethod(i[1])]
-        if space==0: print(Style.DIM + Back.MAGENTA + "ARGUMENTS LIST")
+        if space==0: print(Style.DIM + Back.MAGENTA + "SOURCE PARAMETERS")
         for arg in args :
-            print(f"{' '*space}" + col + f"{arg[0]}" + Style.RESET_ALL
-                  + f" : {arg[1]}")
+            if arg[0] in ["plan1","plan2","vector_n","vector_p","vector_t"]:
+                val = " - ".join([f"{i[0]} : {i[1]:+.2f}"
+                       for i in inspect.getmembers(arg[1]) 
+                       if not i[0].startswith('_')
+                       and not inspect.ismethod(i[1])])
+                print(f"{' '*space}" + col + f"{arg[0]}" + Style.RESET_ALL
+                      + f" : {val}")
+            else:
+                print(f"{' '*space}" + col + f"{arg[0]}" + Style.RESET_ALL
+                      + f" : {arg[1]}")
 

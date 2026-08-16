@@ -220,13 +220,18 @@ def do_query(ev, path, param, current_dist, next_dist, results, rt=False):
                        +f"{times[0]:6.2f} {times[1]:6.2f}\n")
         
     else :
+        from numpy import argsort
         if os.path.exists(f"{datapath}/run_time.txt"):
             lines = loadtxt(f"{datapath}/run_time.txt")
             if shape(lines)==(4,):
                 lines = reshape(lines,(1,4))
-            ind = argwhere(lines[:,1]<=next_dist)
-            t = [sum(lines[ind,2]),sum(lines[ind,3])]
-                    
+            lines = lines[argsort(lines[:,0])]
+            if current_dist in lines[:,0] and next_dist in lines[:,1]:
+                ind = argwhere(lines[:,1]<=next_dist)
+                t = [sum(lines[ind,2]),sum(lines[ind,3])]
+            else : 
+                t = array([sum(lines[:,2]),sum(lines[:,3])])//int(param.distance.totalstep)    
+            
             update_results(results, data_time = t[0])
             update_results(results, pre_time = t[1])
         else:

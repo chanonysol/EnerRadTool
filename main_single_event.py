@@ -61,7 +61,7 @@ def correct_message(message):
     message = message.replace("c:/users/solen/documents/ener/project/","")
     return message+"\n"
 
-def main(path,real_time=True, new_param=False, show_parameters=False, parameters = False,
+def main(path,real_time=True, new_param=False, show_parameters=True, parameters = False,
          reg_lim = None):
     path = f"{CODE_PATH}/{path}"
     
@@ -160,7 +160,7 @@ def main(path,real_time=True, new_param=False, show_parameters=False, parameters
                                             if real_time else real_time)
             update_results(results, 
                             pre_time = (results['information']['time']['pre_time'] 
-                                        + time()- STARTTIME ))
+                                        + time() - STARTTIME ))
             general_st_bb += st.copy()
             general_st_hf += st_hf.copy()
             general_inv += inv.copy()

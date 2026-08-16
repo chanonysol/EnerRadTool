@@ -34,7 +34,7 @@ Python 3.9.1
 ###### For a real time implementation
 
 ```bash
-python main_single_event.py "path2folder" -rt
+python main_single_event.py -rt "path2folder" -sp
 ```
 
 ###### For a catalog
