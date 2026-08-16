@@ -10,20 +10,20 @@ state-of-the-art algorithms that have been adapted for the South-West Pacific .
 DOI : *Submitted to SRL special edition in July 2026*
 
 ### This file table of content
-1. [[EnerRad General information#Structure of the code|Structure of the code]]
-2. [[EnerRad General information#Installation|Installation]]
-	- [[EnerRad General information#System|System]]
-	- [[EnerRad General information#Requirements|Requirements]]
-	- [[EnerRad General information#Git|Git]]
-3. [[EnerRad General information#Procedure|Procedure]]
-	- [[EnerRad General information#For a real time implementation|For a real time implementation]]
-	- [[EnerRad General information#For a catalog|For a catalog]]
-4. [[EnerRad General information#Roadmap|Roadmap]]
-	- [[EnerRad General information#Current version 2.0.2|Current version 2.0.2]]
-	- [[EnerRad General information#Planed version|Planed version]]
-	- [[EnerRad General information#Ideas and discussion|Ideas and discussion]]
-5. [[EnerRad General information#Authors and acknowledgment|Authors and acknowledgment]]
-6. [[EnerRad General information#License|License]]
+1. [Structure of the code](#structure-of-the-code)
+2. [Installation](#installation)
+	- [System](#system)
+	- [Requirements](#requirements)
+	- [Git](#git)
+3. [Procedure](#procedure)
+	- [For a real time implementation](#for-a-real-time-implementation)
+	- [For a catalog](#for-a-catalog)
+4. [Roadmap](#roadmap)
+	- [Current version 2.0.4](#current-version-2.0.4)
+	- [Planed version](#planed-version)
+	- [Ideas and discussion](#ideas-and-discussion)
+5. [Authors and acknowledgment](#authors-and-acknowledgment)
+6. [License](#license)
 
 ---
 ## Structure of the code
@@ -55,7 +55,7 @@ python main_single_event.py -rt "path2folder" -sp
 
 ---
 ## Roadmap
-#### Current version : 2.0.2
+#### Current version : 2.0.4
 #### Planed version
 - [x] 2.0 : Added the S-wave iteration into the real-time code
 	- [x] 2.0.X Minor corrections and adaptation for the RCET Kafka server
