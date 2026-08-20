@@ -4,22 +4,6 @@ Created on Mon Jun 17 15:50:28 2024
 
 @author: solen
 """
-#----- Pwaves until S s
-# 30 : 10.9 to 11.1 min
-# 40 : 13.5 to 13.7 min
-# 50 : 15.9 to 16.1 min
-# 60 : 18.1 to 18.3 min
-# 70 : 20.2 to 20.4 min
-# 80 : 22.0 to 22.2 min
-#----- Pwaves + 250s
-# 30 : 10.2 to 10.3 min     612 to  619 s
-# 40 : 11.6 to 11.7 min     698 to  705 s
-# 50 : 13.0 to 13.1 min     777 to  784 s
-# 60 : 14.2 to 14.3 min     849 to  857 s
-# 70 : 15.2 to 15.4 min     914 to  922 s
-# 80 : 16.2 to 16.3 min     972 to  980 s
-
-### search every 2 min from 11min
 import os
 from obspy import read, read_inventory
 from obspy.taup.tau import TauPyModel
@@ -29,7 +13,7 @@ from multiprocessing import Pool
 import colorama
 from numpy import vstack, loadtxt, array, argwhere, log10, ndarray, shape, unique, \
     reshape, savetxt, sin, cos, arcsin, pi, median, sqrt, mean, arange, nan, \
-    concatenate, dtype, rec, argsort,array_split, delete, lexsort
+    concatenate, dtype, rec, argsort,array_split, delete, lexsort, linspace
 from tqdm import tqdm
 from copy import deepcopy
 from time import sleep, time
@@ -385,7 +369,7 @@ def request_val_s_train(arg,depth,distlist,model_name="iasp91"):
     
     return requests,keys
 # =============================================================================
-# ---- addapt parameters
+# ---- adapt parameters
 # =============================================================================
 def find_min_dist(ev,param):
     i=0
@@ -950,366 +934,86 @@ def site_class_parameters(staname,default = "A"):
         L.append([site,k,beta])
     return L
 # =============================================================================
-# ---- Rad coef
+# ---- Certainty evaluation
 # =============================================================================
-from numpy import arange,linspace,array,shape,zeros_like
-import matplotlib.pyplot as plt
-from matplotlib.ticker import MultipleLocator
-from matplotlib import colormaps
-from matplotlib.colors import ListedColormap, Normalize
-
-# =============================================================================
-# ---- Aki Richards rad coef
-# =============================================================================
-
-def reflexion_coef(phase,i0):
-    a = 6.8; b = 3.9
-    #a = 5; b=3
-    if phase[0]=="p":
-        i = i0; j = arcsin(sin(i)/a*b)
-        p = sin(i)/a
-    if phase[0]=="s":
-        j = i0; i = arcsin(sin(j)/b*a)
-        p = sin(j)/b
-    c = 1/b**2-2*p**2
-    c1 = 4*p**2*cos(i)/a*cos(j)/b
-    if phase == "pP":
-        PP = ((-c**2 + c1)
-              /(c**2 + c1))
-        return PP
-    if phase == "pS":
-        PS = ((4*(a/b)*p*(cos(i)/a)*c)
-              /(c**2 + c1))
-        return PS
-    if phase == "sP":
-        SP = ((4*b/a*p*cos(j)/b*c)
-              /(c**2 + c1))
-        return SP 
-    if phase == "sS":
-        SS = ((c**2 - c1)
-              /(c**2 + c1))
-        return SS 
-def plot_reflex_coef():
-    a = 6.8; b = 3.9
-    fig = plt.figure(figsize = (4,6))
-    ax = fig.add_subplot()
-    ax.xaxis.set_major_locator(MultipleLocator(0.05))
-    ax2 = ax.twiny()
-    ax2.xaxis.set_major_locator(MultipleLocator(10))
-    i = arange(0,91,1)
-    Pi = (sin(i*pi/180)/a)
-    j = arcsin(Pi*b)*180/pi
-    Pj = (sin(j*pi/180)/b)
-    ax.plot(Pi,array([reflexion_coef('pP',i0*pi/180) for i0 in i]),'k',label="pP")
-    ax.plot(Pi,array([reflexion_coef('sP',j0*pi/180) for j0 in j]),'r',label="sP")
-    ax.plot(Pi,array([reflexion_coef('pS',i0*pi/180) for i0 in i]),':k',label="pS")
-    ax.plot(Pi,array([reflexion_coef('sS',j0*pi/180) for j0 in j]),':r',label="sS")
+def find_az_dist_gap(resultpath,rt,correct=True, inv = None):
+    if not inv:
+        stalog_bb = read_log(resultpath,
+                              os.path.split(glob(f"{resultpath.replace(']','?').replace('[','?')}/log_keptdata_*BB*")[-1])[-1][:-4],
+                              return_mat=True)
+        ind = argwhere(array([any(i.find(f"{'REMAIN ITER' if correct and j else ''}{' ' if isinstance(j,int) else ''}{j}")!=-1 
+                                                          for j in (range(rt+1) if not isinstance(rt,bool) else " ")) 
+                                                      for i in stalog_bb[:,0]]))[:,0]
+        stadist,azlist = stalog_bb[:,[2,3]][ind].astype(float).T
+    else :
+        azlist,stadist = array([(sta.extra.station_param.az ,sta.extra.station_param.distance)
+                for net in inv for sta in net]).T
+    azlist = unique(azlist)
+    stadist = unique(stadist)
     
-    ax.legend()
-    ax.set_xlim(0,1/a)
-    ax2.set_xlim(0,i.max())
-    plt.ylim(-1,2)
-    ax.grid(axis="y")
-    ax.grid(axis="x")
-
-def rad_coef_P(stazdif,dip,rake,i0,phase = "P"):
-    dip *= pi/180 ; rake *= pi/180 ; i0 *= pi/180
-    stazdif *= pi/180
-    if phase == "pP" : i0 = pi - i0
-    if phase == "sP" : i0 = pi - arcsin(1/sqrt(3) * sin(i0))
-    val = (cos(rake)*sin(dip)*sin(i0)**2*sin(2*stazdif)
-            -cos(rake)*cos(dip)*sin(2*i0)*cos(stazdif)
-            +sin(rake)*sin(2*dip)*(cos(i0)**2-sin(i0)**2*sin(stazdif)**2)
-            +sin(rake)*cos(2*dip)*sin(2*i0)*sin(stazdif)
-            )
-
-    return val
-
-def rad_coef_SV(stazdif,dip,rake,i0,phase = "S"):
-    dip *= pi/180 ; rake *= pi/180 ; i0 *= pi/180
-    stazdif *= pi/180
-    if phase == "sS" : i0 = pi - i0
-    if phase == "pS" : i0 = pi- arcsin(1/sqrt(3) * sin(i0))
-    val = (sin(rake)*cos(2*dip)*cos(2*i0)*sin(stazdif)
-            -cos(rake)*cos(dip)*cos(2*i0)*cos(stazdif)
-            +1/2*cos(rake)*sin(dip)*sin(2*i0)*sin(2*stazdif)
-            -1/2*sin(rake)*sin(2*dip)*sin(2*i0)*(1+sin(stazdif)**2)
-            )
-
-    return val
-
-def rad_coef_SH(stazdif,dip,rake,i0,phase = "S"):
-    dip *= pi/180 ; rake *= pi/180 ; i0 *= pi/180
-    stazdif *= pi/180
-    if phase == "sS" : i0 = pi- arcsin(1/sqrt(3) * sin(i0))
-    val = (cos(rake)*cos(dip)*cos(i0)*sin(stazdif)
-            +cos(rake)*sin(dip)*sin(i0)*cos(2*stazdif)
-            +sin(rake)*cos(2*dip)*cos(i0)*cos(stazdif)
-            -1/2*sin(rake)*sin(2*dip)*sin(i0)*sin(2*stazdif)
-            )
-
-    return val
-
-def rad_coef_general_P(stazdif,dip,rake,i0):
-    q = 15.6; a = 6.8; b = 3.9
-    i,j = pi - i0*pi/180, pi-arcsin(1/sqrt(3) * sin(i0*pi/180))
-    
-    Fp = rad_coef_P(stazdif,dip,rake,i0,phase = "P")
-    Fpp = rad_coef_P(stazdif,dip,rake,i0,phase = "pP")
-    Fsp = rad_coef_P(stazdif,dip,rake,i0,phase = "sP")
-    
-    final = array([Fp,Fpp,Fsp,0])
-    
-    Fpp *= reflexion_coef("pP", i)
-    Fsp *= (b/a*cos(j)/cos(i)*
-           reflexion_coef("sP",j))    
-    
-    Fgp = sqrt(Fp**2+Fpp**2+2/3*a/b*q*Fsp**2)
-    
-    final[-1] = Fgp
-    return abs(final)
-  
-def rad_coef_general_SV(stazdif,dip,rake,i0):
-    q = 15.6; a = 6.8; b = 3.9
-    
-    Fsv = rad_coef_P(stazdif,dip,rake,i0,phase = "S")
-    Fssv = (reflexion_coef("sS",i0) *
-           rad_coef_SV(stazdif,dip,rake,i0,phase = "sS"))
-    Fpsv = sqrt(3/2*b/a/q)*(reflexion_coef("pS",i0) * 
-           rad_coef_SV(stazdif,dip,rake,i0,phase = "pS"))
-    
-    Fgsv = Fsv**2 + Fssv**2 + Fpsv**2 
-    return array([Fsv,Fssv,Fpsv,sqrt(Fgsv)])
-
-def rad_coef_general_SH(stazdif,dip,rake,i0):
-    q = 15.6; a = 6.8; b = 3.9
-    
-    Fsh = rad_coef_SH(stazdif,dip,rake,i0,phase = "S")
-    Fssh = rad_coef_SH(stazdif,dip,rake,i0,phase = "sS")
-    
-    Fgsh = Fsh**2 + Fssh**2 
-    return array([Fsh,Fssh,sqrt(Fgsh)])
-  
-# =============================================================================
-# ---- KS76 coef
-# =============================================================================
-
-def KS76_coef(stazdif,dip,rake,code):
-    if code == "qL":
-        return (-(cos(rake)*cos(dip))*sin(stazdif)
-                +(sin(rake)*cos(2*dip))*cos(stazdif))
-    if code == "pL":
-        return ((sin(rake)*sin(dip)*cos(dip))*sin(2*stazdif)
-                +(cos(rake)*sin(dip))*cos(2*stazdif))
-    if code == "sR":
-        return sin(rake)*sin(dip)*cos(dip)
-    if code == "qR":
-        return (sin(rake)*cos(2*dip)*sin(stazdif)
-                +cos(rake)*cos(dip)*cos(stazdif))
-    if code == "pR":
-        return (cos(rake)*sin(dip)*sin(2*stazdif)
-                -sin(rake)*sin(dip)*cos(dip)*cos(2*stazdif))
-
-def KS76_rad_coef_P(stazdif,dip,rake,i0):
-    sR = KS76_coef(stazdif,dip,rake,"sR")
-    qR = KS76_coef(stazdif,dip,rake,"qR")
-    pR = KS76_coef(stazdif,dip,rake,"pR")
-    return (sR*(3*cos(i0)**2-1)
-            -qR*sin(2*i0)
-            -pR*sin(i0)**2)
-    
-def KS76_rad_coef_SV(stazdif,dip,rake,i0):
-    sR = KS76_coef(stazdif,dip,rake,"sR")
-    qR = KS76_coef(stazdif,dip,rake,"qR")
-    pR = KS76_coef(stazdif,dip,rake,"pR")
-    
-    return (3/2*sR*sin(2*i0)
-            +qR*cos(2*i0)
-            +1/2*pR*sin(2*i0))
-    
-def KS76_rad_coef_SH(stazdif,dip,rake,i0):
-    qL = KS76_coef(stazdif,dip,rake,"qL")
-    pL = KS76_coef(stazdif,dip,rake,"pL")
-
-    return (-qL*cos(i0)
-            -pL*sin(i0))
-
-def rad_coef_general_P_KS76(stazdif,dip,rake,i0):
-    q = 15.6; a = 6.8; b = 3.9
-    #rake = 180-rake; i0 = 180-i0
-    i0*=pi/180; dip *= pi/180 ; rake *= pi/180 
-    stazdif *= pi/180
-    i,j = pi - i0, pi-arcsin(1/sqrt(3) * sin(i0))
-    
-    Fp = KS76_rad_coef_P(stazdif,dip,rake,i0)
-    Fpp = KS76_rad_coef_P(stazdif,dip,rake,i)
-    Fsp = KS76_rad_coef_P(stazdif,dip,rake,j)
-    
-    final = array([Fp,Fpp,Fsp,0])
-    
-    Fpp *= reflexion_coef("pP", i)
-    Fsp *= (b/a*cos(j)/cos(i)*
-           reflexion_coef("sP",j))
-    
-    Fgp = sqrt(Fp**2+Fpp**2+2/3*a/b*q*Fsp**2)
-    #Fgp = sum(final)
-    
-    #final = array([Fp,Fpp,Fsp,0])
-    final[-1] = Fgp
-    return abs(final)
-
-# =============================================================================
-# ---- test rad coef
-# =============================================================================
-
-def test_P_coef(dip,rake):
-    cmap_dist = ListedColormap(colormaps["hot_r"](linspace(0.4, 0.8, 3)))
-    col = cmap_dist.colors[::-1]
-    #dip = 30; rake = -40
-    x = arange(0,181,10)
-    if rake%180==0: x = arange(-90,91,10)
-    P25 = array([rad_coef_general_P(d,dip,rake,25).T for d in x]).T.round(3)
-    P18 = array([rad_coef_general_P(d,dip,rake,18).T for d in x]).T.round(3)
-
-    fig = plt.figure(figsize = (10,6))
-    ax = fig.add_subplot()
-    ax.yaxis.set_major_locator(MultipleLocator(0.25))
-    for j,h,phase,c,coef18,coef25 in zip(['-','--',':'],['|','-','+'],["P","pP","sP"],col,P18[:-1],P25[:-1]):
-        ax.fill_between(x, coef18,coef25,hatch=h,edgecolor=c,facecolor="None",label=phase)
-        # ax.fill_between(x, abs(coef18),abs(coef25),facecolor=c,alpha=0.1)
-        plt.plot(x,coef18,"-o",color =c)
-        plt.plot(x,coef25,":s",color =c)
-    
-    ax.fill_between(x, P18[-1],P25[-1],facecolor="k",alpha=0.2)
-    plt.plot(x,P18[-1],"-o",color ="k")
-    plt.plot(x,P25[-1],":s",color ="k")
-    
-    plt.grid()
-    plt.legend(loc = "upper center",ncol = 5)
-    if rake%180==0:
-        plt.ylim(0,0.5)
-    else : plt.ylim(0,1.4)
-    plt.xlim(x.min(),x.max())
-    plt.show()
-    plt.close()
-
-def test_P_coef_KS76(dip,rake):
-    cmap_dist = ListedColormap(colormaps["hot_r"](linspace(0.4, 0.8, 3)))
-    col = cmap_dist.colors[::-1]
-    #dip = 30; rake = -40
-    x = arange(0,181,10)
-    if rake%180==0: x = arange(-90,91,10)
-    P25 = array([rad_coef_general_P_KS76(d,dip,180-rake,180-18).T for d in x]).T.round(3)
-    P18 = array([rad_coef_general_P_KS76(d,dip,180-rake,180-18).T for d in x]).T.round(3)
-
-    fig = plt.figure(figsize = (10,6))
-    ax = fig.add_subplot()
-    ax.yaxis.set_major_locator(MultipleLocator(0.25))
-    for j,h,phase,c,coef18,coef25 in zip(['-','--',':'],['|','-','+'],["P","pP","sP"],col,P18[:-1],P25[:-1]):
-        ax.fill_between(x, coef18, coef25,hatch=h,edgecolor=c,facecolor="None",label=phase)
-        # ax.fill_between(x, abs(coef18),abs(coef25),facecolor=c,alpha=0.1)
-        plt.plot(x,coef18,"-o",color =c)
-        plt.plot(x,coef25,":s",color =c)
-    
-    ax.fill_between(x, P18[-1],P25[-1],facecolor="k",alpha=0.2,label=f"gP rake={rake}")
-    plt.plot(x,P18[-1],"-o",color ="k")
-    plt.plot(x,P25[-1],":s",color ="k")
-    
-    plt.grid()
-    plt.legend(loc = "upper center",ncol = 5)
-    if rake%180==0:
-        plt.ylim(0,0.5)
-    else : plt.ylim(0,1.4)
-    plt.xlim(x.min(),x.max())
-    plt.show()
-    plt.close()
-
-# test_P_coef(30,-45)
-# test_P_coef_KS76(30,-45)
-#test_P_coef(90,0+180)
-#test_P_coef_KS76(90,0+180)
-# for r in arange(20,110,5):
-#     test_P_coef_KS76(30,-r+180)
-
-from obspy.imaging.beachball import mt2plane, MomentTensor
-
-def test_coef_radial(strike=0,dip=0,rake = 0, i0 = 80, mt = 1,ks76=True):
-    model = TauPyModel(model="iasp91")
-    #distlist = arange(10,91,80)
-    #distlist = arange(20,111,90)
-    cmap_dist = ListedColormap(colormaps["hot_r"](linspace(0.4,1, 3)))
-    col = cmap_dist.colors[::-1]
-    dt = 1
-    theta = arange(0,361,dt)
-    fig, ax = plt.subplots(subplot_kw={'projection': 'polar'},figsize = (8,8))
-    
-    #strike*= pi/180;dip*= pi/180;rake*= pi/180 
-    # plane = mt2plane(MomentTensor(ev.moment,ev.exponent))
-    # strike,dip,rake = plane.strike, plane.dip, plane.rake
-    #strike,dip,rake = 0,30,-40
-    for angle in [i0]:
-        #t = model.get_ray_paths(10, distance_in_degree=dist, phase_list=('P',), receiver_depth_in_km=0.0)[0].takeoff_angle
-        r = array([rad_coef_P(d,dip,rake,angle,'P') for d in theta]).round(3)
-        if ks76 :
-            r = array([KS76_rad_coef_P(d*pi/180,dip*pi/180,
-                                        (180-rake)*pi/180,(180-angle)*pi/180) 
-                       for d in theta]).round(3)
-        ax.plot(theta*pi/180, abs(r),color=col[0],label=f"{angle}° P")
-        ax.bar(where(r>0,theta*pi/180,0), where(r>0,r,0), width=dt*pi/180, 
-                bottom=0.0, color=col[0], alpha=0.5, label = "+")
-
-        r = array([rad_coef_SV(d,dip,rake,angle,'SV') for d in theta]).round(3)
-        if ks76 :
-            r = array([KS76_rad_coef_SV(d*pi/180,dip*pi/180,
-                                        (180-rake)*pi/180,(180-angle)*pi/180) 
-                       for d in theta]).round(3)
-        ax.plot(theta*pi/180, abs(r),"--",color=col[1],label=f"{angle}° Sv")
-        ax.bar(where(r>0,theta*pi/180,0), where(r>0,r,0), width=dt/2*pi/180, 
-                bottom=0.0, color=col[1], alpha=0.5)
+    azgap = []; distgap = []
+    if azlist.size == 1 :
+        if isnan(azlist[0]):
+            azgap.append(nan)
+            distgap.append(nan)
         
-        r = array([rad_coef_SH(d,dip,rake,angle,'SH') for d in theta]).round(3)
-        if ks76 :
-            r = array([KS76_rad_coef_SH(d*pi/180,dip*pi/180,
-                                        (180-rake)*pi/180,(180-angle)*pi/180) 
-                       for d in theta]).round(3)
-        ax.plot(theta*pi/180, abs(r),":",color=col[2],label=f"{angle}° Sh")
-        ax.bar(where(r>0,theta*pi/180,0), where(r>0,r,0), width=dt/2*pi/180, 
-                bottom=0.0, color=col[2], alpha=0.5)
+    azlist = concatenate(((azlist[1:]-azlist[:-1]),[360-azlist[-1]+azlist[0]]))
+    azgap = azlist.max()
+    if stadist.size == 1:
+        distgap = 75.
+    else :
+        distgap = (stadist[1:] - stadist[:-1]).max()
+    #azgap, distgap = find_az_dist_gap()
+    return azgap, distgap
 
-        # r = (array([rad_coef_SV(d,dip,rake,angle,"S") for d in theta]).round(3)
-        #           +array([rad_coef_SH(d,dip,rake,angle,"S") for d in theta]).round(3))
-        # ax.plot(theta*pi/180, abs(r),":",color=c,label=f"{angle}° S")
-        # ax.bar(where(r>0,theta*pi/180,0), where(r>0,r,0), width=dt/4*pi/180, 
-        #         bottom=0.0, color=c, alpha=0.5)
-    #strike*= 180/pi;dip*= 180/pi;rake*= 180/pi
-    ax.set_rmax(mt*2)
-    #ax.set_theta_zero_location("N")
-    ax.set_theta_offset(strike*pi/180+pi/2)
-    ax.set_theta_direction(-1)
-    ax.set_rticks([mt/2,mt,mt*3/2, mt*2])  # Less radial ticks
-    ax.set_rlabel_position(120)  # Move radial labels away from plotted line
-    ax.grid(True)
-    ax.legend(loc="upper center",ncol = 2)
+def compar_cat(ev):
+    from numpy import median,var,std
+    dty = dtype([('date',"U25"),('lon',"f8"),('lat',"f8"),("reg","U25"),("sreg","U25"),
+                  ('Ebb',"f8"),('Ehf',"f8"),('M0',"f8"),
+                  ('MeBB',"f8"),('MeHF',"f8"),('theta',"f8"),('Tr',"f8")])
+    mat = loadtxt("EnerRadTool/5.plot_functions/newcat.dat",dtype=dty,comments="#")  
+    r,sr = name_reg_event(ev.lat,ev.lon) 
+    
+    ind = argwhere((mat["reg"]==r) & (mat["sreg"]==sr))[:,0]
+    mati = mat[ind]["theta"]
+    avs = array([mean(mati),median(mati),var(mati),std(mati)]).round(3)
+    avs = array(avs).round(3)
+    return avs
 
-    ax.set_title(f"Rad pattern test\n strike N - dip = {dip}° - rake = {rake}° ", va='bottom')
-    plt.show()
-    plt.close()
+def quality_level(resultpath,rt,ev,correct=True,results=None):
+    from results_plots import read_results_file
+    if not results:
+        res = read_results_file(glob(f"{resultpath.replace("[","?").replace("]","?")}"
+                                  +f"/results*{'' if isinstance(rt,bool) else rt}.txt")[-1], 
+                                correct = correct)
+    else :
+        res = AttribDict(results[f"{'raw' if not correct else 'corrected'}_smooth"])
+        res.dEbb = res.dEBB; res.dEhf = res.dEHF
+    
+    MOM, LEVEL_DIC = ev.levels_conf()
+    
+    avs = compar_cat(ev)
+    azgap, distgap = find_az_dist_gap(resultpath,rt,correct=True)
+    
+    data = array([abs(res.theta-avs[0]),distgap/75,
+                  abs(res.Tr_lines-res.Tr_tacer)/2/70,
+                  res.dEbb/100,res.dEhf/100,
+                  abs(res.Tr_tacer/((1.2*1e-8*(MOM*1e7)**(1/3)+5.8)*2))/3,
+                  azgap/360])
+    
+    data = where(data>1.,1.,where(data<0.,0.,data))
 
-# test_coef_radial(180,55,25,198, 0.25,ks76=False)
-# test_coef_radial(180,90,0,198, 0.04,ks76=False)
-# test_coef_radial(180,70,0,30, 0.1,ks76=False)
-
-# test_coef_radial(180,55,25,198, 0.25)
-# test_coef_radial(180,90,0,198, 0.04)
-# test_coef_radial(180,70,0,30, 0.1)
-
-# test_coef_radial(180,45,90,198, 0.2)
-# test_coef_radial(180,94,277,198, 0.2)
-# test_coef_radial(180,75,180,198, 0.6)
-
-# test_coef_radial(180,54.45,60,70, 0.3)
-# test_coef_radial(180,90,45,198, 0.05)
-# test_coef_radial(180,55,25,46, 0.2)
+    test = array([LEVEL_DIC[k]["val"] for k in LEVEL_DIC.keys()]).round(3)
+    levels = [int(concatenate((argwhere(test[:,j]>d)[:,0],[4])).min()-1)
+                for j,d in enumerate(data)]
+    if res.Tr_lines<res.Tr_tacer:
+        levels[2] = 4
+    mark = sum(levels)
+    levels_name = [list(LEVEL_DIC.keys())[l] for l in levels]
+    if res.Tr_lines<res.Tr_tacer:
+        levels_name[2]="ERROR"
+    
+    return data, levels, levels_name, mark, list(LEVEL_DIC.keys())[mark//7]
 # =============================================================================
 # ---- Impedance
 # =============================================================================

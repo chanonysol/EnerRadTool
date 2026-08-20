@@ -20,7 +20,7 @@ from results_writing import add_results, update_results, complete_from_template,
     read_results,read_results_sta, write_station_log, write_raw_results_sta, add_results_S,\
     Me
 from do_correction import do_corrections
-from data_utils import modify_log, find_train, Fest, read_log
+from data_utils import modify_log, find_train, Fest, read_log, quality_level
 from time_rupture_functions import joint_tr
 
 from glob import glob
@@ -247,14 +247,20 @@ def do_estimations(ev, path, param, st_bb, st_hf, inv, results, stadist, rt=Fals
                     file.write(f"{tr.id:16s} {lon:+6.2f} {lat:+6.2f} "+
                                f"{dist:5.2f} {az:3.0f} {site:1s} {tr.stats.ener:.2e}\n")
                 
-            
+        
+        update_results(results,certain = [rt,quality_level(resultpath,rt,ev,
+                                                       correct=True, results = results)])
+        
+        sys.stdout.write(f"{Fore.RED + Style.DIM}"
+                          +" > Saving results"
+                          +f"{Style.RESET_ALL}\n")
+        
         update_results(results, ener_time = time()-STARTTIME)
         times = array(list(results['information']['time'].values()))[:-1]
         update_results(results, tot_time = sum(where(times<0,0,times)))
-        sys.stdout.write(f"{Fore.RED + Style.DIM}"
-                          +f" > Saving results"
-                          +f"{Style.RESET_ALL}\n")
+        
         complete_from_template(results, path = resultpath,name=f"{folder[:2]}{rt}",
                                S = True if param.distance.include_near else False)
+        
         return resultpath, [inv, st_bb, st_hf]
         

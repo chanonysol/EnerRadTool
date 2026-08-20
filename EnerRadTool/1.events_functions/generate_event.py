@@ -156,7 +156,27 @@ class Event:
         with open(f"{path}meca.dat", "w") as file:
             file.write(proc.stdout)
         return proc.stdout.strip().split()[-1]
-
+    
+    def levels_conf(self):
+        MOM = moment(self.moment,self.exponent)
+        
+        Tr_mom = array([(1.2*1e-8*(MOM*1e7)**(1/3)+5.8)*2,(1.2*1e-8*(MOM*1e7)**(1/3)+2.8)*2,(1.2*1e-8*(MOM*1e7)**(1/3))*2])
+        Tr_mom = concatenate(([Tr_mom[0]*3,Tr_mom[0]*2],Tr_mom))
+        Tr_mom = ((Tr_mom/Tr_mom[2])/3).round(2)
+        
+        LEVEL_DIC={ "GREAT":{"val":[0. ,  0/75, 0.  , 0.  , 0.  , 0.         ,   0/360],
+                            "color":"aquamarine","alpha":0.3},
+                    "GOOD" :{"val":[0.3, 10/75, 0.07, 0.05, 0.05, Tr_mom[-1] ,  45/360],
+                            "color":"yellowgreen","alpha":0.3},
+                    "OK"   :{"val":[0.5, 25/75, 0.14, 0.1 , 0.1 , Tr_mom[-2] , 105/360],
+                            "color":"khaki","alpha":0.4},
+                    "LIMIT":{"val":[0.7, 50/75, 0.42, 0.35, 0.35, Tr_mom[-3] , 270/360],
+                            "color":"orange","alpha":0.3},
+                    "BAD"  :{"val":[0.8 , 60/75, 0.71, 0.6 , 0.6 , Tr_mom[-4] , 315/360],
+                            "color":"salmon","alpha":0.25}
+                    }
+        return MOM,LEVEL_DIC
+    
     def arglist(self, col = Style.DIM + Fore.RED,space=0):
         """
         Print all the parameters and their value

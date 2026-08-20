@@ -124,7 +124,7 @@ def radar_factory(num_vars, frame='circle'):
     register_projection(RadarAxes)
     return theta
 
-def certain_report(resultpath,ev,correct = True, rt= False,savefile= False, 
+def certain_rt(resultpath,ev,correct = True, rt= False,savefile= False, 
                     ext =".png", redo=False):
     sys.stdout.write(f"\n{Fore.GREEN + Style.BRIGHT}"
                      +f"> Fiability evaluation - iteration {rt}")
@@ -134,9 +134,14 @@ def certain_report(resultpath,ev,correct = True, rt= False,savefile= False,
                      +" ... Already Done ")
         return
     
-    from numpy import median,var,std, unique, dtype, loadtxt, nan, log10, \
+    from numpy import unique, dtype, loadtxt, nan, log10, \
         mean, isnan, concatenate, where
     from glob import glob
+    
+    pos = [["center","right","right","center","center","left","left"],
+            ["top","center","center","bottom","bottom","center","center"],
+            [-0.2 , 0.07, 0.16, 0.11,-0.16,-0.16,-0.07],
+            [ 0.14, 0.04, 0.04, 0.08, 0.06, 0.04, 0.04]]
     
     plt.rcParams.update({'font.size': 14,'axes.titlesize':16,'axes.labelsize':16,
                          'xtick.labelsize':14,'ytick.labelsize':14,'legend.fontsize':14,
@@ -146,57 +151,13 @@ def certain_report(resultpath,ev,correct = True, rt= False,savefile= False,
                                   +f"/results*{'' if isinstance(rt,bool) else rt}.txt")[-1], 
                             correct = correct)
     #----- stations   
-    stalog_bb = read_log(resultpath,
-                          os.path.split(glob(f"{resultpath.replace(']','?').replace('[','?')}/log_keptdata_*BB*")[-1])[-1][:-4],
-                          return_mat=True)
-    ind = argwhere(array([any(i.find(f"{'REMAIN ITER' if correct and j else ''}{' ' if isinstance(j,int) else ''}{j}")!=-1 
-                                                      for j in (range(rt+1) if not isinstance(rt,bool) else " ")) 
-                                                  for i in stalog_bb[:,0]]))[:,0]
-    stadist,azlist = stalog_bb[:,[2,3]][argwhere(array([any(i.find(f"{'REMAIN ITER' if correct and j else ''}{' ' if isinstance(j,int) else ''}{j}")!=-1 
-                                                      for j in (range(rt+1) if not isinstance(rt,bool) else " ")) 
-                                                  for i in stalog_bb[:,0]]))[:,0]].astype(float).T
-    
-    azlist = unique(azlist)
-    stadist = unique(stadist)
-    
-    azgap = []; distgap = []
-    if azlist.size == 1 :
-        if isnan(azlist[0]):
-            azgap.append(nan)
-            distgap.append(nan)
-        
-    azlist = concatenate(((azlist[1:]-azlist[:-1]),[360-azlist[-1]+azlist[0]]))
-    azgap = azlist.max()
-    if stadist.size == 1:
-        distgap = 75.
-    else :
-        distgap = (stadist[1:] - stadist[:-1]).max()
-
-    #-------- catalogue
-    dty = dtype([('date',"U25"),('lon',"f8"),('lat',"f8"),("reg","U25"),("sreg","U25"),
-                  ('Ebb',"f8"),('Ehf',"f8"),('M0',"f8"),
-                  ('MeBB',"f8"),('MeHF',"f8"),('theta',"f8"),('Tr',"f8")])
-    mat = loadtxt("EnerRadTool/5.plot_functions/newcat.dat",dtype=dty,comments="#")  
-    r,sr = name_reg_event(ev.lat,ev.lon) 
-    
-    ind = argwhere((mat["reg"]==r) & (mat["sreg"]==sr))[:,0]
-    mati = mat[ind]["theta"]
-    avs = array([mean(mati),median(mati),var(mati),std(mati)]).round(3)
-    avs = array(avs).round(3)
-    
+    from data_utils import quality_level
     #------data
     from generate_event import moment
-    xi = moment(ev.moment,ev.exponent)
-   
-    data = array([abs(res.theta-avs[0]),distgap/75,
-                  abs(res.Tr_lines-res.Tr_tacer)/2/70,
-                  res.dEbb/100,res.dEhf/100,
-                  abs(res.Tr_tacer/((1.2*1e-8*(xi*1e7)**(1/3)+5.8)*2))/3,
-                  azgap/360])
     
-    Tr_mom = array([(1.2*1e-8*(xi*1e7)**(1/3)+5.8)*2,(1.2*1e-8*(xi*1e7)**(1/3)+2.8)*2,(1.2*1e-8*(xi*1e7)**(1/3))*2])
-    Tr_mom = concatenate(([Tr_mom[0]*3,Tr_mom[0]*2],Tr_mom))
-    Tr_mom = ((Tr_mom/Tr_mom[2])/3).round(2)
+    _ , LEVEL_DIC = ev.levels_conf()
+    
+    data, levels, levels_name, mark, general = quality_level(resultpath,rt,ev,correct=True)
     
     N = 7
     theta = radar_factory(N, frame='polygon')
@@ -204,42 +165,17 @@ def certain_report(resultpath,ev,correct = True, rt= False,savefile= False,
     fig, ax = plt.subplots(1,1,figsize=(9,9),
                             subplot_kw=dict(projection='radar'))
 
-    level_dic={ "GREAT":{"val":[0. ,  0/75, 0.  , 0.  , 0.  , 0.         ,   0/360],
-                        "color":"aquamarine","alpha":0.3},
-                "GOOD" :{"val":[0.3, 10/75, 0.07, 0.05, 0.05, Tr_mom[-1] ,  45/360],
-                        "color":"yellowgreen","alpha":0.3},
-                "OK"   :{"val":[0.5, 25/75, 0.14, 0.1 , 0.1 , Tr_mom[-2] , 105/360],
-                        "color":"khaki","alpha":0.4},
-                "LIMIT":{"val":[0.7, 50/75, 0.42, 0.35, 0.35, Tr_mom[-3] , 270/360],
-                        "color":"orange","alpha":0.3},
-                "BAD"  :{"val":[0.8 , 60/75, 0.71, 0.6 , 0.6 , Tr_mom[-4] , 315/360],
-                        "color":"salmon","alpha":0.25}
-                }
-
     vals = []
-    for k in level_dic.keys():
-        p=ax.fill(theta,level_dic[k]["val"], facecolor=level_dic[k]["color"], linewidth = 0, 
-                alpha=level_dic[k]["alpha"])#, label=k)
+    for k in LEVEL_DIC.keys():
+        p=ax.fill(theta,LEVEL_DIC[k]["val"], facecolor=LEVEL_DIC[k]["color"], linewidth = 0, 
+                alpha=LEVEL_DIC[k]["alpha"])#, label=k)
         vals.append(p)
-
-    data = where(data>1.,1.,where(data<0.,0.,data))
-
-    test = array([level_dic[k]["val"] for k in level_dic.keys()]).round(3)
-    levels = [int(concatenate((argwhere(test[:,j]>d)[:,0],[4])).min()-1)
-                for j,d in enumerate(data)]
-
 
     pr = ax.plot(theta,data, "o-k",label="results")
 
     if res.Tr_lines<res.Tr_tacer:
-        levels[2] = 4
-
         pj = ax.plot(theta[2],data[2], "or", markerfacecolor="w",label="error")
     ax.fill(theta,data, facecolor="w", alpha=0.7,label='_nolegend_')    
-    mark = sum(levels)
-    levels = [list(level_dic.keys())[l] for l in levels]
-    if res.Tr_lines<res.Tr_tacer:
-        levels[2]="ERROR"
 
     ax.set_varlabels([  r"$|\Theta-\bar\Theta_{reg}|$",
                         r"gap$\Delta$",
@@ -249,16 +185,11 @@ def certain_report(resultpath,ev,correct = True, rt= False,savefile= False,
                         r"$T_{TACER}$""\n""$/$""\n""$T_{GCMT+delay}$",
                         r"gap $\lambda_{sta}$"])
 
-    pos = [["center","right","right","center","center","left","left"],
-            ["top","center","center","bottom","bottom","center","center"],
-            [-0.2 , 0.07, 0.16, 0.11,-0.16,-0.16,-0.07],
-            [ 0.14, 0.04, 0.04, 0.08, 0.06, 0.04, 0.04]]
-
-    for j,k in enumerate(levels):
+    for j,k in enumerate(levels_name):
         if k == "ERROR":
             c = "w"
         else :
-            c = level_dic[k]["color"]
+            c = LEVEL_DIC[k]["color"]
         ax.text(theta[j]+pos[2][j],-pos[3][j], k, verticalalignment=pos[1][j],
                   horizontalalignment=pos[0][j],
                   bbox={'facecolor': c, 'alpha': 0.3, 
@@ -269,13 +200,13 @@ def certain_report(resultpath,ev,correct = True, rt= False,savefile= False,
     ax.set_yticklabels([])
     #ax.set_rticks(arange(1,0,-0.33/2).round(2))
 
-    legend1 = plt.legend([v[0] for v in vals], list(level_dic.keys()), 
+    legend1 = plt.legend([v[0] for v in vals], list(LEVEL_DIC.keys()), 
                           loc="upper center",ncol=1,bbox_to_anchor=(0.02, 1.14))
     plt.gca().add_artist(legend1)
     ax.legend(loc=1)
 
     #plt.tight_layout()
-    plt.title(f"Confidence level in results : {list(level_dic.keys())[mark//7]}",
+    plt.title(f"Confidence level in results : {general}",
               pad=50,weight='bold')
     
     if savefile :
@@ -285,6 +216,100 @@ def certain_report(resultpath,ev,correct = True, rt= False,savefile= False,
     sys.stdout.write(f"\n{Fore.GREEN + Style.BRIGHT}"
                      +" ... Done ")
 
+def certain_report(resultpath,ev,correct = True, rt= False, multi = False,
+                  savefile= False, ext =".png", redo=False):
+    sys.stdout.write(f"\n{Fore.GREEN + Style.BRIGHT}"
+                     +f"> Fiability evaluation {f'- iteration {rt}' if not multi else 'all'}")
+    
+    if os.path.exists(f"{resultpath}/certain_radar_{rt if not multi else 'all'}{ext}") and not redo:
+        sys.stdout.write(f"\n{Fore.GREEN + Style.BRIGHT}"
+                     +" ... Already Done ")
+        return
+    
+    from numpy import unique, dtype, loadtxt, nan, log10, \
+        mean, isnan, concatenate, where
+    from glob import glob
+    from data_utils import quality_level
+    from generate_event import moment
+    
+    cmap_rt = ListedColormap(colormaps["gray_r"](linspace(.6, 1., rt+1)))
+    col_rt = cmap_rt.colors
+    
+    pos = [["center","right","right","center","center","left","left"],
+            ["top","center","center","bottom","bottom","center","center"],
+            [-0.22 , 0.07, 0.16, 0.13,-0.16,-0.16,-0.07],
+            [ 0.14, 0.04, 0.05, 0.08, 0.06, 0.05, 0.04]]
+    
+    plt.rcParams.update({'font.size': 14,'axes.titlesize':16,'axes.labelsize':16,
+                         'xtick.labelsize':14,'ytick.labelsize':14,'legend.fontsize':14,
+                             'figure.titlesize':14})
+    
+    _ , LEVEL_DIC = ev.levels_conf()
+    
+    N = 7
+    theta = radar_factory(N, frame='polygon')
+
+    fig, ax = plt.subplots(1,1,figsize=(9,9),
+                            subplot_kw=dict(projection='radar'))
+    
+    vals = []
+    for k in LEVEL_DIC.keys():
+        p=ax.fill(theta,LEVEL_DIC[k]["val"], facecolor=LEVEL_DIC[k]["color"], linewidth = 0, 
+                alpha=LEVEL_DIC[k]["alpha"])#, label=k)
+        vals.append(p)
+
+    for rt in range(rt if not multi else 0,rt+1):
+        #----- res
+        res = read_results_file(glob(f"{resultpath.replace("[","?").replace("]","?")}"
+                                      +f"/results*{'' if isinstance(rt,bool) else rt}.txt")[-1], 
+                                correct = correct)
+        #------data
+        data, levels, levels_name, mark, general = quality_level(resultpath,rt,ev,correct=True)
+    
+        pr = ax.plot(theta,data, "o-", color = ("k" if not multi else col_rt[rt]),label=f"results iter {rt}")
+        
+        if res.Tr_lines<res.Tr_tacer:
+            pj = ax.plot(theta[2],data[2], "or", markerfacecolor="w",label="error")
+        ax.fill(theta,data, facecolor="w", alpha=0.4,label='_nolegend_')    
+    
+    for j,k in enumerate(levels_name):
+        if k == "ERROR":
+            c = "w"
+        else :
+            c = LEVEL_DIC[k]["color"]
+        ax.text(theta[j]+pos[2][j],-pos[3][j], k, verticalalignment=pos[1][j],
+                  horizontalalignment=pos[0][j],
+                  bbox={'facecolor': c, 'alpha': 0.3, 
+                        "edgecolor": ("r" if k == "ERROR" else None)}, fontsize=10)
+    
+    ax.set_varlabels([  r"$|\Theta-\bar\Theta_{reg}|$",
+                        r"gap$\Delta$",
+                        r"$T_{lines}$""\n""$-$""\n""$T_{TACER}$",
+                        r"d$E_{BB}$",
+                        r"d$E_{HF}$",
+                        r"$T_{TACER}$""\n""$/$""\n""$T_{GCMT+delay}$",
+                        r"gap $\lambda_{sta}$"])
+    
+    ax.tick_params(pad=17)
+    ax.set_rlim(1,0)
+    ax.set_yticklabels([])
+    #ax.set_rticks(arange(1,0,-0.33/2).round(2))
+    
+    legend1 = plt.legend([v[0] for v in vals], list(LEVEL_DIC.keys()), 
+                          loc="upper center",ncol=1,bbox_to_anchor=(0.02, 1.14))
+    plt.gca().add_artist(legend1)
+    ax.legend(loc=1,bbox_to_anchor=(1.15,1.1))
+    
+        #plt.tight_layout()
+    plt.title(f"Confidence level in results : {general}",
+              pad=50,weight='bold')
+    
+    if savefile :
+        plt.savefig(f"{resultpath}/certain_radar_{rt if not multi else 'all'}{ext}",
+                    dpi = 300, transparent=True)
+    plt.show()
+    sys.stdout.write(f"\n{Fore.GREEN + Style.BRIGHT}"
+                     +" ... Done ")
 
 def plot_station_rad_pattern(st,inv,dat,names):
     vals = empty((0,3))

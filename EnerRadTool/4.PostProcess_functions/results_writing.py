@@ -111,7 +111,7 @@ def update_results(results,**kwargs):
     None.
 
     """
-
+    # event information --------------------------------------------
     if "ev" in kwargs.keys():
         ev = kwargs["ev"]
         reg,sreg = ev.reg,ev.sreg
@@ -125,20 +125,20 @@ def update_results(results,**kwargs):
             for (element,value) in ev.items():
                 ev_info.update({element:value})
         results['information'].update({"event":ev_info})
-
+        
+    # calcul information -------------------------------------------
     if "estimate" in kwargs.keys():
-        rt, dist, azlist, stadist, dist_list, (stbb,sthf), time = kwargs["estimate"]
-        azlist = concatenate(((azlist[1:]-azlist[:-1]),[360-azlist[-1]+azlist[0]]))
+        rt, dist, (azgap,distgap), (stbb,sthf), time = kwargs["estimate"]
         if "estimate" not in results["information"].keys() or rt==0:
-            ener_info={"version":"v2.0.RT" ,"iter": rt if isinstance(rt, int) else None ,
+            ener_info={"version":"v2.1.RT" ,"iter": rt if isinstance(rt, int) else None ,
                        "mindist": dist.min(),
                        "maxdist": dist.max(),
                        "nsta_bb":len(list(set([f"{tr.stats.network}.{tr.stats.station}.{tr.stats.location}" for tr in stbb]))),
                        "channel_list_bb":list(set([f"{tr.stats.channel}" for tr in stbb])),
                        "nsta_hf":len(list(set([f"{tr.stats.network}.{tr.stats.station}.{tr.stats.location}" for tr in sthf]))),
                        "channel_list_hf":list(set([f"{tr.stats.channel}" for tr in sthf])),
-                       "max_az_gap":azlist.max(),
-                       "max_dist_gap":(stadist[1:] - stadist[:-1]).max(),
+                       "max_az_gap": azgap,
+                       "max_dist_gap": distgap,
                        "duration":time,"ref_ratio":25}
         elif rt!=results['information']['estimate']['iter']:
             ener_info = results['information']["estimate"]
@@ -147,9 +147,26 @@ def update_results(results,**kwargs):
                        "channel_list_bb":list(set([f"{tr.stats.channel}" for tr in stbb])),
                        "nsta_hf":len(list(set([f"{tr.stats.network}.{tr.stats.station}.{tr.stats.location}" for tr in sthf]))),
                        "channel_list_hf":list(set([f"{tr.stats.channel}" for tr in sthf])),
-                       "max_az_gap":azlist.max()})
+                       "max_az_gap":azgap,
+                       "max_dist_gap": distgap})
         results['information'].update({"estimate":ener_info})
-
+    # certainty information -------------------------------------------    
+    if "certain" in kwargs.keys():
+        rt, [data, levels, levels_name, mark, general] = kwargs["certain"]
+        keys = ["reg_fit","az_gap","dist_gap","tr_gap","dEbb","dEhf","tr_moment","total"]
+        if "estimate" not in results["information"].keys() or rt==0:
+            certain_info=dict([(k,{"val":v,"name":n}) 
+                               for k,v,n in zip(keys,
+                                                 concatenate((levels,[mark])),
+                                                 concatenate((levels_name,[general])))])
+        elif rt==results['information']['estimate']['iter']:
+            certain_info = results['information']["certain"]
+            certain_info.update(dict([(k,{"val":v,"name":n}) 
+                               for k,v,n in zip(keys,
+                                                 concatenate((levels,[mark])),
+                                                 concatenate((levels_name,[general])))]))
+        results['information'].update({"certain":certain_info})
+    # time information -------------------------------------------      
     if any([i in kwargs.keys()
             for i in ['data_time', 'pre_time', 'ener_time', 'tot_time']]):
         if "time" not in results["information"].keys():
@@ -178,6 +195,7 @@ def complete_from_template(results, path = None, name = None, S=False):
     file.write(f"#======================================\n")
     file.write(f"\n")
     
+    # RAW results
     if not all(array(list(results['raw'].values()))==-9999):
         Ebb, MeBB, dEBB, Ehf, MeHF, dEHF, Tr, theta, Tr_tacer, Tr_lines, EhfTr3 =\
             list(results['raw'].values())
@@ -191,9 +209,9 @@ def complete_from_template(results, path = None, name = None, S=False):
         file.write(f"(Tr_lines = {Tr_lines:3.0f}s)\n")
         file.write(f"\n")
         file.write(f"E_HF/Tr3 = {EhfTr3:7.2e}J\n")
-        file.write(f"E_HF/E_BB = {Ehf/Ebb*100:4.1e}%\n")
+        file.write(f"E_HF/E_BB = {Ehf/Ebb*100:4.1f}%\n")
         file.write(f"\n")
-
+        
     if not all(array(list(results['raw_smooth'].values()))==-9999):
         Ebb, MeBB, dEBB, Ehf, MeHF, dEHF, Tr, theta, Tr_tacer, Tr_lines, EhfTr3 =\
             list(results['raw_smooth'].values())
@@ -206,9 +224,10 @@ def complete_from_template(results, path = None, name = None, S=False):
         file.write(f"(Tr_lines = {Tr_lines:3.0f}s)\n")
         file.write(f"\n")
         file.write(f"E_HF/Tr3 = {EhfTr3:7.2e}J\n")
-        file.write(f"E_HF/E_BB = {Ehf/Ebb*100:4.1e}%\n")
+        file.write(f"E_HF/E_BB = {Ehf/Ebb*100:4.1f}%\n")
         file.write(f"\n")
 
+    # CORRECTED results
     if not all(array(list(results['corrected'].values()))==-9999):
         Ebb, MeBB, dEBB, Ehf, MeHF, dEHF, Tr, theta, Tr_tacer, Tr_lines, EhfTr3 =\
             list(results['corrected'].values())
@@ -221,7 +240,7 @@ def complete_from_template(results, path = None, name = None, S=False):
         file.write(f"(Tr_lines = {Tr_lines:3.0f}s)\n")
         file.write(f"\n")
         file.write(f"E_HF/Tr3 = {EhfTr3:7.2e}J\n")
-        file.write(f"E_HF/E_BB = {Ehf/Ebb*100:4.1e}%\n")
+        file.write(f"E_HF/E_BB = {Ehf/Ebb*100:4.1f}%\n")
         file.write(f"\n")
 
     if not all(array(list(results['corrected_smooth'].values()))==-9999):
@@ -236,7 +255,7 @@ def complete_from_template(results, path = None, name = None, S=False):
         file.write(f"(Tr_lines = {Tr_lines:3.0f}s)\n")
         file.write(f"\n")
         file.write(f"E_HF/Tr3 = {EhfTr3:7.2e}J\n")
-        file.write(f"E_HF/E_BB = {Ehf/Ebb*100:4.1e}%\n")
+        file.write(f"E_HF/E_BB = {Ehf/Ebb*100:4.1f}%\n")
         file.write(f"\n")
         
     if S :
@@ -245,6 +264,7 @@ def complete_from_template(results, path = None, name = None, S=False):
         Ebb, MeBB, Ehf, MeHF, theta =\
             list(results['S_near'].values())
         file.write(f"Ebb = {Ebb:7.2e}J ; MeBB = {MeBB:4.2f} \n")
+        file.write(f"#Pwaves-comparison\n")
         if not all(array(list(results['corrected_smooth'].values()))==-9999):
             Ebbp, MeBBp, dEBBp, _,_,_, Tr, _, _, _, _ = list(results['corrected_smooth'].values())
             file.write(f"dEp = {log10(Ebb/Ebbp):+5.2f} ; dMep = {MeBB-MeBBp:+5.2f}\n")
@@ -275,6 +295,7 @@ def complete_from_template(results, path = None, name = None, S=False):
     file.write(f"#======================================\n")
     file.write(f"\n")
 
+    # Event
     date, mag, magtype, M0, lat, lon, depth, region, subregion=\
         list(results['information']['event'].values())
     file.write(f"#---------- Event information ---------\n")
@@ -285,19 +306,23 @@ def complete_from_template(results, path = None, name = None, S=False):
     file.write(f"# Region : {region:15s}\n")
     file.write(f"# Subregion : {subregion:15s}\n")
     file.write(f"\n")
-
+    
+    # Param
     version, iter, mindist, maxdist, nsta_bb, channel_list_bb, nsta_hf, \
         channel_list_hf, az_gap, dist_gap, duration, ref_ratio=\
         list(results['information']['estimate'].values())
     file.write(f"#------- Estimation information -------\n")
     file.write(f"# {version}\n")
     file.write(f"# iteration n°{iter} : {mindist:2.0f}-{maxdist:2.0f}\n")
+    file.write(f"# network azimuthal gap : {az_gap:3.0f}°\n")
+    file.write(f"# network distance gap : {dist_gap:3.0f}°\n")
     file.write(f"# BB : {nsta_bb:2.0f} stations [{channel_list_bb}]\n")
     file.write(f"# HF : {nsta_hf:2.0f} stations [{channel_list_hf}]\n")
     file.write(f"# Time after P-waves : {duration:3.0f}s\n")
     file.write(f"# reference used for mEhf : {ref_ratio:2.0f}%\n")
     file.write(f"\n")
-
+    
+    # Time
     data_time, pre_time, ener_time, tot_time =\
         list(results['information']['time'].values())
     file.write(f"#----------- Estimation time ----------\n")
@@ -305,9 +330,22 @@ def complete_from_template(results, path = None, name = None, S=False):
     file.write(f"# Preprocessing : {pre_time:3.0f}s\n")
     file.write(f"# Energy estimation : {ener_time:3.0f}s\n")
     file.write(f"# TOTAL : {tot_time:3.0f}s\n")
-
+    
+    # Certainty
+    certain_dic = list(results['information']['certain'].values())
+    text = ["Theta reg fit","station az gap","station dist gap","TR variation",
+                "Ebb variation","Ehf variation","TR theorique","CONFIDENCE LEVEL"]
+    file.write(f"#----------- Certainty level ----------\n")
+    file.write("#----- 0 highest - 6 or 34 lowest -----\n")
+    for t,d in zip(text,certain_dic):
+        file.write(f"# {t:17s} : {d['val']:2.0f} {d['name']:5s}\n")
+        
     if path:
         file.close()
+
+# =============================================================================
+# ---- READING LOG AND RESULTS
+# =============================================================================
 
 def read_results(filepath):
     with open(filepath,"r") as file:
@@ -318,6 +356,7 @@ def read_results(filepath):
                                     "#---------- Event information ---------\n",
                                     "#------- Estimation information -------\n",
                                     "#----------- Estimation time ----------\n"
+                                    "#----------- Certainty level ----------\n"
                                     ] for l in lines_file]))[:,0]
     results = {}
     for ind,name in zip(indices[:4],["raw","raw_s","corr","corr_s"]):
@@ -348,26 +387,45 @@ def read_results(filepath):
     dic={}
     results["ev"]=dic
     
-    # ind = indices[5]
-    # lines = lines_file[ind+1:ind+7]
-    # lines = [i.strip()[2:] for i in lines]
-    # dic={}
-    # dic["version"] = lines[0]
-    # dic["iteration"] = int(lines[1].split()[1][-1])
-    # dic["distance"] = [int(i) for i in lines[1].split()[-1].split("-")]
-    # dic["version"] = 
-    # dic["version"] = 
-    # dic["version"] = 
-    # dic["version"] = 
-    # results["info"]=dic
-    
-    # ind = indices[6]
-    # lines = lines_file[ind+1:]
-    # dic={}
-    # results["times"]=dic
-    
     return AttribDict(results)
 
+def read_results_sta(file,rt=None):
+    time = (loadtxt(file,dtype =str,comments = None)[0,1:]).astype(int)
+    ener_sta_bb = loadtxt(file,
+                          usecols = list(arange(1,time.max()+2).astype(int)),
+                          skiprows = 1)
+    names = loadtxt(file, usecols = [0],skiprows = 1,dtype=str)
+    if isinstance(rt,int):
+        with open(file,"r") as file:
+            lines = file.readlines()[1:]
+        index = argwhere(array([l[:6]=="#mean " for l in lines]))[:,0]
+        ener_sta_bb = ener_sta_bb[index[rt-1]+2 if rt!=0 else 0:index[rt]]
+        names = names[index[rt-1]+2 if rt!=0 else 0:index[rt]]
+    return time, ener_sta_bb, names
+
+def read_sta_log(file,hf=False):
+    with open(f"{file}/sta_log.dat",'r') as file:
+        lines=file.readlines()
+    stalog = {}
+    for line in lines[1:]:
+        name,use,az,dist,lon,lat = line.strip().split()
+        az,dist,lon,lat = float(az),float(dist),float(lon),float(lat)
+        stalog[name]={'use': use, 'az':az, 'dist' : dist,'lon':lon,'lat':lat}
+    uses = array([sta['use'] for sta in stalog.values()])
+    if hf :
+        index = argwhere((uses=='HF')| (uses=='both'))[:,0]
+    else:
+        index = argwhere((uses=='BB')| (uses=='both'))[:,0]
+    names = array(list(stalog.keys()))[index]
+    info = array(list(stalog.values()))[index]
+    stalog = {}
+    for name,inf in zip(names,info):
+        stalog[name] = inf
+    return names, stalog
+
+# =============================================================================
+# ---- WRITING LOG
+# =============================================================================
 def write_station_log(file_sta,st_bb,st_hf, inv):
     st_hf_names = [tr.id for tr in st_hf]
     st_bb_names = [tr.id for tr in st_bb]
@@ -423,62 +481,14 @@ def write_raw_results_sta(file,ener_sta,ener,ener_s,names,rt=None):
         if end:
             write_file.write(end)
             
-def read_results_sta(file,rt=None):
-    time = (loadtxt(file,dtype =str,comments = None)[0,1:]).astype(int)
-    ener_sta_bb = loadtxt(file,
-                          usecols = list(arange(1,time.max()+2).astype(int)),
-                          skiprows = 1)
-    names = loadtxt(file, usecols = [0],skiprows = 1,dtype=str)
-    if isinstance(rt,int):
-        with open(file,"r") as file:
-            lines = file.readlines()[1:]
-        index = argwhere(array([l[:6]=="#mean " for l in lines]))[:,0]
-        ener_sta_bb = ener_sta_bb[index[rt-1]+2 if rt!=0 else 0:index[rt]]
-        names = names[index[rt-1]+2 if rt!=0 else 0:index[rt]]
-    return time, ener_sta_bb, names
-
-def read_sta_log(file,hf=False):
-    with open(f"{file}/sta_log.dat",'r') as file:
-        lines=file.readlines()
-    stalog = {}
-    for line in lines[1:]:
-        name,use,az,dist,lon,lat = line.strip().split()
-        az,dist,lon,lat = float(az),float(dist),float(lon),float(lat)
-        stalog[name]={'use': use, 'az':az, 'dist' : dist,'lon':lon,'lat':lat}
-    uses = array([sta['use'] for sta in stalog.values()])
-    if hf :
-        index = argwhere((uses=='HF')| (uses=='both'))[:,0]
-    else:
-        index = argwhere((uses=='BB')| (uses=='both'))[:,0]
-    names = array(list(stalog.keys()))[index]
-    info = array(list(stalog.values()))[index]
-    stalog = {}
-    for name,inf in zip(names,info):
-        stalog[name] = inf
-    return names, stalog
 
 # =============================================================================
-# Make a PDF
+# ---- Make a PDF
 # =============================================================================
-from fpdf import FPDF
+from matplotlib.backends.backend_pdf import PdfPages
 from glob import glob
 from numpy import concatenate
 from tqdm import tqdm
-class PDF(FPDF):
-    def __init__(self):
-        super().__init__()
-    def header(self):
-        self.set_font('Arial', '', 12)
-        self.cell(0, 7, 'Energy estimation report', "B", 1, 'C')
-        
-    def footer(self):
-        self.set_y(-10)
-        self.set_font('Arial', '', 7)
-        self.set_text_color(82,0,12)
-        self.cell(0, 5, '''Solution provided by R-CET: Rapid Characterization of Earthquake and Tsunami
-                        A GNS Science Led Research Programme''', 0, 0, 'L')
-        self.image(f'EnerRadTool/4.PostProcess_functions/RCETlogo.png', 
-                   x = 178, y = 285, w=20, h=10, type = 'PNG')
 
 def read_result_info(filepath):
     with open(filepath,"r") as file:
@@ -489,7 +499,7 @@ def read_result_info(filepath):
                         #else i.strip()[2:-2]  
                         for j,i in enumerate(lines)] 
             if i!=""]
-    vals[0] = vals[0][:-10]; vals[2] = vals[2][:-10]
+    vals = vals[3:]; vals.pop(15); vals.pop(13)
     return vals
 
 def make_report(resultpath,correct=False):
@@ -510,60 +520,115 @@ def make_report(resultpath,correct=False):
     #img5=f'{resultpath}/Spectrum_selected.png'
     img6=f'{resultpath}/station_contrib_map_BB.png'
     #img7=f'{resultpath}/station_contrib_map_HF.png'
+      
     
-    p= tqdm(total = 10,desc = "Compiling image into pdf")
+    level = int(res[-1].strip().split()[-2])
+    levels, level_c, level_a = (["GREAT","GOOD","OK","LIMIT","BAD"],
+                                ["aquamarine","yellowgreen","khaki","orange","salmon"], 
+                                [0.3,0.3,0.4,0.3,0.25])
     
-    pdf = PDF() # Instance of custom class
-    # Margin
-    MARGIN = 10 
-    pdf.add_page()
-    p.update(1)
+    from PIL import Image
+    from numpy import asarray
+    import matplotlib.pyplot as plt
+    import matplotlib.gridspec as gridspec
+    import matplotlib.patches as mpatches
+    from numpy.ma import masked_where
+    from mpl_toolkits.axes_grid1 import make_axes_locatable
+    import datetime
     
-    #pdf.cell(w=20, h=2, border=0, ln=1)
-    pdf.set_font('Arial', '', 6)
-    pdf.cell(0,5, '''Note: These results are currently evaluated by a fully automated process.
-              Users should be advised to use and interpret these products with caution.''', 0, 1, 'C')
-    p.update(1)
-    
-    pdf.set_font('Times', '', 8)
-    pdf.multi_cell(60, 4, txt="\n".join(res[3:10]), align="L", border = 0)
-    pdf.set_xy(x=75, y= 22)
-    pdf.multi_cell(62, 4, txt="\n".join(res[10:17]), align="L", border = 0)
-    pdf.set_xy(x=140, y= 22)
-    pdf.multi_cell(60, 4, txt="\n".join(res[17:]), align="L", border = 0)
-    p.update(1)
-    
-    pdf.image(img3, x = MARGIN + 80, y = 45, w=125, h=65, type = 'PNG'); p.update(1)  
-    pdf.image(img4, x = MARGIN + 80, y = 45+55, w=125, h=65, type = 'PNG'); p.update(1)  
-    
-    pdf.image(img6, x = 0+MARGIN, y = 55, w=80, h=90, type = 'PNG'); p.update(1)  
-   
-    pdf.image(img8, x = -5+MARGIN, y = 142, w=90, h=90, type = 'PNG'); p.update(1)  
+    cm = 1/2.54
 
-    pdf.image(img9, x = 0+MARGIN, y = 138+90, w=80, h=60, type = 'PNG'); p.update(1)  
-    
-    pdf.image(img2, x = MARGIN + 85, y = 148, w=100, h=150, type = 'PNG'); p.update(1)  
+    p= tqdm(total = 23,desc = "Compiling image into pdf")
 
-    pdf.output(f'{resultpath}/../../report_{resultpath.split('/')[-1]}.pdf', 'F')
-    p.update(1)  
+    fig2 = plt.figure(2, figsize=(21*cm,29.7*cm),dpi=1000)
+
+    gs0 = gridspec.GridSpec(7,6, figure=fig2, height_ratios=[.3,1.2,2,2,3,2,.4], wspace=0.01, hspace=-0.05)
+    fig2.add_subplot(gs0[0,:]); p.update(1)
+    for j in range(0,gs0.ncols,2):
+        fig2.add_subplot(gs0[1,j:j+2])
+        p.update(1)
+    fig2.add_subplot(gs0[2:4,:3]); p.update(1)
+    for i in range(1,gs0.nrows-1):
+        if i in [4,5]:
+            fig2.add_subplot(gs0[i,:3])
+        if i in [2,3]:
+            fig2.add_subplot(gs0[i,3:])
+        p.update(1)
+    fig2.add_subplot(gs0[4:6,3:]); p.update(1)
+    for i,j in enumerate([0,3,5]):
+        fig2.add_subplot(gs0[-1,j:j+3-i])
+        p.update(1)        
+    #format_axes(fig2)
+    p.update(1)
+
+    logo = 'EnerRadTool/4.PostProcess_functions/RCETlogo.png'
+    img = asarray(Image.open(logo))
+    img = masked_where(img == [255, 255, 255,   0], img)
+    fig2.axes[-1].imshow(img); p.update(1)
+
+
+    fig2.axes[0].text(0.5, .55, 'Energy estimation report',horizontalalignment='center', size='x-small')
+    fig2.axes[0].axhline(y=0.35, linewidth=.7, color='k')
+    fig2.axes[0].text(0.5, 0., '''Note: These results are currently evaluated by a fully automated process.        Users should be advised to use and interpret these products with caution.''',horizontalalignment='center', style="italic", size=5.5)
+
+    fig2.axes[1].text(0.05, 0.5, "\n".join(res[:7]),verticalalignment ="center",horizontalalignment='left',size=6.5)
+    fig2.axes[2].text(0.05, 0.5, "\n".join(res[7:14]),verticalalignment ="center",horizontalalignment='left',size=6.5)
+    fig2.axes[3].text(0.05, 0.46, "\n".join(res[14:19]),verticalalignment ="center",horizontalalignment='left',size=5.5)
+    
+    fig2.axes[-3].text(0.6, 0.4, '''Solution provided by R-CET: Rapid Characterization of Earthquake and Tsunami''',horizontalalignment='center',  size=5.5,c="maroon")
+    fig2.axes[-2].text(0.65, 0.4, '''A GNS Science Led Research Programme''',horizontalalignment='center',  size=5.5, c="maroon")
+    
+    for i in [0,1,2,3,-3,-2,-1]:
+        fig2.axes[i].set_axis_off()
+
+    for i,im,k,l,v,w in zip([4,5,6,7,8,9],[img6,img3,img4,img8,img9,img2],
+                    [0,210,240,80,0,370],[0,255,215,50,50,225],
+                    [0,110,100,50,0,0],[0,675,635,150,150,0]):
+        #if i in [4,7,8]:continue
+        img = asarray(Image.open(im))
+        if i in [5,6]:
+            a=.8
+        else : 
+            a=1
+            if i == 8 : a = .9
+            img = masked_where(img == [255, 255, 255,   0], img)
+        fig2.axes[i].imshow(img[k:-1-l,v:-1-w],aspect=a)
+        p.update(1)
+        fig2.axes[i].set_axis_off()
+
+    divider = make_axes_locatable(fig2.axes[3])
+    ax2 = divider.append_axes("bottom", size="40%", pad=0.1, sharex=fig2.axes[3])
+
+    for i,(l,c,a) in enumerate(zip(levels,level_c,level_a)):
+        rect = mpatches.Rectangle((0,.7), 35-i*7, 1.1, linewidth=1,zorder=-10,
+                                  edgecolor=c, facecolor=c,alpha=a)
+        ax2.add_patch(rect)
+    ax2.axvline(35-level,ymin=.7,ymax=1,c="k",lw=1)
+    ax2.set_xlim(0,7*5)
+    ax2.set_ylim(0,1)
+    ax2.set_xticks(arange(0,35,7)[::-1]+3.5,labels =levels,size=4.5)
+    ax2.xaxis.set_ticks_position('top')
+    ax2.tick_params(axis='x', pad=-.1)
+    ax2.set_yticks([])
+    ax2.text(35/2, .6, f"Confidence level estimates : {levels[int(level//7)]}",
+                      verticalalignment ="top", horizontalalignment='center',
+                      size=5.5)
+    
+    for i in ["top","bottom","right","left"]:
+        ax2.spines[i].set_visible(False)
+        
     p.close()
     
-    # # 1. Open your images
-    # img1 = Image.open(img6)
-    # img2 = Image.open(img3)
-    # img3 = Image.open(img4)
+    p.update(1)
 
-    # # 2. Create a new blank image (e.g., side-by-side)
-    # total_width = img1.width + img2.width
-    # max_height = max(img1.height, img2.height)
-    # new_img = Image.new('RGB', (total_width, max_height))
+    with PdfPages(f'{resultpath}/../../report_{resultpath.split('/')[-1]}_new.pdf') as pdf:
+        pdf.savefig(fig2,
+                     bbox_inches="tight",dpi=600,pad_inches=0.1)
+        plt.close()
 
-    # # 3. Paste them onto the canvas
-    # new_img.paste(img1, (0, 0))
-    # new_img.paste(img2, (img1.width, 0))
-    # new_img.paste(img3, (img1.width, img2.height))
-    # new_img.save("temp_combined.jpg")
-
-    # # 4. Convert the combined image to PDF
-    # with open(f"{resultpath}/Stickers.pdf", "wb") as f:
-    #     f.write(img2pdf.convert("temp_combined.jpg"))
+        # We can also set the file's metadata via the PdfPages object:
+        d = pdf.infodict()
+        d['Title'] = f'{resultpath.split("/")[1]}'
+        d['Author'] = 'ESNZ 2026 - EnerRad'
+        d['Keywords'] = 'Radiated seismi energy'
+        d['CreationDate'] = datetime.datetime.today()

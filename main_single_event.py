@@ -4,14 +4,13 @@ Created on Fri Aug  9 09:51:52 2024
 
 @author: solen
 """
+__version__ = "v2.0.4"
 # =============================================================================
 # LIBRARIES IMPORT
 # =============================================================================
 import argparse
 import sys
 import os
-import subprocess
-from numpy import arange
 from colorama import Back, Fore, Style
 # ---- add module to python path
 CODE_PATH = os.path.dirname(os.path.realpath(__file__)).replace('\\', '/')
@@ -24,31 +23,18 @@ for DIR in DIRLIST:
     sys.path.insert(0, DIR)
 # ---- Import module
 from generate_param import Parameters
-from generate_event import Event, moment
+from generate_event import Event
 from do_query import do_query
 from do_preprocessing import do_preprocessing, Inventory, Stream, request_val_p_train
 from do_estimation import do_estimations, folder_name
-from ener_functions import trace_ener, smooth_curve_mean, find_ener
-from results_writing import results_dictionnary_init, update_results,\
-    complete_from_template
-from time_rupture_functions import find_tr_tacer
+from results_writing import results_dictionnary_init, update_results
 from do_plot import do_plots
 
-from numpy import linspace, arange, concatenate, unique
-from numpy.linalg import norm
-import matplotlib.pyplot as plt
-import matplotlib as mpl
-from matplotlib import cm
-from matplotlib import colormaps
-from matplotlib.colors import ListedColormap, Normalize
-from matplotlib.ticker import MultipleLocator
-from data_utils import verif_size, find_min_dist
+from numpy import linspace, concatenate
+from data_utils import find_min_dist, find_az_dist_gap
 from obspy import UTCDateTime
 
-from numpy import vstack, mean, array, argwhere
-from multiprocessing import Pool
-from tqdm import tqdm
-from copy import deepcopy
+from numpy import array
 from time import time
 from glob import glob
 from traceback import format_exc
@@ -61,7 +47,7 @@ def correct_message(message):
     message = message.replace("c:/users/solen/documents/ener/project/","")
     return message+"\n"
 
-def main(path,real_time=True, new_param=False, show_parameters=True, parameters = False,
+def main(path,real_time=True, new_param=False, show_parameters=False, parameters = False,
          reg_lim = None):
     path = f"{CODE_PATH}/{path}"
     
@@ -76,7 +62,7 @@ def main(path,real_time=True, new_param=False, show_parameters=True, parameters 
     ev = Event(path)
     if reg_lim and ev.sreg!=reg_lim:
         sys.stdout.write(f"{Fore.CYAN + Style.DIM}"
-                         +f"\n > Not targeted region. Moving on."
+                         +"\n > Not targeted region. Moving on."
                          +f"{Style.RESET_ALL}\n")
         return
     if show_parameters:
@@ -90,7 +76,7 @@ def main(path,real_time=True, new_param=False, show_parameters=True, parameters 
     if ((parameters.waves.S_near or parameters.distance.include_near) and
             (ev.reg == "SW.Pacific" or not ev.sreg)) :
         sys.stdout.write(f"{Fore.CYAN + Style.DIM}"
-                         +f"\n > Region out of scope for Swaves. Moving on."
+                         +"\n > Region out of scope for Swaves. Moving on."
                          +f"{Style.RESET_ALL}\n")
         return
       
@@ -136,7 +122,7 @@ def main(path,real_time=True, new_param=False, show_parameters=True, parameters 
         
             do_query(ev, path, parameters, current_dist, next_dist,
                      results, rt=iteration)
-        except Exception as error :
+        except Exception:
             with open(f"{path}/Data/0.ERROR.log","a") as file:
                 file.write(f"#{str(UTCDateTime().now()):=^60}\n ")
                 file.write("Error occured in the data collection phase -")
@@ -166,7 +152,7 @@ def main(path,real_time=True, new_param=False, show_parameters=True, parameters 
             general_inv += inv.copy()
         except FileNotFoundError :
             return
-        except Exception as error:
+        except Exception:
             with open(f"{path}/Results/{folder_name(parameters,iteration)}/0.ERROR.log","a") as file:
                 file.write(f"#{str(UTCDateTime().now()):=^60}\n ")
                 file.write("Error occured in the preprocessing phase -")
@@ -178,16 +164,12 @@ def main(path,real_time=True, new_param=False, show_parameters=True, parameters 
                 # file.write(f"{exc_type} : {error}")
                 file.write("\n >>> moving on to another iteration\n")
                 continue
-            
         update_results(results,estimate = [iteration, 
                                            dist_list[:iteration+2] if iteration!=-1 else array([0,2]),
-                                           unique([sta.extra.station_param.az 
-                                                   for net in general_inv for sta in net]),
-                                           unique([sta.extra.station_param.distance
-                                                   for net in general_inv for sta in net]),
-                                            dist_list,
+                                           find_az_dist_gap(None,iteration,correct=False,inv=general_inv),
                                             (general_st_bb,general_st_hf),
                                             parameters.time_max if iteration!=-1 else parameters.time_max_s])
+            
         stadist = array([inv.select(station=tr.stats.station)[0][0].extra.station_param.distance
                               for tr in st ])
         try :
@@ -201,7 +183,7 @@ def main(path,real_time=True, new_param=False, show_parameters=True, parameters 
                                                   st,st_hf,inv,
                                                   results, stadist, rt=iteration)
                 data[0] = general_inv.copy();data[1]+=st_bb;data[2]+=st_hf
-        except Exception as error:
+        except Exception:
             with open(f"{path}/Results/{folder_name(parameters,iteration)}/0.ERROR.log","a") as file:
                 file.write(f"#{str(UTCDateTime().now()):=^60}\n ")
                 file.write("Error occured in energy estimation phase : ")
@@ -215,6 +197,12 @@ def main(path,real_time=True, new_param=False, show_parameters=True, parameters 
         else : 
             if os.path.exists(f"{path}/Results/{folder_name(parameters,iteration)}/0.ERROR.log"):
                 os.remove(f"{path}/Results/{folder_name(parameters,iteration)}/0.ERROR.log")
+            
+            update_results(results,estimate = [iteration, 
+                                               dist_list[:iteration+2] if iteration!=-1 else array([0,2]),
+                                               find_az_dist_gap(resultpath,iteration,correct=True),
+                                                (general_st_bb,general_st_hf),
+                                                parameters.time_max if iteration!=-1 else parameters.time_max_s])
         finally : continue
     
     if parameters.plot.level:

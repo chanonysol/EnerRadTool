@@ -88,6 +88,11 @@ def do_plots(ev,param,resultpath,data):
                                       or param.plot.details.growth) else False, 
                        ext = param.general.do_plot, 
                        redo=param.redoing_results.force_plot)
+    certain_report(resultpath,ev, correct = correct, rt=i,
+                   savefile= True if (param.plot.level in ["minimum","report","all"] 
+                                  or param.plot.details.growth) else False, 
+                   ext = param.general.do_plot, multi=True,
+                   redo=param.redoing_results.force_plot)
     
     if (param.plot.level in ["report","all"] or param.plot.details.map_sta_dev) :
         from map_plots import plot_stations_contrib_map

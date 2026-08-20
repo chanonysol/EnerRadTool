@@ -19,7 +19,7 @@ DOI : *Submitted to SRL special edition in July 2026*
 	- [For a real time implementation](#for-a-real-time-implementation)
 	- [For a catalog](#for-a-catalog)
 4. [Roadmap](#roadmap)
-	- [Current version 2.0.4](#current-version-2.0.4)
+	- [Current version 2.1.3](#current-version-2.1.3)
 	- [Planed version](#planed-version)
 	- [Ideas and discussion](#ideas-and-discussion)
 5. [Authors and acknowledgment](#authors-and-acknowledgment)
@@ -55,16 +55,16 @@ python main_single_event.py -rt "path2folder" -sp
 
 ---
 ## Roadmap
-#### Current version : 2.0.4
+#### Current version : 2.1.3
 #### Planed version
 - [x] 2.0 : Added the S-wave iteration into the real-time code
 	- [x] 2.0.X Minor corrections and adaptation for the RCET Kafka server
 	- [x] 2.0.3 Extension of raw results output information
 	- [x] 2.0.4 Correction of the processing time
-- [ ] 2.1 : Uncertainty evaluation
-	- [ ] 2.1.1 Incorporating uncertainty into raw output
-	- [ ] 2.1.2 Showing evolution of quality over multiple iterations
-	- [ ] 2.1.3 New report visual
+- [x] 2.1 : Uncertainty evaluation
+	- [x] 2.1.1 Incorporating uncertainty into raw output
+	- [x] 2.1.2 Showing evolution of quality over multiple iterations
+	- [x] 2.1.3 New report visual
 - [ ] 2.2 : Runnable code for a catalogue
 	- [ ] 2.2.1 Separation of the query, preprocessing, calculation and plot phases
 	- [ ] 2.2.2 Automatic catalogue correction, analysis and figures
@@ -74,11 +74,14 @@ python main_single_event.py -rt "path2folder" -sp
 	- [ ] 2.3.1 Example folder with description of the process output
 	- [ ] 2.3.2 Catalogue results from the thesis in text-files
 	
-*============================================> Repository made public*
+* ============================================> *Repository made public*
 
 	- [ ] 2.3.3 Outline changable parameters/code etc. in code
 	- [ ] 2.3.4 Adding bibliography in repository with summary from thesis
 - [ ] 2.4 : Code structure tightening and detailed documentation
+    - [x] 2.4.1 Cleaning remnants and stickig to recommended Python practices
+    - [x] 2.4.1 Report extra pages with explanations
+    - [x] 2.4.1 Incorporated documentation
 - [ ] 3.0 : Improvement of the close S wave estimation
 - [ ] 3.1 : Add S-wave results as a default for real-time and self-sufficient option for catalogue
 #### Ideas and discussion
