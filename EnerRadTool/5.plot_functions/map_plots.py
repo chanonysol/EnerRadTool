@@ -188,7 +188,7 @@ def plot_stations_contrib_map(resultpath, ev, inv, st_bb,st_hf,
                     (elon,elat), frame=["af10", f"WSne"])
         # PLOT
         fig.grdimage(grid=grid, cmap="elevgray.cpt", verbose="q")
-        fig.grdimage(grid=az, cmap="ax.cpt", verbose="q", transparency = 70)
+        fig.grdimage(grid=az, cmap="EnerRadTool/5.plot_functions/ax.cpt", verbose="q", transparency = 70)
         fig.coast(shorelines="0.15p,black", land=None, resolution='h')
         
         if len(ind_remove)!=0:
@@ -218,7 +218,7 @@ def plot_stations_contrib_map(resultpath, ev, inv, st_bb,st_hf,
                      cmap="dev.cpt",box='+gwhite')
         fig.colorbar(position="JBR+o-1c/-4.5c+w5c/.3c",
                      frame=["x90f45+lsta_az", "y"],transparency = 40,
-                     cmap="ax.cpt",box='+gwhite')
+                     cmap="EnerRadTool/5.plot_functions/ax.cpt",box='+gwhite')
         fig.colorbar(frame=["xa1f.5+lElevation", "y+lkm"],
                       cmap="elevgray.cpt")
         bar.update(1)

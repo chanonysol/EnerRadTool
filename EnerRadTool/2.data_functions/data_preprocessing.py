@@ -87,12 +87,14 @@ def test_inventory(inv,st,datapath,invpath):
     
     
     for i in [i for i in names_inv if i not in [tr.id for tr in st]]:
+        jsonfile = os.path.exists(f"{invpath}/{i}.json")
         net,sta,loc,cha = i.split('.')
-        inv_remove += inv.select(network = net,station= sta,
-                                 location = loc,channel = cha)
+        if not jsonfile : 
+            inv_remove += inv.select(network = net,station= sta,
+                                     location = loc,channel = cha)
         inv = inv.remove(network = net, station = sta,
                         location = loc, channel = cha)
-        os.remove(f'{invpath}/{i}.xml')
+        if not jsonfile : os.remove(f'{invpath}/{i}.xml')
             
     write_log(f"{datapath}/../",f"log_cleardata_{datapath.split('/')[-1]}",
               None, inv_remove, update = "no mseed file")
@@ -151,6 +153,32 @@ def test_data_size(inv,st,datapath,invpath):
 
     write_log(f"{datapath}/../",f"log_cleardata_{datapath.split('/')[-1]}",
               st_remove, None, update = "data record flat")
+    return inv,st
+
+def remove_nb_sta(inv,st,datapath,invpath,preprocess=False):
+    st_remove = Stream()
+
+    for tr in st:
+        if tr.stats.station[-1] in arange(0,10,1).astype(str):
+            net,sta,loc,cha = tr.id.split('.')
+            
+            st_remove += tr
+            st.remove(tr)
+            inv = inv.remove(network = net,station= sta,
+                             location = loc,channel = cha)
+            for p in glob(f'{datapath}/../*/{tr.id}*'):
+               os.remove(p)
+            continue
+
+    write_log(f"{datapath}/../",f"log_cleardata_{datapath.split('/')[-1]}",
+              st_remove, None, update = "unsure sta _")
+    if preprocess :
+        write_log(f"{datapath}/../",f"log_keptdata_{datapath.split('/')[-1]}",
+                  st_remove, None, update = "unsure sta _")
+        for freq in ["BB","HF"]:
+            if os.path.exists(f"{preprocess}/log_keptdata_{datapath.split('/')[-1]}_{freq}"):
+                write_log(f"{preprocess}",f"log_keptdata_{datapath.split('/')[-1]}_{freq}",
+                          st_remove, None, update = "unsure sta _")
     return inv,st
 
 def test_snr(inv,st,st_hf,datapath,invpath,timewindow = 60, snrlim = 5):
@@ -237,6 +265,7 @@ def fixed_network_selection(inv,st,logpath,logfile):
 
 def check_inv_files(invpath,inv):
     names_xml = [os.path.split(i)[-1][:-4] for i in glob(f"{invpath}/*.xml")]
+    names_json = [os.path.split(i)[-1][:-5] for i in glob(f"{invpath}/*.json")]
     names_inv = [f"{net.code}.{sta.code}.{cha.location_code}.{cha.code}" 
                  for net in inv for sta in net for cha in sta]
     for i in names_inv:
@@ -251,37 +280,19 @@ def check_inv_files(invpath,inv):
                                     channel=chan).write(f"{invpath}/{net}.{sta}.{loc}.{chan}.xml",
                                                                         format = "STATIONXML")
 
-def clear_data_file(datapath, invpath=None):
+def clear_data_file(datapath, invpath, inv = None, st_hf=None):
     for d in glob(f"{datapath}/*?H?.mseed"):
         os.remove(d)
-    for d in invpath:
-        os.remove(d)
-
-def remove_nb_sta(inv,st,datapath,invpath,preprocess=False):
-    st_remove = Stream()
-
-    for tr in st:
-        if tr.stats.station[-1] in arange(0,10,1).astype(str):
-            net,sta,loc,cha = tr.id.split('.')
-            
-            st_remove += tr
-            st.remove(tr)
-            inv = inv.remove(network = net,station= sta,
-                             location = loc,channel = cha)
-            for p in glob(f'{datapath}/../*/{tr.id}*'):
-               os.remove(p)
-            continue
-
-    write_log(f"{datapath}/../",f"log_cleardata_{datapath.split('/')[-1]}",
-              st_remove, None, update = "unsure sta _")
-    if preprocess :
-        write_log(f"{datapath}/../",f"log_keptdata_{datapath.split('/')[-1]}",
-                  st_remove, None, update = "unsure sta _")
-        for freq in ["BB","HF"]:
-            if os.path.exists(f"{preprocess}/log_keptdata_{datapath.split('/')[-1]}_{freq}"):
-                write_log(f"{preprocess}",f"log_keptdata_{datapath.split('/')[-1]}_{freq}",
-                          st_remove, None, update = "unsure sta _")
-    return inv,st
+    if inv:
+        names = [j for j in glob(f"{invpath}/*") 
+                if ".".join(os.path.split(j)[-1].split(".")[:-1]) 
+                not in [i for i 
+                    in [f"{net.code}.{sta.code}.{chan.location_code}.{chan.code}" 
+                    for net in inv for sta in net  for chan in sta] 
+                    if i in [tr.id for tr in st_hf]]
+                and glob(f"{datapath}/{".".join(os.path.split(j)[-1].split(".")[:-1])}.d*.MSEED")==[]]
+        for d in names:
+            os.remove(d)
 # =============================================================================
 # ---- cleaning query
 # =============================================================================
@@ -357,20 +368,13 @@ def clean_data(datapath,invpath,ev,save,ext = ".mseed"):
     st_hf = st.copy()
     st_hf.filter("bandpass",freqmin = 0.5, freqmax = 2, 
                  corners = 4, zerophase=True)
-
+    
     sys.stdout.write(f"{Fore.MAGENTA + Style.BRIGHT} check snr...")
-
+    
     inv, st, st_hf = test_snr(inv,st,st_hf,datapath,invpath,timewindow=2*60,snrlim = 5)
     # inv_fixed, st_fixed_hf = fixed_network_selection(inv,st_hf,datapath,invpath)
-    
-    clear_data_file(datapath,
-                    invpath = [j for j in glob(f"{invpath}/*") 
-                               if ".".join(os.path.split(j)[-1].split(".")[:-1]) 
-                               not in [i for i 
-                                in [f"{net.code}.{sta.code}.{chan.location_code}.{chan.code}" 
-                                for net in inv  for sta in net  for chan in sta] 
-                                if i in [tr.id for tr in st_hf]]])
-    
+    clear_data_file(datapath,invpath,inv,st_hf)
+
     sys.stdout.write(f"{Fore.MAGENTA + Style.BRIGHT} save data...")
     for name in [tr.id for tr in st_hf]:
         tr = st.select(id=name)[0]
@@ -383,7 +387,9 @@ def clean_data(datapath,invpath,ev,save,ext = ".mseed"):
     inv = read_inventory(f"{invpath}/*.xml")
     st = read(f"{datapath}/*?H?*.MSEED")
     st.sort(["network","station","location","channel"])
+
     inv, st = test_inventory(inv,st, datapath,invpath) 
+
     
     # save_spectrum(datapath,f"spec_BB_{datapath.split('/')[-1]}",st.copy())
     # save_spectrum(datapath,f"spec_HF_{datapath.split('/')[-1]}",st_hf.copy())
@@ -394,7 +400,7 @@ def clean_data(datapath,invpath,ev,save,ext = ".mseed"):
                     + f" > Data filtered "
                     + f"{Style.RESET_ALL}"
                     + f" (lasted{time()-starttime: 3.0f}s) \n")
-
+    
     return st,st_hf
 
 def RT_comp(st,inv,ev):
@@ -578,7 +584,22 @@ def select_chan(st,channels):
         new_st += st.select(station=sta,location=loc,channel=cha)
     new_st.sort(["network","station"])
     return new_st
-            
+
+from data_utils import read_log        
+def add_2_log(datapath,resultpath,mindist,maxdist):
+    
+    for freq in ["BB",'HF']:
+        lines_res = read_log(resultpath,f"log_keptdata_{datapath.split('/')[-1]}_{freq}", modif=True)
+        lines = read_log(datapath+"/../",f"log_keptdata_{datapath.split('/')[-1]}", modif=True)
+        
+        mat = read_log(datapath+"/../",f"log_keptdata_{datapath.split('/')[-1]}", 
+                       return_mat=True)[:,2].astype(float)
+        ind = argwhere((mat>=mindist) & (mat<maxdist))[:,0]
+        lines = array(lines)[ind]
+        
+        lines_res += list(lines) 
+        write_log(resultpath,f"log_keptdata_{datapath.split('/')[-1]}_{freq}", None, None, modif = lines_res)
+    
 
 def preprocessing(datapath,invpath,resultpath,ev,tmax,tmax_s,
                   channels,mindist,maxdist,
@@ -602,7 +623,9 @@ def preprocessing(datapath,invpath,resultpath,ev,tmax,tmax_s,
         except:
             st.remove(st.select(id = name)[0])
             continue
-     
+    print(mindist,maxdist)
+    # add_2_log(datapath,resultpath,mindist,maxdist)   
+    
     inv, st = remove_nb_sta(inv,st,datapath,invpath,preprocess=resultpath)
     
     names = [tr.id for tr in st]

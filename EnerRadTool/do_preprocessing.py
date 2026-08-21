@@ -23,7 +23,7 @@ def do_preprocessing(ev, path, param, current_dist, next_dist, results, rt=False
         sys.stdout.write(f"\n{Back.MAGENTA + Style.DIM + Fore.BLACK}"
                          +f"{'Preparation  '.rjust(20):20s}"
                          +f"{Style.RESET_ALL}")
-    
+        
     if isinstance(param.general.search_data,bool) :
         datapath,invpath = f"{path}/Data/Records",f"{path}/Data/Stations"
     else :
@@ -97,9 +97,11 @@ def do_preprocessing(ev, path, param, current_dist, next_dist, results, rt=False
             rem_line_log(resultpath,f"log_keptdata_{datapath.split('/')[-1]}_HF",
                          arange(param.distance.min,param.distance.max,.1))
         
+        
     sys.stdout.write(f"\n{Back.MAGENTA + Style.DIM + Fore.BLACK}"
                      +f"{'Preprocessing  '.rjust(20):20s}"
                      +f"{Style.RESET_ALL}")
+    print(current_dist,next_dist)
     return preprocessing(datapath,invpath,resultpath,ev,param.time_max,param.time_max_s,
                   param.channel_code,current_dist,next_dist,
                   param.deviation_correction.type,snrlim)

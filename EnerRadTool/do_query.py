@@ -141,7 +141,7 @@ def do_query(ev, path, param, current_dist, next_dist, results, rt=False):
         
         #Waiting time if rt
         if rt == True :
-            from data.query import waiting_P_smileys
+            from data_query import waiting_P_smileys
             waiting_P_smileys(ev, mintime, next_dist)
         #Entering query
         sys.stdout.write(f"{Fore.YELLOW + Style.DIM}"

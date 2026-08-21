@@ -431,7 +431,7 @@ def plot_s_map(resultpath,ev,savefile= False, ext =".png",redo=False):
     dty = dtype([(d,v) for d,v in zip (datatype, vals)])
     stas = loadtxt(file_sta,comments="#",dtype=dty)    
     
-    path = "spec_decay.dat"
+    path = "EnerRadTool/2.data_functions/spec_decay.dat"
     dty = dtype([('station',"U25"),('k',"f8"),('dk',"f8")])
     k0sta = loadtxt(path,comments="#",dtype=dty)
     

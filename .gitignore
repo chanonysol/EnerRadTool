@@ -1,3 +1,13 @@
 /CATdata
 /RTdata
 /images
+EnerRadTool.zip
+*.cpt
+*.pyc
+/EnerRadTool/__pycache__
+/EnerRadTool/5.plot_functions/__pycache__
+/EnerRadTool/4.PostProcess_functions/__pycache__
+/EnerRadTool/3.estimation_functions/__pycache__
+/EnerRadTool/2.data_functions/__pycache__
+/EnerRadTool/1.events_functions/__pycache__
+/EnerRadTool/0.init/__pycache__

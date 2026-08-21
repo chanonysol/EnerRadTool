@@ -848,6 +848,8 @@ def rem_line_log(path,filename,dist):
     for i in ind[::-1] : lines.pop(i)
     if len(lines)!=0:
         write_log(path,filename, None, None, modif = lines)
+        
+
 # =============================================================================
 # ---- Inventory / Stream update
 # =============================================================================
@@ -903,14 +905,14 @@ def add_attribute_xml(inv,infodict,st,datapath,invpath,saveinv = False,returninv
         return inv_new
     
 def site_class_parameters(staname,default = "A"):
-    path = "site_class_metadata_Kaiser2017.csv"
+    path = "EnerRadTool/2.data_functions/site_class_metadata_Kaiser2017.csv"
     dty = dtype([('station',"U25"),('site',"U25"),('vs30',"f8"),('tsite',"U25"),
                  ('Zb',"f8"),('Q_Vs30',"U25"),('Q_Tsite',"U25"),
                  ('D_Tsite',"U25"),('Q_Zb',"U25"),('ref',"U25")])
     Nzclass = loadtxt(path,comments="#",delimiter=",",dtype=dty,usecols=range(10))
     Nzclass = array(Nzclass[["station","site","vs30"]])
     
-    path = "spec_decay.dat"
+    path = "EnerRadTool/2.data_functions/spec_decay.dat"
     dty = dtype([('station',"U25"),('k',"f8"),('dk',"f8")])
     k0sta = loadtxt(path,comments="#",dtype=dty)
     
@@ -1173,6 +1175,7 @@ def interp_imp_S(stalat,stalon,freq,site,de):
 def geometrical_spreading_s(freq, dist, cross_dist=27.5):
     # dist*=1e3
     # cross_dist*=1e3
+    from numpy import zeros_like
     if dist<= cross_dist :
         g_square = zeros_like(freq) + dist**2
     else :
@@ -1202,7 +1205,7 @@ def attenuation_s(freq,lat,lon):
 def Qmodel():
     from numpy import dtype, reshape, loadtxt, unique, pi, cos, sin
     from xarray import DataArray
-    file = "Qsnzw2p3xyzltln.tbl (1).txt"
+    file = "EnerRadTool/2.data_functions/Qsnzw2p3xyzltln.tbl.txt"
     datatype=open(file,"r").readlines()[1][1:].split()
     vals = ["f8"]*len(datatype)
     dty = dtype([(d,v) for d,v in zip (datatype, vals)])

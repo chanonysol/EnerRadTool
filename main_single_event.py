@@ -119,7 +119,7 @@ def main(path,real_time=True, new_param=False, show_parameters=False, parameters
         #     results = results_dictionnary_init(parameters)
         #     update_results(results,ev=ev)
         try :
-        
+            
             do_query(ev, path, parameters, current_dist, next_dist,
                      results, rt=iteration)
         except Exception:
@@ -144,6 +144,7 @@ def main(path,real_time=True, new_param=False, show_parameters=False, parameters
                                             dist_list[iteration+1]-1 if current_dist!=0 else 2., 
                                             results,rt = iteration 
                                             if real_time else real_time)
+            
             update_results(results, 
                             pre_time = (results['information']['time']['pre_time'] 
                                         + time() - STARTTIME ))
@@ -200,7 +201,8 @@ def main(path,real_time=True, new_param=False, show_parameters=False, parameters
             
             update_results(results,estimate = [iteration, 
                                                dist_list[:iteration+2] if iteration!=-1 else array([0,2]),
-                                               find_az_dist_gap(resultpath,iteration,correct=True),
+                                               find_az_dist_gap(resultpath if iteration!=-1 else None,
+                                                                iteration,correct=True,inv=general_inv if iteration==-1 else None),
                                                 (general_st_bb,general_st_hf),
                                                 parameters.time_max if iteration!=-1 else parameters.time_max_s])
         finally : continue

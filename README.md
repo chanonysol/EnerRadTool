@@ -79,9 +79,9 @@ python main_single_event.py -rt "path2folder" -sp
 	- [ ] 2.3.3 Outline changable parameters/code etc. in code
 	- [ ] 2.3.4 Adding bibliography in repository with summary from thesis
 - [ ] 2.4 : Code structure tightening and detailed documentation
-    - [x] 2.4.1 Cleaning remnants and stickig to recommended Python practices
-    - [x] 2.4.1 Report extra pages with explanations
-    - [x] 2.4.1 Incorporated documentation
+    - [ ] 2.4.1 Cleaning remnants and stickig to recommended Python practices
+    - [ ] 2.4.2 Report extra pages with explanations
+    - [ ] 2.4.3 Incorporated documentation
 - [ ] 3.0 : Improvement of the close S wave estimation
 - [ ] 3.1 : Add S-wave results as a default for real-time and self-sufficient option for catalogue
 #### Ideas and discussion

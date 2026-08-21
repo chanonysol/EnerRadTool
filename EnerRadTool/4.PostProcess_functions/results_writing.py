@@ -153,7 +153,7 @@ def update_results(results,**kwargs):
     # certainty information -------------------------------------------    
     if "certain" in kwargs.keys():
         rt, [data, levels, levels_name, mark, general] = kwargs["certain"]
-        keys = ["reg_fit","az_gap","dist_gap","tr_gap","dEbb","dEhf","tr_moment","total"]
+        keys = ["reg_fit","az_gap","tr_gap","dEbb","dEhf","tr_moment","dist_gap","total"]
         if "estimate" not in results["information"].keys() or rt==0:
             certain_info=dict([(k,{"val":v,"name":n}) 
                                for k,v,n in zip(keys,
@@ -332,13 +332,14 @@ def complete_from_template(results, path = None, name = None, S=False):
     file.write(f"# TOTAL : {tot_time:3.0f}s\n")
     
     # Certainty
-    certain_dic = list(results['information']['certain'].values())
-    text = ["Theta reg fit","station az gap","station dist gap","TR variation",
-                "Ebb variation","Ehf variation","TR theorique","CONFIDENCE LEVEL"]
-    file.write(f"#----------- Certainty level ----------\n")
-    file.write("#----- 0 highest - 6 or 34 lowest -----\n")
-    for t,d in zip(text,certain_dic):
-        file.write(f"# {t:17s} : {d['val']:2.0f} {d['name']:5s}\n")
+    if "certain" in results["information"].keys():
+        certain_dic = list(results['information']['certain'].values())
+        text = ["Theta reg fit","station az gap","TR variation","Ebb variation",
+                "Ehf variation","TR theorique","station dist gap","CONFIDENCE LEVEL"]
+        file.write(f"#----------- Certainty level ----------\n")
+        file.write("#----- 0 highest - 6 or 34 lowest -----\n")
+        for t,d in zip(text,certain_dic):
+            file.write(f"# {t:17s} : {d['val']:2.0f} {d['name']:5s}\n")
         
     if path:
         file.close()

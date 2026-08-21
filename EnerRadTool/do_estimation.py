@@ -194,7 +194,9 @@ def do_estimations(ev, path, param, st_bb, st_hf, inv, results, stadist, rt=Fals
                 # st_hf_names = [n for n in st_hf_names if n not in [tr.id for tr in st_hf]]
                 # modify_log(f"{resultpath}/",f"log_keptdata_{datapath.split('/')[-1]}_BB",st_bb_names,f"correct remov {rt}")
                 # modify_log(f"{resultpath}/",f"log_keptdata_{datapath.split('/')[-1]}_HF",st_hf_names,f"correct remov {rt}")
-                
+            update_results(results,certain = [rt,quality_level(resultpath,rt,ev,
+                                                           correct=True, results = results)])
+            
             
             
         elif (param.distance.include_near and all(stadist<=2.)):
@@ -247,10 +249,6 @@ def do_estimations(ev, path, param, st_bb, st_hf, inv, results, stadist, rt=Fals
                     file.write(f"{tr.id:16s} {lon:+6.2f} {lat:+6.2f} "+
                                f"{dist:5.2f} {az:3.0f} {site:1s} {tr.stats.ener:.2e}\n")
                 
-        
-        update_results(results,certain = [rt,quality_level(resultpath,rt,ev,
-                                                       correct=True, results = results)])
-        
         sys.stdout.write(f"{Fore.RED + Style.DIM}"
                           +" > Saving results"
                           +f"{Style.RESET_ALL}\n")
