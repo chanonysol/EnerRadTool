@@ -195,7 +195,8 @@ def do_estimations(ev, path, param, st_bb, st_hf, inv, results, stadist, rt=Fals
                 # modify_log(f"{resultpath}/",f"log_keptdata_{datapath.split('/')[-1]}_BB",st_bb_names,f"correct remov {rt}")
                 # modify_log(f"{resultpath}/",f"log_keptdata_{datapath.split('/')[-1]}_HF",st_hf_names,f"correct remov {rt}")
             update_results(results,certain = [rt,quality_level(resultpath,rt,ev,
-                                                           correct=True, results = results)])
+                                                           correct= param.deviation_correction.type == "result",
+                                                           results = results)])
             
             
             

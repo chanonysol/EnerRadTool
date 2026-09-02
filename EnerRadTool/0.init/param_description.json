@@ -1,8 +1,8 @@
 {
 "general": {"session_name": "- null for an automatic format like 'version_parameters'\n- or type wanted-name for folder",
                "search_data": "- true to make automatic query with Obspy\n- fixed if want a fixed list of station\n- false for data in 'Data' folder\n- or dir to the folder with data",
-               "keep_data": "- 'all' to keep all data\n- 'used' for only used signals\n- null (default) remove all data for minimum space",
-               "saved_results": "- 'all' to save everything in files\n- 'plot' to redo plots later\n- 'detailed' saves all stations contribution over time\n- 'minimum' for files with general results, station contribution and energy growth\n- 'fastest' only write in the general results file",
+               "save_method": "- 'all' to keep all data\n- 'used' for only used signals\n- null (default) remove all data for minimum space",
+               "save_level": "- 'all' to save everything in files\n- 'plot' to redo plots later\n- 'detailed' saves all stations contribution over time\n- 'minimum' for files with general results, station contribution and energy growth\n- 'fastest' only write in the general results file",
                "do_plot": "- 'format' (.png,.pdf, etc...) for wanted figures\n- null for no figures",
                "do_report": "- true to put everything in a pdf file (will overwrite other option to minimum report level)\n- false if no pdf file wanted"
             },

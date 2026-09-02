@@ -4,7 +4,7 @@ save_data_on_exit = True
 save_history = True
 save_non_project_files = False
 project_type = 'empty-project-type'
-recent_files = ['main_single_event.py', 'CATdata\\catalog_results.py', 'RTdata\\Kaikoura\\param_test.json', 'README.md', 'EnerRadTool\\2.data_functions\\data_preprocessing.py', 'EnerRadTool\\4.PostProcess_functions\\results_writing.py', 'EnerRadTool\\2.data_functions\\data_utils.py', 'EnerRadTool\\3.estimation_functions\\ener_functions.py']
+recent_files = ['main_single_event.py', 'README.md', 'RTdata\\Kaikoura\\param_test.json', 'CATdata\\catalog_results.py', 'EnerRadTool\\5.plot_functions\\catalog_plots.py', 'EnerRadTool\\4.PostProcess_functions\\catalogue_compile.py', 'EnerRadTool\\0.init\\param_description.json', 'EnerRadTool\\2.data_functions\\data_utils.py']
 
 [main]
 version = 0.2.0

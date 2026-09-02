@@ -101,9 +101,9 @@ def do_preprocessing(ev, path, param, current_dist, next_dist, results, rt=False
     sys.stdout.write(f"\n{Back.MAGENTA + Style.DIM + Fore.BLACK}"
                      +f"{'Preprocessing  '.rjust(20):20s}"
                      +f"{Style.RESET_ALL}")
-    print(current_dist,next_dist)
+    
     return preprocessing(datapath,invpath,resultpath,ev,param.time_max,param.time_max_s,
-                  param.channel_code,current_dist,next_dist,
+                  param.channel_code,current_dist,next_dist,param,
                   param.deviation_correction.type,snrlim)
 
     #real time and data doesn't exist

@@ -843,7 +843,7 @@ def rem_line_log(path,filename,dist):
     lines = read_log(path,filename,modif = True)
     dists = read_log(path,filename,return_mat=True)[:,2].astype(float)
     reasons = read_log(path,filename,return_mat=True)[:,0]
-    ind = argwhere((array([d not in dist.round(1) for d in dists])==False)|
+    ind = argwhere((array([d not in dist.round(1) for d in dists])==True)|
                    (reasons!="in processing"))[:,0]
     for i in ind[::-1] : lines.pop(i)
     if len(lines)!=0:
@@ -950,6 +950,7 @@ def find_az_dist_gap(resultpath,rt,correct=True, inv = None):
     else :
         azlist,stadist = array([(sta.extra.station_param.az ,sta.extra.station_param.distance)
                 for net in inv for sta in net]).T
+        # print(azlist,resultpath,inv)
     azlist = unique(azlist)
     stadist = unique(stadist)
     
@@ -958,7 +959,7 @@ def find_az_dist_gap(resultpath,rt,correct=True, inv = None):
         if isnan(azlist[0]):
             azgap.append(nan)
             distgap.append(nan)
-        
+    
     azlist = concatenate(((azlist[1:]-azlist[:-1]),[360-azlist[-1]+azlist[0]]))
     azgap = azlist.max()
     if stadist.size == 1:
@@ -997,16 +998,18 @@ def quality_level(resultpath,rt,ev,correct=True,results=None):
     avs = compar_cat(ev)
     azgap, distgap = find_az_dist_gap(resultpath,rt,correct=True)
     
-    data = array([abs(res.theta-avs[0]),distgap/75,
+    data = array([abs(res.theta-avs[0]),
+                  distgap/75,
                   abs(res.Tr_lines-res.Tr_tacer)/2/70,
-                  res.dEbb/100,res.dEhf/100,
+                  res.dEbb/100,
+                  res.dEhf/100,
                   abs(res.Tr_tacer/((1.2*1e-8*(MOM*1e7)**(1/3)+5.8)*2))/3,
                   azgap/360])
     
     data = where(data>1.,1.,where(data<0.,0.,data))
 
     test = array([LEVEL_DIC[k]["val"] for k in LEVEL_DIC.keys()]).round(3)
-    levels = [int(concatenate((argwhere(test[:,j]>d)[:,0],[4])).min()-1)
+    levels = [int((argwhere(test[:,j]<=d)[:,0]).max())
                 for j,d in enumerate(data)]
     if res.Tr_lines<res.Tr_tacer:
         levels[2] = 4

@@ -15,12 +15,12 @@ FILE_PATH = os.path.dirname(os.path.realpath(__file__)).replace('\\', '/')
 DIR=f"{FILE_PATH}/../2.data_functions"
 sys.path.insert(0, DIR)
 
-from results_writing import read_results_sta, read_sta_log, read_results, Me
+from results_writing import read_results_sta, read_sta_log, read_results, Me, inv_Me, Mehf, inv_Mehf
 from ener_functions import smooth_curve_mean
 from data_utils import read_log
 import sys
 from colorama import Back,Style,Fore
-from numpy import vstack, array, argwhere, mean, concatenate, isnan, log10, shape, nanmean
+from numpy import vstack, array, argwhere, mean, concatenate, isnan, log10, shape, nanmean, arange
 from obspy.core.util import AttribDict
 from glob import glob
 from time_rupture_functions import find_tr
@@ -117,7 +117,9 @@ def plot_growth(resultpath, correct = False, rt= False,savefile= False, ext =".p
     mp.rcParams.update({'font.size': 14})
     
     fig,[ax,axhf] = plt.subplots(2,1,figsize = (8,12))
-    axm = ax.twinx(); axhfm = axhf.twinx()
+    #axm = ax.twinx(); axhfm = axhf.twinx()
+    axm = ax.secondary_yaxis('right', functions=(Me,inv_Me))
+    axhfm = axhf.secondary_yaxis('right', functions=(Mehf,inv_Mehf))
 
     ax.plot(t,Ebb,c="purple",ls="--",alpha=0.5)
     
@@ -147,8 +149,8 @@ def plot_growth(resultpath, correct = False, rt= False,savefile= False, ext =".p
     axhf.set_ylim(bothf,tophf)
     #ax.set_ylim(bottom = topbb/1000)
     #axhf.set_ylim(bottom = tophf/1000)
-    axm.set_ylim(Me(botbb),Me(topbb))
-    axhfm.set_ylim(Me(bothf/0.13),Me(tophf/0.13))
+    # axm.set_ylim(me(botbb),me(topbb))
+    # axhfm.set_ylim(Me(bothf/0.25),Me(tophf/0.25))
     
     ax.set_ylabel(r"Cumulative $E_{BB}$ (J)")
     axhf.set_ylabel(r"Cumulative $E_{HF}$ (J)")
@@ -182,9 +184,9 @@ def plot_growth(resultpath, correct = False, rt= False,savefile= False, ext =".p
                      horizontalalignment='left',
                      bbox={'facecolor': 'silver', 'alpha': 0.6, 'pad': 10}, fontsize=12)
             
-            axi.text(res.Tr_tacer-10,-bothf*3,f"{res.Tr_tacer:.0f}s",
+            axi.text(res.Tr_tacer-10,tophf*0.94,f"{res.Tr_tacer:.0f}s",
                      backgroundcolor="w",c='lightseagreen')
-            axi.text(res.Tr_lines+2,-bothf*3,f"{res.Tr_lines:.0f}s",
+            axi.text(res.Tr_lines-5,tophf*0.94,f"{res.Tr_lines:.0f}s",
                      backgroundcolor="w",c='sandybrown')
     if savefile :
         plt.savefig(f"{resultpath}/EnerOverTime_{'raw' if not correct else 'corrected'}{ext}",

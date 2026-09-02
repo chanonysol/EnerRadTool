@@ -23,9 +23,19 @@ from generate_event import moment
 from time_rupture_functions import joint_tr
 
 from obspy.core.util import AttribDict
+from obspy import UTCDateTime
 
 def Me(E):
     return 2/3*log10(E)-2.9
+
+def Mehf(E):
+    return 2/3*log10(E/0.25)-2.9
+
+def inv_Me(Me):
+    return 10**((Me+2.9)*3/2)
+
+def inv_Mehf(Me):
+    return 10**((Me+2.9)*3/2)*0.25
 
 def results_dictionnary_init(param):
     results = {'raw':{k:-9999 for k in ['Ebb','Ehf','MeBB','MeHF','Tr',
@@ -130,7 +140,7 @@ def update_results(results,**kwargs):
     if "estimate" in kwargs.keys():
         rt, dist, (azgap,distgap), (stbb,sthf), time = kwargs["estimate"]
         if "estimate" not in results["information"].keys() or rt==0:
-            ener_info={"version":"v2.1.RT" ,"iter": rt if isinstance(rt, int) else None ,
+            ener_info={"version":"v2.2.RT" ,"iter": rt if isinstance(rt, int) else None ,
                        "mindist": dist.min(),
                        "maxdist": dist.max(),
                        "nsta_bb":len(list(set([f"{tr.stats.network}.{tr.stats.station}.{tr.stats.location}" for tr in stbb]))),
@@ -356,7 +366,7 @@ def read_results(filepath):
                                     "#-------- Corrected estimation --------\n",
                                     "#---------- Event information ---------\n",
                                     "#------- Estimation information -------\n",
-                                    "#----------- Estimation time ----------\n"
+                                    "#----------- Estimation time ----------\n",
                                     "#----------- Certainty level ----------\n"
                                     ] for l in lines_file]))[:,0]
     results = {}
@@ -382,11 +392,68 @@ def read_results(filepath):
             method = "both"
         dic['method']=method
         results[name]=dic
+    
+    for ind,ind_next,name in zip(indices[4:],
+                                 concatenate((indices[5:],[-1])),
+                                 ["ev","info","time","eval"]):   
+        lines = lines_file[ind+1:ind_next if ind_next!=-1 else None]
+        if ind==indices[6]:
+            vals = [i for i in 
+                    concatenate([i.strip().split(" : ") for i in lines])][1::2]
+        elif ind==indices[7]:
+            vals = [i for i in 
+                    concatenate([i.strip().split(" : ")[1:] for i in lines])]
+        elif ind==indices[5]:
+            vals = [i 
+                    for i in concatenate([[i] if i.find("[")!=-1  else i.split()
+                                          for i in concatenate([i.strip().split(" : ") 
+                                                                for i in lines])
+                                          if i not in ['# network azimuthal gap',
+                                                       '# network distance gap',
+                                                       '# BB','# HF',
+                                                       '# Time after P-waves',
+                                                       '# reference used for mEhf']]) 
+                    if i not in ["","#",'iteration','stations']]
         
-    ind = indices[4]
-    lines = lines_file[ind+1:ind+7]
-    dic={}
-    results["ev"]=dic
+        dic = {}
+        if ind==indices[6]:
+            for i,n in zip(vals,["data","proc","calc","total"]):
+                dic[n]=float(i[:-1])
+            results[name]=dic
+        elif ind==indices[7]:
+            for i,n in zip(vals,["reg_fit","az_gap","tr_gap","dEbb","dEhf",
+                                 "tr_moment","dist_gap","total"]):
+                dic[n]={"val":int(i.split()[0]),"name":i.split()[1]}
+            results[name]=dic
+        elif ind==indices[5]:
+            for i,n in zip(vals,["version","iter","dist","azgap","distgap",
+                                 "bb_sta","hf_sta","sig_length","mehf_ref"]):
+                if n in ["bb_sta","hf_sta"]:
+                    dic[n]={"nsta":int(i.split()[0]),
+                            "channel":i[i.find("[")+2:-2].replace("'","").split(", ") }
+                elif n=="dist":
+                    dic[n]={"min":int(i.split("-")[0]),
+                            "max":int(i.split("-")[1])}
+                else:
+                    i = i.replace("°","").replace("%","")
+                    if i[0]=="v":
+                        dic[n]=i
+                    elif i[0]=="n":
+                        dic[n]=int(i[-1])
+                    elif n=="mehf_ref":
+                        dic[n]=float(i)/100
+                    else:
+                        dic[n]=int(i.replace("s",""))
+            results[name]=dic
+        else :
+            vals = [i for i in concatenate([i.strip().replace("# ","").split(" ") for i in lines]) 
+                    if i!=""]
+            dic = {"date":UTCDateTime(vals[0]),
+                   "mw" : float(vals[2]), "M0": float(vals[5]),
+                   "lat": float(vals[7]),"lon":float(vals[8]),"de":float(vals[9]),
+                   "reg":vals[12],"sreg":"-".join(vals[15:])}
+            results[name]=dic
+            
     
     return AttribDict(results)
 

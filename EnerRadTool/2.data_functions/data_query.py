@@ -75,7 +75,8 @@ def get_stationxml_storage(network, station, channels, startime,endtime):
         "filename": filename}
 
 def check4fixed_stations(path,min_dist,max_dist):
-    from  numpy import dtype, loadtxt, concatenate
+    from  numpy import dtype, loadtxt, concatenate, arange
+    from data_utils import write_log,read_log
     file = 'EnerRadTool/2.data_functions/sta_cor_perma0.5.dat'
     mat = loadtxt(file,usecols = 0,comments="#",dtype=str)
     
@@ -83,6 +84,7 @@ def check4fixed_stations(path,min_dist,max_dist):
     dists = array([int(p[-8:-6]) for p in L])
     ind = argwhere((dists>=min_dist) & (dists<max_dist))[:,0]
     L = L[ind]
+    
     if L.size==0: return False
     else :
         Lsta = concatenate([glob(f"{path}Data/Stations/{n}*") 
@@ -91,6 +93,40 @@ def check4fixed_stations(path,min_dist,max_dist):
             copyfile(p,p.replace("Records","FixedRecords"))
         for p in Lsta:
             copyfile(p,p.replace("Stations","FixedStations"))
+            
+        lines = read_log(f"{path}Data/","log_keptdata_Records", modif=True)
+        na,dists = array([l.split()[3:5] for l in lines]).T
+        dists = dists.astype(float)
+        ind = argwhere((array([n in mat for n in na]))&
+                       ((dists>=min_dist) & (dists<max_dist)))[:,0]
+        
+        if os.path.exists(f"{path}Data/log_keptdata_FixedRecords.dat"):
+            write_log(f"{path}Data/","log_keptdata_FixedRecords", None, None, 
+                      modif = list(concatenate((array(read_log(f"{path}Data/",
+                                                     "log_keptdata_FixedRecords",
+                                                     modif=True)),
+                                                array(lines)[ind]))))
+        else :
+            write_log(f"{path}Data/","log_keptdata_FixedRecords", None, None, 
+                      modif = list(array(lines)[ind]))
+            
+        lines = read_log(f"{path}Data/","log_keptdata_Records", modif=True)
+        na,dists = array([l.split()[3:5] for l in lines]).T
+        dists = dists.astype(float)
+        ind = argwhere((array([n not in mat for n in na]))&
+                       ((dists>=min_dist) & (dists<max_dist)))[:,0]
+        lines = [l.replace("in processing _",f"{'not select sta':15s}") for l in lines]
+        
+        if os.path.exists(f"{path}Data/log_cleardata_FixedRecords.dat"):
+            write_log(f"{path}Data/","log_cleardata_FixedRecords", None, None, 
+                      modif = list(concatenate((array(read_log(f"{path}Data/",
+                                                 "log_cleardata_FixedRecords",
+                                                 modif=True)),
+                                                array(lines)[ind]))))
+        else :
+            write_log(f"{path}Data/","log_cleardata_FixedRecords", None, None, 
+                      modif = list(array(lines)[ind]))
+        
         return True
     
 

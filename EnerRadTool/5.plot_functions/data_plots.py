@@ -70,7 +70,7 @@ def plot_preprocessed_data_dist(resultpath,st,st_hf,inv,
                                  location = tr.stats.location)[0][0].extra.station_param.distance
             t=linspace(0, tr.stats.npts * tr.stats.delta, tr.stats.npts, endpoint=True)-60
             axs[j].plot(t, tr.data, color = col_dist[int(d)],
-                        zorder=int(d)//4,lw = 0.5,alpha=0.4)
+                        zorder=int(d)//4,lw = 2. if d%16<8 else 1.,alpha=0.4)
     
     for axi in axs:
         axi.set_facecolor("w")
@@ -136,7 +136,7 @@ def plot_preprocessed_data_az(resultpath,st,st_hf,inv,
                                  location = tr.stats.location)[0][0].extra.station_param.distance
             t=linspace(0, tr.stats.npts * tr.stats.delta, tr.stats.npts, endpoint=True)-60
             axs[j].plot(t, tr.data, color = col_az[int(a)//45],
-                        zorder=int(d)//4,lw = 0.5,alpha=0.4)
+                        zorder=int(d)//4,lw = 1.,alpha=0.4)
     
     for axi in axs:
         axi.set_facecolor("w")

@@ -586,8 +586,12 @@ def select_chan(st,channels):
     return new_st
 
 from data_utils import read_log        
-def add_2_log(datapath,resultpath,mindist,maxdist):
-    
+def add_2_log(datapath,resultpath,mindist,maxdist,param):
+    mat_res = read_log(resultpath,f"log_keptdata_{datapath.split('/')[-1]}_BB", 
+                       return_mat=True)[:,2].astype(float)
+    if any(mat_res>=maxdist) and maxdist!=param.distance.max: return
+    if maxdist==param.distance.max and any(mat_res>=mindist): return
+    if abs(mat_res.min()-mindist)<7. : return
     for freq in ["BB",'HF']:
         lines_res = read_log(resultpath,f"log_keptdata_{datapath.split('/')[-1]}_{freq}", modif=True)
         lines = read_log(datapath+"/../",f"log_keptdata_{datapath.split('/')[-1]}", modif=True)
@@ -599,16 +603,17 @@ def add_2_log(datapath,resultpath,mindist,maxdist):
         
         lines_res += list(lines) 
         write_log(resultpath,f"log_keptdata_{datapath.split('/')[-1]}_{freq}", None, None, modif = lines_res)
-    
-
+        print("added")
+        
 def preprocessing(datapath,invpath,resultpath,ev,tmax,tmax_s,
-                  channels,mindist,maxdist,
+                  channels,mindist,maxdist,param,
                   correct,snrlim = 5.):
+    
     start = time()
     #snrlim = 10.
     
     st= Stream()
-    for d in arange(mindist,maxdist+1).astype(int):
+    for d in arange(mindist,maxdist).astype(int):
         try:
             st+=read(f"{datapath}/*d{d:02d}*.mseed")
         except : continue
@@ -623,8 +628,8 @@ def preprocessing(datapath,invpath,resultpath,ev,tmax,tmax_s,
         except:
             st.remove(st.select(id = name)[0])
             continue
-    print(mindist,maxdist)
-    # add_2_log(datapath,resultpath,mindist,maxdist)   
+
+    add_2_log(datapath,resultpath,mindist,maxdist,param)   
     
     inv, st = remove_nb_sta(inv,st,datapath,invpath,preprocess=resultpath)
     

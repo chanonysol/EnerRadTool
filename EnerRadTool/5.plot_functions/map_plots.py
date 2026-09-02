@@ -169,10 +169,10 @@ def plot_stations_contrib_map(resultpath, ev, inv, st_bb,st_hf,
         stalog = read_log(resultpath,
                               os.path.split(glob(f"{resultpath.replace(']','?').replace('[','?')}/log_keptdata_*{'BB' if j==0 else 'HF'}*")[-1])[-1][:-4],
                               return_mat=True)
-        keep_names=stalog[:,1][argwhere(array([i.find(f"REMAIN ITER")!=-1 for i in stalog[:,0]]))[:,0]]
-        remove_names=stalog[:,1][argwhere(array([i.find(f"dev")!=-1 for i in stalog[:,0]]))[:,0]]
-        keep_log=stalog[:,[2,3,6,7]][argwhere(array([i.find(f"REMAIN ITER")!=-1 for i in stalog[:,0]]))[:,0]].astype(float).T
-        remove_log=stalog[:,[2,3,6,7]][argwhere(array([i.find(f"dev")!=-1 for i in stalog[:,0]]))[:,0]].astype(float).T
+        keep_names=stalog[:,1][argwhere(array([i.find("REMAIN ITER")!=-1 for i in stalog[:,0]]))[:,0]]
+        remove_names=stalog[:,1][argwhere(array([i.find("dev")!=-1 for i in stalog[:,0]]))[:,0]]
+        keep_log=stalog[:,[2,3,6,7]][argwhere(array([i.find("REMAIN ITER")!=-1 for i in stalog[:,0]]))[:,0]].astype(float).T
+        remove_log=stalog[:,[2,3,6,7]][argwhere(array([i.find("dev")!=-1 for i in stalog[:,0]]))[:,0]].astype(float).T
         ind = [i for i,n in enumerate(nam) if n in keep_names]
         ind_remove = [i for i,n in enumerate(nam) if n in remove_names]
         

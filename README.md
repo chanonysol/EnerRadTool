@@ -44,18 +44,71 @@ Python 3.9.1
 
 ---
 ## Procedure
+
 ###### For a real time implementation
 
 ```bash
-python main_single_event.py -rt "path2folder" -sp
+python main_single_event.py -rt "path2folder"
 ```
 
 ###### For a catalog
-===> Coming in 2.2
+```bash
+python main_single_event.py "path2folder" -sp -cat
+```
+###### For details on arguments
 
+```bash
+python main_single_event.py -h
+```
+
+```python
+usage: testparser.py [-h] [-rt] [-n] [-sp] [-cat] [-stage {1,2,3,4,5}] path
+
+positional arguments:
+  path                path to folder of event or catalog; [if rt] Folder
+                      contains the cmt file and parameter file of the source;
+                      [if cat] Folder contains parameters file and one
+                      separate folder per source with the corresponding cmt
+                      file
+
+options:
+  -h, --help          show this help message and exit
+  -rt, --real_time    apply the real time code or one source
+  -n, --new_param     change parameter file
+  -sp, --show_param   print the code and source parameters for verification
+  -cat, --catalogue   apply calculation for multiple sources in folder
+  -stage {1,2,3,4,5}  separate stages [Default : 0 = do all] ; 1 = Only do
+                      data collections ; 2 = Only do data processing and
+                      calculation ; 3 = Do both data collection and
+                      calculation ; 4 = Only do plots ; 6 = Do calculation and
+                      plots. (If necessarry previous steps have not been
+                      performed, the path and missing stages will be stored in
+                      an error file)
+```
+###### For input parameters gestion inside console
+```python
+import sys
+import os
+# ---- add module to python path
+CODE_PATH = os.path.dirname(os.path.realpath(__file__)).replace('\\', '/')
+MODULE_PATH = f"{CODE_PATH}/EnerRadTool"
+sys.path.insert(0, MODULE_PATH)
+DIRLIST = [f"{MODULE_PATH}/{folder}"
+           for folder in os.listdir(f"{MODULE_PATH}")
+           if folder[:2] != "do"]
+for DIR in DIRLIST:
+    sys.path.insert(0, DIR)
+    
+parameters = Parameters(folderpath)
+parameters.arglist() #show parameter file current input
+parameters.param_description("name_of_the_parameter") #describe parameters and accepted values
+
+parameters = Parameters(folderpath,new=True) #console guide to help build a new parameter file
+
+```
 ---
 ## Roadmap
-#### Current version : 2.1.3
+#### Current version : 2.2.2
 #### Planed version
 - [x] 2.0 : Added the S-wave iteration into the real-time code
 	- [x] 2.0.X Minor corrections and adaptation for the RCET Kafka server
@@ -65,11 +118,9 @@ python main_single_event.py -rt "path2folder" -sp
 	- [x] 2.1.1 Incorporating uncertainty into raw output
 	- [x] 2.1.2 Showing evolution of quality over multiple iterations
 	- [x] 2.1.3 New report visual
-- [ ] 2.2 : Runnable code for a catalogue
-	- [ ] 2.2.1 Separation of the query, preprocessing, calculation and plot phases
-	- [ ] 2.2.2 Automatic catalogue correction, analysis and figures
-	- [ ] 2.2.3 Automatic building of catalog by stocking real-time results in the future
-	- [ ] 2.2.4 Implement the cleaning options to minimize data
+- [x] 2.2 : Runnable code for a catalogue
+	- [x] 2.2.1 Separation of the query, preprocessing, calculation and plot phases
+	- [x] 2.2.2 Automatic building of catalog by stocking real-time results in the future
 - [ ] 2.3 : Accessibility of the repository
 	- [ ] 2.3.1 Example folder with description of the process output
 	- [ ] 2.3.2 Catalogue results from the thesis in text-files
@@ -78,10 +129,12 @@ python main_single_event.py -rt "path2folder" -sp
 
 	- [ ] 2.3.3 Outline changable parameters/code etc. in code
 	- [ ] 2.3.4 Adding bibliography in repository with summary from thesis
-- [ ] 2.4 : Code structure tightening and detailed documentation
-    - [ ] 2.4.1 Cleaning remnants and stickig to recommended Python practices
-    - [ ] 2.4.2 Report extra pages with explanations
-    - [ ] 2.4.3 Incorporated documentation
+	- [ ] 2.3.5 Add catalogue analysis code and figures maker into the repo as callable functions
+- [ ] 2.5 : Code structure tightening and detailed documentation
+    - [ ] 2.5.1 Cleaning remnants and stickig to recommended Python practices
+    - [ ] 2.5.2 Report extra pages with explanations
+    - [ ] 2.5.3 Incorporated documentation
+    - [ ] 2.5.4 Implement the cleaning options to minimize data storage
 - [ ] 3.0 : Improvement of the close S wave estimation
 - [ ] 3.1 : Add S-wave results as a default for real-time and self-sufficient option for catalogue
 #### Ideas and discussion

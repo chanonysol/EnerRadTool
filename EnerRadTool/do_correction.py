@@ -65,7 +65,7 @@ def correct_complex(ener_sta_bb,ener_sta_hf,
         if log == "HF": 
             ener_sta_hf = delete(ener_sta_hf, cor+len(ener[:-len(st)])-1, axis = 0)
         for i in cor[::-1]:
-            print(st[i])
+            
             st.remove(st[i])
     
     new_Tr, new_Tr_tacer, new_Tr_lign = re_eval_time(ener_sta_hf,method)
@@ -79,7 +79,7 @@ def correct_complex(ener_sta_bb,ener_sta_hf,
         if log == "HF": 
             ener_sta_hf = delete(ener_sta_hf, cor+len(ener[:-len(st)]), axis = 0)
         for i in cor[::-1]:
-            print(st[i])
+            
             st.remove(st[i])
     
     new_Tr, new_Tr_tacer, new_Tr_lign = re_eval_time(ener_sta_hf,method)
