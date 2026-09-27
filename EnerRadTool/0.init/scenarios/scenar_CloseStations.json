@@ -8,18 +8,20 @@
         "do_report": true
     },
     "plot": {
-        "level": "report",
+        "level": "all",
+        "report_details": false,
+        "step":"final",
         "details": {
-            "results": false,
-            "signal": false,
-            "signal_stack": false,
-            "postsignal_stack": false,
-            "spectrum": false,
-            "growth": false,
-            "station_dev": false,
-            "station_dev_corrected": false,
-            "map_network": false,
-            "map_sta_dev": false,
+            "ener_growth": false,
+            "ener_growth_corrected": false,
+            "sta_ener_flux": false,
+            "sta_ener_flux_deviation": false,
+            "sta_map_dev": false,
+            "cat_region_results": false,
+            "confidence_radar": false,
+            "apparent_stress": false,
+            "signal_dist": false,
+            "signal_az": false,
             "stream_list": false
         }
     },
@@ -98,6 +100,9 @@
         "BH","HH"
     ],
     "deviation_correction": {
+        "snr_keep":5.0,
+        "snr_max": 10.0,
+        "unknown_site_class":"A",
         "type": "result",
         "threshold": 1.0
     },

@@ -1,0 +1,13 @@
+ PDE @ye @mo @da @ho @mi @se  @lat      @lon      @dep 0.0 @mb @region_name
+event name:           @ref      
+time shift:           0.0000
+half duration:        0.0000
+latitude:           @lat   
+longitude:          @lon   
+depth:              @dep
+Mrr:           @mrr
+Mtt:           @mtt
+Mpp:           @mpp
+Mrt:           @mrt
+Mrp:           @mrp
+Mtp:           @mtp

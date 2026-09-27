@@ -20,7 +20,8 @@ from ener_functions import smooth_curve_mean
 from data_utils import read_log
 import sys
 from colorama import Back,Style,Fore
-from numpy import vstack, array, argwhere, mean, concatenate, isnan, log10, shape, nanmean, arange
+from numpy import vstack, array, argwhere, mean, concatenate, isnan, log10,\
+    shape, nanmean, nanmedian, arange, ndarray
 from obspy.core.util import AttribDict
 from glob import glob
 from time_rupture_functions import find_tr
@@ -59,11 +60,191 @@ def read_results_file(filepath,correct = True):
     dic['method']=method
     return AttribDict(dic)    
 
+def plot_correct_staflux(resultpath, rt= False, correct = False, savefile= False, ext =".png", redo=False):
+    sys.stdout.write(f"\n{Fore.GREEN + Style.BRIGHT}"
+                     +f"> Showing stations energy flux - iteration {rt}")
+    
+    if os.path.exists(f"{resultpath}/staflux_{'raw' if not correct else 'corrected'}{rt}{ext}") and not redo:
+        sys.stdout.write(f"\n{Fore.GREEN + Style.BRIGHT}"
+                     +" ... Already Done ")
+        return
+       
+    t,ener_sta_bb,names_bb = read_results_sta(f"{resultpath}/ener_all_bb.dat")
+    t,ener_sta_hf,names_hf = read_results_sta(f"{resultpath}/ener_all_hf.dat")
+    
+    if len(shape(ener_sta_bb)) == 1 :
+        ener_sta_bb = array([ener_sta_bb])
+    if len(shape(ener_sta_hf)) == 1 :
+        ener_sta_hf = array([ener_sta_hf])
+        
+    ener_sta_bb = vstack([smooth_curve_mean(t, ener, dt=None)[1] for ener in ener_sta_bb])
+    ener_sta_hf = vstack([smooth_curve_mean(t, ener, dt=None)[1] for ener in ener_sta_hf])
+    
+    
+    res = read_results_file(glob(f"{resultpath.replace("[","?").replace("]","?")}"
+                                  +f"/results*{'' if isinstance(rt,bool) else rt}.txt")[-1], 
+                            correct = correct) 
+       
+    
+    reasons_bb, names_bb_log,dist_bb, az_bb = read_log(resultpath,
+                                          os.path.split(glob(f"{resultpath.replace(']','?').replace('[','?')}/log_keptdata_*BB*")[-1])[-1][:-4],
+                                          return_mat=True)[:,[0,1,2,3]].T
+    ind = argwhere(reasons_bb!='not chosen chan')[:,0]
+    names_bb_log = names_bb_log[ind]; reasons_bb = reasons_bb[ind]
+    dist_bb, az_bb = dist_bb[ind].astype(float), az_bb[ind].astype(float)
+    
+    # indsort = array([argwhere(names_bb_log==i)[0,0] for i in names_bb])
+    # names_bb_log = names_bb_log[indsort]; reasons_bb = reasons_bb[indsort]
+    # dist_bb, az_bb = dist_bb[indsort], az_bb[indsort]
+    
+    
+    ind_bb_m = array([i for i,r in enumerate(reasons_bb) 
+                      if ((r.find("dev limit")!=-1 and int(r[-1])==rt)
+                      or (r.find("REMAIN ITER")!=-1 and int(r[-1])<=rt))])
+    ind_bb_f = array([i for i,r in enumerate(reasons_bb) 
+                      if r.find("REMAIN ITER")!=-1 and int(r[-1])<=rt])
+    
+    rem_bb_m = array([i for i,r in enumerate(reasons_bb) 
+                      if r.find("dev median")!=-1 and int(r[-1])==rt])
+    rem_bb_f = array([i for i,r in enumerate(reasons_bb) 
+                      if r.find("dev limit")!=-1 and int(r[-1])==rt])
+    
+    if rem_bb_f.size == 0 : rem_bb_f=list(rem_bb_f)
+    if rem_bb_m.size == 0 : rem_bb_m=list(rem_bb_m)
+    
+    reasons_hf, names_hf_log, dist_hf, az_hf = read_log(resultpath,
+                                          os.path.split(glob(f"{resultpath.replace(']','?').replace('[','?')}/log_keptdata_*HF*")[-1])[-1][:-4],
+                                          return_mat=True)[:,[0,1,2,3]].T
+    ind = argwhere(reasons_hf!='not chosen chan')[:,0]
+    names_hf_log = names_hf_log[ind]; reasons_hf = reasons_hf[ind]
+    dist_hf, az_hf = dist_hf[ind].astype(float), az_hf[ind].astype(float)
+    
+    indsort = array([argwhere(names_hf_log==i)[0,0] for i in names_hf])
+    names_hf_log = names_hf_log[indsort]; reasons_hf = reasons_hf[indsort]
+    dist_hf, az_hf = dist_hf[indsort], az_hf[indsort]
+    
+    
+    ind_hf_m = array([i for i,r in enumerate(reasons_hf) 
+                      if ((r.find("dev limit")!=-1 and int(r[-1])==rt)
+                      or (r.find("REMAIN ITER")!=-1 and int(r[-1])<=rt))])
+    ind_hf_f = array([i for i,r in enumerate(reasons_hf) 
+                      if r.find("REMAIN ITER")!=-1 and int(r[-1])<=rt])
+    
+    rem_hf_m = array([i for i,r in enumerate(reasons_hf) 
+                      if r.find("dev median")!=-1 and int(r[-1])==rt])
+    
+    rem_hf_f = array([i for i,r in enumerate(reasons_hf) 
+                      if r.find("dev limit")!=-1 and int(r[-1])==rt])
+    
+    if rem_hf_f.size == 0 : rem_hf_f=list(rem_hf_f)
+    if rem_hf_m.size == 0 : rem_hf_m=list(rem_hf_m)
+    
+    Ebb_r = nanmean(ener_sta_bb,axis = 0)
+    Ebb_r_med = nanmedian(ener_sta_bb,axis = 0)
+    Ebb_m = nanmean(ener_sta_bb[ind_bb_m],axis = 0)
+    Ebb_f = nanmean(ener_sta_bb[ind_bb_f],axis = 0)
+    
+    Ehf_r = nanmean(ener_sta_hf,axis = 0)
+    Ehf_r_med = nanmedian(ener_sta_hf,axis = 0)
+    Ehf_m = nanmean(ener_sta_hf[ind_hf_m],axis = 0)
+    Ehf_f = nanmean(ener_sta_hf[ind_hf_f],axis = 0)
+    
+    (ttac_r, _), (ttrend_r, _, _) = find_tr(res.method,t,Ehf_r)
+    tr_r = nanmean((ttac_r,ttrend_r))
+    (ttac_m, tacer_m), (ttrend_m, fstline_m, secline_m) = find_tr(res.method,t,Ehf_m)
+    tr_m = nanmean((ttac_m,ttrend_m))
+    (ttac_f, tacer), (ttrend_f, fstline, secline) = find_tr(res.method,t,Ehf_f)
+    tr_f = nanmean((ttac_f,ttrend_f))
+    
+    mp.rcParams.update({'font.size': 14})
+    #============================================================================
+    fig,[[ax_r,ax_m,ax_f],[axhf_r,axhf_m,axhf_f]] = plt.subplots(2,3,figsize = (10*3,12))
+    #axm = ax.twinx(); axhfm = axhf.twinx()
+    axm_r = ax_r.secondary_yaxis('right', functions=(Me,inv_Me))
+    axm_m = ax_m.secondary_yaxis('right', functions=(Me,inv_Me))
+    # axm_f = ax_f.secondary_yaxis('right', functions=(Me,inv_Me))
+    axhfm_r = axhf_r.secondary_yaxis('right', functions=(Mehf,inv_Mehf))
+    axhfm_m = axhf_m.secondary_yaxis('right', functions=(Mehf,inv_Mehf))
+    # axhfm_f = axhf_f.secondary_yaxis('right', functions=(Mehf,inv_Mehf))
+
+    for axi,E,Emed,ind,rem in zip([ax_r,ax_m],[Ebb_r,Ebb_m],[Ebb_r_med,Ebb_f],
+                     [ind_bb_m,ind_bb_f],[rem_bb_m,rem_bb_f]):
+        axi.plot(t,E,c="purple",ls="-",label="BB ener")
+        if isinstance(Emed,ndarray):
+            axi.plot(t,Emed,c="purple",ls="--",label="BB corrected")
+        for i,e in enumerate(ener_sta_bb[ind]):
+            axi.plot(t,e,c="plum",ls="-",alpha=0.4,zorder =-10,label = "kept" if i==0 else None)
+        for i,e in enumerate(ener_sta_bb[rem]):
+            axi.plot(t,e,c="gray",ls="-",alpha=0.3,zorder =-10,label = "rejected" if i==0 else None)
+
+    for axi,E,Emed,ind,rem in zip([axhf_r,axhf_m],[Ehf_r,Ehf_m],[Ehf_r_med,Ehf_f],
+                     [ind_hf_m,ind_hf_f],[rem_hf_m,rem_hf_f]):
+        axi.plot(t,E,c="r",ls="-",label="HF ener")
+        if isinstance(Emed,ndarray):
+            axi.plot(t,Emed,c="r",ls="--",label="HF corrected")
+        for i,e in enumerate(ener_sta_hf[ind]):
+            axi.plot(t,e,c="pink",ls="-",alpha=0.6,zorder =-10,label = "kept" if i==0 else None)
+        for i,e in enumerate(ener_sta_hf[rem]):
+            axi.plot(t,e,c="gray",ls="-",alpha=0.3,zorder =-10,label = "rejected" if i==0 else None)
+
+    for axi,axi_hf,Ebb,Ehf in zip([ax_r,ax_m],[axhf_r,axhf_m],
+                                [Ebb_r,Ebb_m],[Ehf_r,Ehf_m]):
+        topbb = 10**(round(log10(Ebb.max()),1)+.1)
+        tophf = 10**(round(log10(Ehf.max()),1)+.1)
+        botbb = topbb/100
+        bothf = tophf/100
+
+        axi.set_ylim(botbb,topbb)
+        axi_hf.set_ylim(bothf,tophf)
+
+    ax_r.set_ylabel(r"Cumulative $E_{BB}$ (J)")
+    for axi in [axhf_r,axhf_m]:
+        axi.set_xlabel("Time since first P-wave arrival (s)")
+    axhf_r.set_ylabel(r"Cumulative $E_{HF}$ (J)")
+    axm_m.set_ylabel(r"Corresponding $Me_{BB}$")
+    axhfm_m.set_ylabel(r"Corresponding $Me_{HF}$")
+
+    for i,(axi,tr) in enumerate(zip([ax_r,ax_m,axhf_r,axhf_m],
+                                    [t[-1],tr_m,t[-1],tr_m])): 
+        axi.set_facecolor("w")
+        axi.grid()
+        axi.set_xlim(0,t.max())
+        axi.axvline(tr,lw=2,c="k",label="Tr")
+    axhf_m.axvline(tr_f,lw=2,c="k",ls="--",label="Tr corrected")
+    ax_m.axvline(tr_f,lw=2,c="k",ls="--",label="Tr corrected")
+    
+    for ind,c,lab in zip([rem_bb_m,rem_bb_f,ind_bb_f],["r","k","silver"],["first corr","sec corr","kept"]):
+        ax_f.scatter(az_bb[ind],log10(ener_sta_bb[ind,int(tr_m)]/Ebb_m[int(tr_m)]),c=dist_bb[ind],
+                     cmap="BuGn",vmin=5,vmax=80,edgecolor=c,label=lab)
+    for ind,c,lab in zip([rem_hf_m,rem_hf_f,ind_hf_f],["r","k","silver"],["first corr","sec corr","kept"]):
+        sc = axhf_f.scatter(az_hf[ind],log10(ener_sta_hf[ind,int(tr_m)]/Ehf_m[int(tr_m)]),c=dist_hf[ind],
+                     cmap="BuGn",vmin=5,vmax=80,edgecolor=c,label=lab)
+    #axhf_f.legend();ax_f.legend()
+    for axi in [ax_f,axhf_f]:
+        axi.set_ylabel(r"Station epicentral distance (°)")
+        axi.set_ylim(-3,3)
+        axi.set_xlim(-1,361)
+        axi.grid()
+    axhf_f.set_xlabel(r"Station azimuth (°)")
+    fig.colorbar(sc ,ax=[ax_f,axhf_f], label = r"$log_{10}(E_{station}/E)$")
+    # plt.tight_layout()  
+    
+    for axi in [ax_m,ax_r,axhf_m,axhf_r,axhf_f,ax_f]:
+        axi.legend(ncol=3,fontsize="small")
+    
+    if savefile :
+        plt.savefig(f"{resultpath}/staflux_{'raw' if not correct else 'corrected'}{rt}{ext}",
+                    dpi = 300, transparent=True)
+    #plt.show()
+    plt.close()
+    sys.stdout.write(f"\n{Fore.GREEN + Style.BRIGHT}"
+                     +" ... Done ")
+
 def plot_growth(resultpath, correct = False, rt= False,savefile= False, ext =".png", redo=False):
     sys.stdout.write(f"\n{Fore.GREEN + Style.BRIGHT}"
-                     +"> Showing results graphics")
+                     +f"> Showing {'corrected ' if correct else ''}results graphics - iteration {rt}")
     
-    if os.path.exists(f"{resultpath}/EnerOverTime_{'raw' if not correct else 'corrected'}{ext}") and not redo:
+    if os.path.exists(f"{resultpath}/EnerOverTime_{'raw' if not correct else 'corrected'}{rt}{ext}") and not redo:
         sys.stdout.write(f"\n{Fore.GREEN + Style.BRIGHT}"
                      +" ... Already Done ")
         return
@@ -109,8 +290,8 @@ def plot_growth(resultpath, correct = False, rt= False,savefile= False, ext =".p
     
     Ebb = nanmean(ener_sta_bb,axis = 0)
     Ehf = nanmean(ener_sta_hf,axis = 0)
-    Ehfs = smooth_curve_mean(t, Ehf, dt=None)[1]
-    Ebbs = smooth_curve_mean(t, Ebb, dt=None)[1]
+    Ebbs = nanmean(ener_sta_bb_s,axis = 0)
+    Ehfs = nanmean(ener_sta_hf_s,axis = 0)
     
     (ttac, tacer), (ttrend, fst_lign, sec_lign) = find_tr(res.method,t,Ehfs)
     
@@ -189,9 +370,10 @@ def plot_growth(resultpath, correct = False, rt= False,savefile= False, ext =".p
             axi.text(res.Tr_lines-5,tophf*0.94,f"{res.Tr_lines:.0f}s",
                      backgroundcolor="w",c='sandybrown')
     if savefile :
-        plt.savefig(f"{resultpath}/EnerOverTime_{'raw' if not correct else 'corrected'}{ext}",
+        plt.savefig(f"{resultpath}/EnerOverTime_{'raw' if not correct else 'corrected'}{rt}{ext}",
                     dpi = 300, transparent=True)
-    plt.show()
+    #plt.show()
+    plt.close()
     sys.stdout.write(f"\n{Fore.GREEN + Style.BRIGHT}"
                      +" ... Done ")
 
@@ -269,7 +451,8 @@ def result_in_cat(resultpath,ev,correct = False, savefile= False, ext =".png", r
     if savefile :
         plt.savefig(f"{resultpath}/Res2Cat_{'raw' if not correct else 'corrected'}{ext}",
                     dpi = 300, transparent=True)
-    plt.show()    
+    #plt.show()
+    plt.close()
     sys.stdout.write(f"\n{Fore.GREEN + Style.BRIGHT}"
                      +" ... Done ")
 
@@ -340,7 +523,8 @@ def plot_theta_depth_apparent(resultpath,ev,correct = False,
     if savefile :
         plt.savefig(f"{resultpath}/apparentStress_{'raw' if not correct else 'corrected'}{ext}",
                     dpi = 300,transparent = True)
-    plt.show()
+    #plt.show()
+    plt.close()
     sys.stdout.write(f"\n{Fore.GREEN + Style.BRIGHT}"
                      +" ... Done ")
     
@@ -407,7 +591,8 @@ def plot_s_int(resultpath,ev,savefile= False, ext =".png",redo=False):
     plt.title("Energy spectral integrals - total and weighed stations")
     if savefile:
         plt.savefig(f"{resultpath}/integral_contribs{ext}",dpi=200)
-    plt.show()
+    #plt.show()
+    plt.close()
     sys.stdout.write(f"\n{Fore.GREEN + Style.BRIGHT}"
                      +" ... Done ")
     

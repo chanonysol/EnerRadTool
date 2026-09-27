@@ -50,6 +50,10 @@ def mw(M):
     M0 = moment(M)
     return round(2/3*log10(M0)-10.73,1)
 
+
+def inv_mw(mag,dyn=False):
+    return 10**(3/2*(mag+10.73)-(7 if not dyn else 0))
+
 def write_psmeca_ind(path,ev):
     if not f"{path}temp_psmeca.dat" in [p.replace('\\','/') for p in glob(f"{path}/*.dat")]:
         with open(f"{path}temp_psmeca.dat","w") as file:

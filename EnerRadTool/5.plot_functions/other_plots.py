@@ -212,7 +212,7 @@ def certain_rt(resultpath,ev,correct = True, rt= False,savefile= False,
     if savefile :
         plt.savefig(f"{resultpath}/certain_radar_{rt}{ext}",
                     dpi = 300, transparent=True)
-    plt.show()
+    #plt.show()
     sys.stdout.write(f"\n{Fore.GREEN + Style.BRIGHT}"
                      +" ... Done ")
 
@@ -307,7 +307,7 @@ def certain_report(resultpath,ev,correct = True, rt= False, multi = False,
     if savefile :
         plt.savefig(f"{resultpath}/certain_radar_{rt if not multi else 'all'}{ext}",
                     dpi = 300, transparent=True)
-    plt.show()
+    #plt.show()
     sys.stdout.write(f"\n{Fore.GREEN + Style.BRIGHT}"
                      +" ... Done ")
 
@@ -339,5 +339,5 @@ def plot_station_rad_pattern(st,inv,dat,names):
     ax.set_rlabel_position(120)  # Move radial labels away from plotted line
     ax.grid(True)
     plt.colorbar(test)
-    plt.show()
+    #plt.show()
     plt.close()

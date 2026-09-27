@@ -30,24 +30,26 @@ from multiprocessing import Pool
 from colorama import Back, Fore, Style
 
 def folder_name(param,rt,close=False):
-    if not param.general.session_name :
-        name = f'W{"p" if param.waves.P_teleseismic else ""}'\
-            +f'{"r" if param.waves.P_regional else ""}'\
-            +f'{"s" if param.waves.S_near else ""}'\
-            +f'{"f" if param.waves.network_fixed else ""}_'\
-            +f'D[{param.distance.min:.0f}.{param.distance.max:.0f}.{param.distance.totalstep:.0f}]_'\
-            +f'T{param.time_max:.0f}'
-        if close:
-            name = f'W{"s" if param.distance.include_near else ""}_'\
-                +f'D[{0.:.0f}.{2.:.0f}.{param.distance.totalstep:.0f}]_'\
-                +f'T{param.time_max_s:.0f}'
-    return f'{"RT" if isinstance(rt,int) else "SC"}_{name if not param.general.session_name else param.general.session_name}'
+    #if not param.general.session_name :
+    name = f'W{"p" if param.waves.P_teleseismic else ""}'\
+        +f'{"r" if param.waves.P_regional else ""}'\
+        +f'{"s" if param.waves.S_near else ""}'\
+        +f'{"f" if param.waves.network_fixed else ""}_'\
+        +f'D[{param.distance.min:.0f}.{param.distance.max:.0f}.{param.distance.totalstep:.0f}]_'\
+        +f'T{param.time_max:.0f}'
+    if close:
+        name = f'W{"s" if param.distance.include_near else ""}_'\
+            +f'D[{0.:.0f}.{2.:.0f}.{param.distance.totalstep:.0f}]_'\
+            +f'T{param.time_max_s:.0f}'
+    return (f'{param.general.session_name+"_" if param.general.session_name else ""}'
+            +f'{"RT" if isinstance(rt,int) else "SC"}_{name}')
 
 def do_estimations(ev, path, param, st_bb, st_hf, inv, results, stadist, rt=False):
     STARTTIME = time()
     #selecting the right results folder
     folder = folder_name(param,rt,close = True if all(stadist<2.) else False)
     resultpath = f"{path}/Results/{folder}"
+    resname=f"{folder[(len(param.general.session_name)+1 if param.general.session_name else 0):][:2]}{rt}"
     if isinstance(param.general.search_data,bool) :
         datapath,invpath = f"{path}/Data/Records",f"{path}/Data/Stations"
     if param.waves.network_fixed:
@@ -60,7 +62,7 @@ def do_estimations(ev, path, param, st_bb, st_hf, inv, results, stadist, rt=Fals
                      +f"\n{'Energy estimation '.rjust(20):20s}"
                      +f"{Style.RESET_ALL}")
         
-    if (" ".join(os.listdir(resultpath)).find(f"results_{folder[:2]}{rt}.txt")!=-1
+    if (" ".join(os.listdir(resultpath)).find(f"results_{resname}.txt")!=-1
         and not param.redoing_results.force_results):
         sys.stdout.write(f"{Fore.RED + Style.DIM}"
                           +f" > Already estimated - skipping to figures"
@@ -156,8 +158,10 @@ def do_estimations(ev, path, param, st_bb, st_hf, inv, results, stadist, rt=Fals
                 write_raw_results_sta(file_bb,ener_bb_sta[-len(st_bb):],ener_bb,ener_bb_s,st_bb_names[-len(st_bb):],rt=rt)
                 write_raw_results_sta(file_hf,ener_hf_sta[-len(st_hf):],ener_hf,ener_hf_s,st_hf_names[-len(st_hf):],rt=rt)
 
-                
-            if param.deviation_correction.type == "result" :
+            test = any(array([len(ener_bb_sta)+(len(ener_sta) if ener_sta else 0),
+                              len(ener_hf_sta)+(len(ener_sta) if ener_sta else 0)])>1)            
+    
+            if param.deviation_correction.type == "result" and test:
             #`and not param.waves.network_fixed: #correct results
                 sys.stdout.write(f"{Fore.RED + Style.DIM}"
                                   +f" > Correcting for deviation"
@@ -195,8 +199,8 @@ def do_estimations(ev, path, param, st_bb, st_hf, inv, results, stadist, rt=Fals
                 # modify_log(f"{resultpath}/",f"log_keptdata_{datapath.split('/')[-1]}_BB",st_bb_names,f"correct remov {rt}")
                 # modify_log(f"{resultpath}/",f"log_keptdata_{datapath.split('/')[-1]}_HF",st_hf_names,f"correct remov {rt}")
             update_results(results,certain = [rt,quality_level(resultpath,rt,ev,
-                                                           correct= param.deviation_correction.type == "result",
-                                                           results = results)])
+                                             correct= param.deviation_correction.type == "result" and test,
+                                             results = results)])
             
             
             
@@ -258,7 +262,8 @@ def do_estimations(ev, path, param, st_bb, st_hf, inv, results, stadist, rt=Fals
         times = array(list(results['information']['time'].values()))[:-1]
         update_results(results, tot_time = sum(where(times<0,0,times)))
         
-        complete_from_template(results, path = resultpath,name=f"{folder[:2]}{rt}",
+        complete_from_template(results, path = resultpath,
+                               name=resname,
                                S = True if param.distance.include_near else False)
         
         return resultpath, [inv, st_bb, st_hf]

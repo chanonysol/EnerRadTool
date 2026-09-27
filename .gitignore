@@ -11,3 +11,5 @@ EnerRadTool.zip
 /EnerRadTool/2.data_functions/__pycache__
 /EnerRadTool/1.events_functions/__pycache__
 /EnerRadTool/0.init/__pycache__
+/EnerRadTool/__pycache__
+*.pyc

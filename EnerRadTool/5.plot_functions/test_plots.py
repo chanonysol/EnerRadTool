@@ -100,7 +100,7 @@ def plot_station_rad_pattern(st,inv,dat,names):
     ax.set_rlabel_position(120)  # Move radial labels away from plotted line
     ax.grid(True)
     plt.colorbar(test)
-    plt.show()
+    #plt.show()
     plt.close()
 
 #def plot_station_map(datalog):

@@ -839,13 +839,15 @@ def modify_log(path,filename,names,reason):
                 lines[i] = line
     write_log(path,filename, None, None, modif = lines)
 
-def rem_line_log(path,filename,dist):
+def rem_line_log(path,filename,dist,init=False):
     lines = read_log(path,filename,modif = True)
+    names = list(read_log(path,filename,return_mat=True)[:,1])
     dists = read_log(path,filename,return_mat=True)[:,2].astype(float)
     reasons = read_log(path,filename,return_mat=True)[:,0]
     ind = argwhere((array([d not in dist.round(1) for d in dists])==True)|
                    (reasons!="in processing"))[:,0]
-    for i in ind[::-1] : lines.pop(i)
+    for i in ind[::-1] : lines.pop(i); names.pop(i)
+    if init : lines = list(array(lines)[argsort(names)])
     if len(lines)!=0:
         write_log(path,filename, None, None, modif = lines)
         
@@ -857,7 +859,7 @@ from obspy import Stream, Inventory, read, read_inventory
 import json
 from glob import glob
 
-def add_attribute_xml(inv,infodict,st,datapath,invpath,saveinv = False,returninv=False):
+def add_attribute_xml(inv,infodict,st,datapath,invpath,default_class=None,saveinv = False,returninv=False):
     inv_new = Inventory()
     ns = 'http://some-page.de/xmlns/1.0'
     if not saveinv and len(glob(f"{invpath}/*.json"))!=0:
@@ -872,7 +874,8 @@ def add_attribute_xml(inv,infodict,st,datapath,invpath,saveinv = False,returninv
             inv_new += inv_sta
         return inv_new
     
-    classes = site_class_parameters([tr.stats.station for tr in st])
+    classes = site_class_parameters([tr.stats.station for tr in st], 
+                                    default = default_class if default_class else "A")
     
     for tr,(d,a,ba,r,e,pt,i1,i0),(cl,k,beta) in zip(st,infodict.T,classes):
         inv_sta = inv.select(network = tr.stats.network,
@@ -929,7 +932,7 @@ def site_class_parameters(staname,default = "A"):
             k= site_class[site]["k"]
         else :
             k,beta = site_class[default].values()
-            site= None
+            site = None
         if na in k0sta["station"]:
             ind = argwhere(k0sta["station"]==na)[0,0]
             _,k,_ = k0sta[ind]

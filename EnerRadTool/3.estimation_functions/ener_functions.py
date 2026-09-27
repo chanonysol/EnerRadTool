@@ -177,11 +177,11 @@ def ener_flux_station(disp_trace,depth, spectra=False, imp_cor = False):
 # =============================================================================
 # ---- Ener flux S
 # =============================================================================
-def ener_S_station(disp_trace,depth,stainfo,cross_dist):
+def ener_S_station(disp_trace,depth,stainfo,cross_dist,default="A"):
     stalat,stalon = [stainfo.latitude,stainfo.longitude]
     stainfo = stainfo.extra
     site,k,beta = stainfo.site_class.values()
-    if site == None : site="A"
+    if site == None : site=default
     dist = degrees2kilometers(stainfo.station_param.distance)
     # Fourier transform
     spec = rfft(disp_trace.data) * disp_trace.stats.delta #disp_trace is the VEL
@@ -233,9 +233,13 @@ def trace_ener(argum):
         ener_flux_station(tr_use,de, spectra=False, imp_cor = p)
         en.append(tr_use.stats.ener)
     en=array(en)*econst
+    # tr_en = tr.copy()
+    # tr_en.stats.delta = 1.;tr_en.stats.npts = len(en);tr_en.stats.sampling_rate = 1.
+    # tr_en.data = en; tr_en.stats.channel = "ENE"
     #sys.stdout.write(f"{max(en[:2*60]):.1e} - ")
     #en-=max(en[:20])
     return en#[20:]
+
 
 # def trace_ener_S(argum):
 #     tr,stainfo,tmax,dt,de,p = argum
@@ -299,13 +303,17 @@ def calc_ener_S(st_bb,st_hf,inv,param,ev):
         ener_S_station(tr,ev.depth,
                        inv.select(network = tr.stats.network, 
                         station=tr.stats.station)[0][0],
-                       cross_dist)
+                       cross_dist,
+                       default = param.deviation_correction.unknown_site_class 
+                       if param.deviation_correction.unknown_site_class else "A")
     for tr in tqdm(st_hf,total=len(st_hf),
                    desc="Calc close S ener HF"):
         ener_S_station(tr,ev.depth,
                        inv.select(network = tr.stats.network, 
                         station=tr.stats.station)[0][0],
-                       cross_dist)
+                       cross_dist,
+                       default = param.deviation_correction.unknown_site_class 
+                       if param.deviation_correction.unknown_site_class else "A")
     
     ener_bb = array([tr.stats.ener for tr in st_bb])
     ener_hf = array([tr.stats.ener for tr in st_hf])
@@ -328,6 +336,7 @@ def calc_ener_rt(st_bb,st_hf,inv,param,ev,resultpath,ener_sta=None,dt=1):
             ener_bb_sta = vstack([result for result
                               in tqdm(p.imap(f,argums),
                                       total=len(argums))])
+            
 
         sys.stdout.write(f"{Fore.RED + Style.DIM}"
                           +f" > Starting HighFrequencies estimations"

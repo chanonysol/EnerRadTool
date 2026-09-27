@@ -166,6 +166,12 @@ class Parameters:
                                  +f"{Style.RESET_ALL} -> ")
                 if its_fine == "n":
                     self.read_param(path,True)
+                    
+                    for key,value in self.__original__.items():
+                        if isinstance(value,dict):
+                            setattr(self,key, decorators[key](path,self.__original__[key]))
+                            continue
+                        setattr(self,key, value)
 
 
     def read_param(self,path,new):
@@ -206,10 +212,10 @@ class Parameters:
                                             )
                                   +f"{Style.RESET_ALL}\n-> "
                                   )
-                save_file = input(f"{Back.CYAN}which name should be given to the parameters file? {Style.RESET_ALL}(no .json needed)\n-> ")
+                save_file = input(f"{Back.CYAN}which name should be given to the parameters file? {Style.RESET_ALL}(param_[insert].json)\n-> ")
                 shutil.copy(f"{SCENAR_PATH}/{copy_file}.json",f"{path}/param_{save_file}.json")
             if new_file == 'y':
-                save_file = input(f"{Back.CYAN}which name should be given to the parameters file? {Style.RESET_ALL}(no .json needed)\n-> ")
+                save_file = input(f"{Back.CYAN}which name should be given to the parameters file? {Style.RESET_ALL}(param_[insert].json)\n-> ")
                 self.init_param_file(path,save_file)
             param_file = "param_"+save_file+".json"
 
@@ -238,10 +244,10 @@ class Parameters:
                                             )
                                   +f"{Style.RESET_ALL}\n-> "
                                   )
-                save_file = input(f"{Back.CYAN}which name should be given to the parameters file? {Style.RESET_ALL}(no .json needed)\n-> ")
+                save_file = input(f"{Back.CYAN}which name should be given to the parameters file? {Style.RESET_ALL}(param_[insert].json)\n-> ")
                 shutil.copy(f"{SCENAR_PATH}/{copy_file}.json",f"{path}/param_{save_file}.json")
             if new_file == 'y':
-                save_file = input(f"{Back.CYAN}which name should be given to the parameters file? {Style.RESET_ALL}(no .json needed)\n-> ")
+                save_file = input(f"{Back.CYAN}which name should be given to the parameters file? {Style.RESET_ALL}(param_[insert].json)\n-> ")
                 self.init_param_file(path,save_file)
             param_file = "param_"+save_file+".json"
 

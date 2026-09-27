@@ -182,6 +182,7 @@ def remove_nb_sta(inv,st,datapath,invpath,preprocess=False):
     return inv,st
 
 def test_snr(inv,st,st_hf,datapath,invpath,timewindow = 60, snrlim = 5):
+    sys.stdout.write(f"{Fore.MAGENTA + Style.BRIGHT} ... filter snr")
     st_remove = Stream()
     inv_remove = Inventory()
     st_delete = Stream()
@@ -189,7 +190,7 @@ def test_snr(inv,st,st_hf,datapath,invpath,timewindow = 60, snrlim = 5):
     
     snr = signaltonoise(st_hf.copy(),timewindow).round(2)
     indmax = array([argwhere(tr.data==tr.data.max())[0,0]*tr.stats.delta for tr in st_hf]).round(0)-timewindow
-    delete_liste = unique(concatenate((argwhere(snr < 5)[:,0],argwhere(abs(indmax)>=median(indmax)+50)[:, 0])))
+    delete_liste = unique(concatenate((argwhere(snr < min(snrlim,5))[:,0],argwhere(abs(indmax)>=median(indmax)+50)[:, 0])))
     
     for i in delete_liste[::-1]:
         tr = st_hf[i]
@@ -207,14 +208,15 @@ def test_snr(inv,st,st_hf,datapath,invpath,timewindow = 60, snrlim = 5):
     
     if len(st_delete)!=0:
         write_log(f"{datapath}/../",f"log_cleardata_{datapath.split('/')[-1]}", 
-                  st_delete, inv_delete, update = "noise above 5db")
+                  st_delete, inv_delete, update = f"noise above {int(min(snrlim,5)):2d}db")
     
     if len(st)!=0:
         write_log(f"{datapath}/../",f"log_keptdata_{datapath.split('/')[-1]}", 
                   st, inv)
     
+    if snrlim<=5: return inv,st,st_hf
     snr = signaltonoise(st_hf.copy(),timewindow).round(2)
-    remove_liste = argwhere(snr < snrlim)[:,0]
+    remove_liste = argwhere(snr < 5.)[:,0]
     for i in remove_liste[::-1]:
         tr = st_hf[i]
         name = st_hf[i].id
@@ -230,9 +232,7 @@ def test_snr(inv,st,st_hf,datapath,invpath,timewindow = 60, snrlim = 5):
     
     if len(st)!=0:
         modify_log(f"{datapath}/../",f"log_keptdata_{datapath.split('/')[-1]}", 
-                  [tr.id for tr in st_remove], f"noise over {snrlim:2d}db")
-        
-    sys.stdout.write(f"{Fore.MAGENTA + Style.BRIGHT} ... filter snr")
+                  [tr.id for tr in st_remove], f"noise over {int(snrlim):2d}db")
     return inv,st,st_hf
 
 def fixed_network_selection(inv,st,logpath,logfile):
@@ -296,7 +296,7 @@ def clear_data_file(datapath, invpath, inv = None, st_hf=None):
 # =============================================================================
 # ---- cleaning query
 # =============================================================================
-def clean_data(datapath,invpath,ev,save,ext = ".mseed"):
+def clean_data(datapath,invpath,ev,save,ext = ".mseed",snrlim = 5.):
     starttime = time()
     
     sys.stdout.write(f"{Fore.MAGENTA + Style.BRIGHT} load {datapath.split('/')[-1]}...")
@@ -371,7 +371,7 @@ def clean_data(datapath,invpath,ev,save,ext = ".mseed"):
     
     sys.stdout.write(f"{Fore.MAGENTA + Style.BRIGHT} check snr...")
     
-    inv, st, st_hf = test_snr(inv,st,st_hf,datapath,invpath,timewindow=2*60,snrlim = 5)
+    inv, st, st_hf = test_snr(inv,st,st_hf,datapath,invpath,timewindow=2*60,snrlim = snrlim)
     # inv_fixed, st_fixed_hf = fixed_network_selection(inv,st_hf,datapath,invpath)
     clear_data_file(datapath,invpath,inv,st_hf)
 
@@ -429,7 +429,7 @@ def RT_comp(st,inv,ev):
     
     return st_tran,st_rad
 
-def clean_close_data(datapath,invpath,ev,save):
+def clean_close_data(datapath,invpath,ev,save,default_class,snrlim = 5.):
     starttime = time()
     
     sys.stdout.write(f"{Fore.MAGENTA + Style.BRIGHT} load {datapath.split('/')[-1]}...")
@@ -448,7 +448,8 @@ def clean_close_data(datapath,invpath,ev,save):
     
     sys.stdout.write(f"{Fore.MAGENTA + Style.BRIGHT} calc parameters...")
     inv = add_attribute_xml(inv,precalc(inv, ev, close=True),st,
-                            datapath,invpath,saveinv=True,returninv=True)
+                            datapath,invpath,default_class=default_class,
+                            saveinv=True,returninv=True)
       
     sys.stdout.write(f"{Fore.MAGENTA + Style.BRIGHT} correct...")
     
@@ -512,7 +513,7 @@ def clean_close_data(datapath,invpath,ev,save):
 
     sys.stdout.write(f"{Fore.MAGENTA + Style.BRIGHT} check snr...")
 
-    inv, st, st_hf = test_snr(inv,st,st_hf,datapath,invpath,timewindow=30,snrlim = 5)
+    inv, st, st_hf = test_snr(inv,st,st_hf,datapath,invpath,timewindow=30,snrlim = snrlim)
     # inv_fixed, st_fixed_hf = fixed_network_selection(inv,st_hf,datapath,invpath)
     
     clear_data_file(datapath,
@@ -597,18 +598,20 @@ def add_2_log(datapath,resultpath,mindist,maxdist,param):
         lines = read_log(datapath+"/../",f"log_keptdata_{datapath.split('/')[-1]}", modif=True)
         
         mat = read_log(datapath+"/../",f"log_keptdata_{datapath.split('/')[-1]}", 
-                       return_mat=True)[:,2].astype(float)
+                       return_mat=True)[:,[1,2]]
+        names = mat[:,0]
+        mat = mat[:,1].astype(float)
         ind = argwhere((mat>=mindist) & (mat<maxdist))[:,0]
-        lines = array(lines)[ind]
+        lines = array(lines)[ind]; names = names[ind]
+        lines = lines[argsort(names)]
         
         lines_res += list(lines) 
         write_log(resultpath,f"log_keptdata_{datapath.split('/')[-1]}_{freq}", None, None, modif = lines_res)
-        print("added")
         
 def preprocessing(datapath,invpath,resultpath,ev,tmax,tmax_s,
                   channels,mindist,maxdist,param,
                   correct,snrlim = 5.):
-    
+
     start = time()
     #snrlim = 10.
     
@@ -634,9 +637,18 @@ def preprocessing(datapath,invpath,resultpath,ev,tmax,tmax_s,
     inv, st = remove_nb_sta(inv,st,datapath,invpath,preprocess=resultpath)
     
     names = [tr.id for tr in st]
-    inv = add_attribute_xml(inv,None,st,
-                        datapath,invpath,returninv=True)
+    inv = add_attribute_xml(inv,None,st,datapath,invpath,returninv=True)
+    
     if maxdist<=2.:
+        if param.deviation_correction.unknown_site_class == None:
+            classes = [list(sta.extra.site_class.values())[0] for net in inv for sta in net]
+            ind = argwhere(array(classes)==None)
+            if ind.size!=0:
+                modify_log(f"{resultpath}/",
+                           f"log_keptdata_{datapath.split('/')[-1]}_BB",
+                           array(names)[ind[:,0]],"no site class")
+                for i in ind[::-1,0]:
+                    st.remove(st[i])
         # st.filter("bandpass",freqmin = .1, freqmax = 10, 
         #               corners = 4, zerophase=True)
         # for tr in st.select(station="DSZ"):

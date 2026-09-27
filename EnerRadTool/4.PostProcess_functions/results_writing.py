@@ -18,13 +18,17 @@ DIR=f"{FILE_PATH}/../2.data_functions"
 sys.path.insert(0, DIR)
 
 
-from numpy import array, all, any, mean, log10, argwhere, arange, loadtxt, isnan
+from numpy import array, all, any, mean, log10, argwhere, arange, loadtxt, isnan, nan
 from generate_event import moment
 from time_rupture_functions import joint_tr
 
 from obspy.core.util import AttribDict
 from obspy import UTCDateTime
 
+#TODO add this in data_utils
+# =============================================================================
+#---- MAG FUNCTIONS
+# =============================================================================
 def Me(E):
     return 2/3*log10(E)-2.9
 
@@ -37,6 +41,9 @@ def inv_Me(Me):
 def inv_Mehf(Me):
     return 10**((Me+2.9)*3/2)*0.25
 
+# =============================================================================
+#---- results storage and updating 
+# =============================================================================
 def results_dictionnary_init(param):
     results = {'raw':{k:-9999 for k in ['Ebb','Ehf','MeBB','MeHF','Tr',
                                        'Tr_tacer','Tr_lines','theta',
@@ -140,7 +147,7 @@ def update_results(results,**kwargs):
     if "estimate" in kwargs.keys():
         rt, dist, (azgap,distgap), (stbb,sthf), time = kwargs["estimate"]
         if "estimate" not in results["information"].keys() or rt==0:
-            ener_info={"version":"v2.2.RT" ,"iter": rt if isinstance(rt, int) else None ,
+            ener_info={"version":"v2.3.RT" ,"iter": rt if isinstance(rt, int) else None ,
                        "mindist": dist.min(),
                        "maxdist": dist.max(),
                        "nsta_bb":len(list(set([f"{tr.stats.network}.{tr.stats.station}.{tr.stats.location}" for tr in stbb]))),
@@ -193,7 +200,9 @@ def update_results(results,**kwargs):
             else:
                 time_info.update({element: kwargs[element]})
         results['information'].update({"time": time_info})
-
+# =============================================================================
+#---- Write results file
+# =============================================================================
 def complete_from_template(results, path = None, name = None, S=False):
     if not path :
         file = sys.stdout
@@ -354,6 +363,48 @@ def complete_from_template(results, path = None, name = None, S=False):
     if path:
         file.close()
 
+def write_rt_cat(ev,results):
+    resultsfile = f"{FILE_PATH}/../6.database/results.dat"
+    if not os.path.exists(resultsfile):
+        with open(resultsfile,"w") as file:
+           file.write(f"#{'DateTime':19s} {'lat':7s} {'lon':7s} "
+                          +f"{'region':12s} {'zone':12s} "
+                           +f"{'moment':8s} {'mw':4s} "
+                           +f"{'Ebb':8s} {'dbb':3s} {'MeBB':3s} "
+                           +f"{'Ehf':8s} {'dhf':3s} {'Mehf':3s} "
+                           +f"{'Tr':3s} {'lines':3s} {'tacer':3s} "
+                           +f"{'theta':4s}\n" ) 
+    
+    else :
+        evline = (f"{str(ev.date)[:-8]:19s} {ev.lat:+7.2f} {ev.lon:+7.2f} "
+                      +f"{ev.reg:12s} {ev.sreg:12s} "
+                       +f"{moment(ev.moment,ev.exponent):8.2e} {ev.mag:4.2f} ")
+        with open(resultsfile,"r") as file:
+            lines = file.readlines()
+        
+        ind = argwhere(array([l.find(evline) for l in lines])>-1)
+        if ind.size!=0:
+            for i in ind[::-1,0]:
+                lines.pop(i)
+            with open(resultsfile,"w") as file:
+                for l in lines:
+                    file.write(l)  
+
+    with open(resultsfile,"a") as file:
+        res = results["corrected_smooth"]
+        if "dEBB"  not in res.keys():
+            res["dEBB"]=-9999; res["dEHF"]=-9999
+        for k,v in zip(res.keys(),res.values()):
+            if v ==-9999 :
+                res[k]=nan
+        res = AttribDict(res)
+        file.write(f"{str(ev.date)[:-8]:19s} {ev.lat:+7.2f} {ev.lon:+7.2f} "
+                      +f"{ev.reg:12s} {ev.sreg:12s} "
+                       +f"{moment(ev.moment,ev.exponent):8.2e} {ev.mag:4.2f} "
+                       +f"{res.Ebb:8.2e} {res.dEBB:3.2f} {res.MeBB:3.2f} "
+                       +f"{res.Ehf:8.2e} {res.dEHF:3.2f} {res.MeHF:3.2f} "
+                       +f"{res.Tr: 3.0f} {res.Tr_lines: 3.0f} {res.Tr_tacer: 3.0f} "
+                       +f"{res.theta:+4.1f}\n" ) 
 # =============================================================================
 # ---- READING LOG AND RESULTS
 # =============================================================================
@@ -476,6 +527,7 @@ def read_sta_log(file,hf=False):
         lines=file.readlines()
     stalog = {}
     for line in lines[1:]:
+        if line[0]=="#":continue
         name,use,az,dist,lon,lat = line.strip().split()
         az,dist,lon,lat = float(az),float(dist),float(lon),float(lat)
         stalog[name]={'use': use, 'az':az, 'dist' : dist,'lon':lon,'lat':lat}
@@ -573,14 +625,14 @@ def read_result_info(filepath):
 def make_report(resultpath,correct=False):
     res = read_result_info(glob(f"{resultpath.replace("[","?").replace("]","?")}"
                                  +"/results*")[-1]) 
-    
+    final = int(resultpath.split("_")[-2][2:-1].split('.')[-1])-1
     #img=f'{resultpath}/EnerOverTime_raw.png'
     if not correct :
-        img2=f'{resultpath}/EnerOverTime_raw.png'
+        img2=f'{resultpath}/EnerOverTime_raw{final}.png'
         img8=f'{resultpath}/Res2Cat_raw.png'
         img9=f'{resultpath}/apparentStress_raw.png'
     else : 
-        img2=f'{resultpath}/EnerOverTime_corrected.png'
+        img2=f'{resultpath}/EnerOverTime_corrected{final}.png'
         img8=f'{resultpath}/Res2Cat_corrected.png'
         img9=f'{resultpath}/apparentStress_corrected.png'
     img3=f'{resultpath}/Signals_DistColor_selected.png'

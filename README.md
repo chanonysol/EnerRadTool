@@ -19,7 +19,7 @@ DOI : *Submitted to SRL special edition in July 2026*
 	- [For a real time implementation](#for-a-real-time-implementation)
 	- [For a catalog](#for-a-catalog)
 4. [Roadmap](#roadmap)
-	- [Current version 2.1.3](#current-version-2.1.3)
+	- [Current version 2.3.0](#current-version-2.3.0)
 	- [Planed version](#planed-version)
 	- [Ideas and discussion](#ideas-and-discussion)
 5. [Authors and acknowledgment](#authors-and-acknowledgment)
@@ -27,7 +27,26 @@ DOI : *Submitted to SRL special edition in July 2026*
 
 ---
 ## Structure of the code
-==> Coming in version 2.3
+More details inside each folder and coming in v2.4.3
+```bash
+├── EnerRadTool/
+│   ├── 0.init '# parameters management, templates and details'
+│   ├── 1.events_functions '# event information import and FMC-master tool'
+│   ├── 2.data_functions '# query, processing, useful functions'
+│   ├── 3.estimation_functions '# energy calculation and Tr estimation'
+│   ├── 4.PostProcess_functions '# results storage and catalogue compilation'
+│   ├── 5.plot_functions '# plot functions'
+│   ├── 6.database '# updating catalogue results'
+│   ├── do_query.py 
+│   ├── do_preprocessing.py
+│   ├── do_estimation.py
+│   ├── do_correction.py
+│   └── do_plot.py
+├── main_single_event.py
+├── license.txt
+└── README.md
+```
+
 ##### Input
 ##### Output
 
@@ -62,7 +81,7 @@ python main_single_event.py -h
 ```
 
 ```python
-usage: testparser.py [-h] [-rt] [-n] [-sp] [-cat] [-stage {1,2,3,4,5}] path
+usage: main_single_event.py [-h] [-rt] [-n] [-sp] [-cat] [-stage {1,2,3,6,42}] path
 
 positional arguments:
   path                path to folder of event or catalog; [if rt] Folder
@@ -72,20 +91,44 @@ positional arguments:
                       file
 
 options:
-  -h, --help          show this help message and exit
-  -rt, --real_time    apply the real time code or one source
-  -n, --new_param     change parameter file
-  -sp, --show_param   print the code and source parameters for verification
-  -cat, --catalogue   apply calculation for multiple sources in folder
-  -stage {1,2,3,4,5}  separate stages [Default : 0 = do all] ; 1 = Only do
-                      data collections ; 2 = Only do data processing and
-                      calculation ; 3 = Do both data collection and
-                      calculation ; 4 = Only do plots ; 6 = Do calculation and
-                      plots. (If necessarry previous steps have not been
-                      performed, the path and missing stages will be stored in
-                      an error file)
+  -h, --help           show this help message and exit
+  -rt, --real_time     apply the real time code or one source
+  -n, --new_param      change parameter file
+  -sp, --show_param    print the code and source parameters for verification
+  -cat, --catalogue    apply calculation for multiple sources in folder
+  -stage {1,2,3,6,42}  separate stages [Default : 0 = do all] ; 1 = Only do
+                       data collections ; 2 = Only do data processing and
+                       calculation ; 3 = Do both data collection and
+                       calculation ; 6 = Do calculation and plots. (If
+                       necessarry previous steps have not been performed, the
+                       path and missing stages will be stored in an error
+                       file) ; 42 = Load event and parameters and return them
+                       for manual testing
 ```
-###### For input parameters gestion inside console
+###### For input parameters gestion inside console / Debug mode
+
+> `runfile` is a python command that calls the functions with arguments as an option
+> ```bash
+> python main_single_event.py [-h] [-rt] [-n] [-sp] [-cat] [-stage {1,2,3,6,42}] path
+> ```
+> becomes
+> ```python
+> runfile("main_single_event.py",
+>       args =  "[-h] [-rt] [-n] [-sp] [-cat] [-stage {1,2,3,6,42}] path"
+>       wdir='./'
+> ```
+
+If executed in console that supports the `runfile` command : 
+```python
+#{MODULE_DIR} = direction to module folder where main_single_event.py is located
+
+runfile('{MODULE_DIR}/main_single_event.py', 
+            args='-rt "RTdata/2026p666955/" -stage 42', 
+            wdir='{MODULE_DIR}')
+```
+
+else, directly in IPython console :
+
 ```python
 import sys
 import os
@@ -108,7 +151,7 @@ parameters = Parameters(folderpath,new=True) #console guide to help build a new 
 ```
 ---
 ## Roadmap
-#### Current version : 2.2.2
+#### Current version : 2.3.1
 #### Planed version
 - [x] 2.0 : Added the S-wave iteration into the real-time code
 	- [x] 2.0.X Minor corrections and adaptation for the RCET Kafka server
@@ -122,21 +165,25 @@ parameters = Parameters(folderpath,new=True) #console guide to help build a new 
 	- [x] 2.2.1 Separation of the query, preprocessing, calculation and plot phases
 	- [x] 2.2.2 Automatic building of catalog by stocking real-time results in the future
 - [ ] 2.3 : Accessibility of the repository
+    - [x] 2.3.0 Parameters rework and more user control 
 	- [ ] 2.3.1 Example folder with description of the process output
 	- [ ] 2.3.2 Catalogue results from the thesis in text-files
+	- [ ] 2.3.3 Add catalogue analysis code and figures maker into the repo as callable functions
 	
 * ============================================> *Repository made public*
 
-	- [ ] 2.3.3 Outline changable parameters/code etc. in code
-	- [ ] 2.3.4 Adding bibliography in repository with summary from thesis
-	- [ ] 2.3.5 Add catalogue analysis code and figures maker into the repo as callable functions
-- [ ] 2.5 : Code structure tightening and detailed documentation
-    - [ ] 2.5.1 Cleaning remnants and stickig to recommended Python practices
-    - [ ] 2.5.2 Report extra pages with explanations
-    - [ ] 2.5.3 Incorporated documentation
-    - [ ] 2.5.4 Implement the cleaning options to minimize data storage
+	- [ ] 2.3.4 Outline changable parameters/code etc. in code
+	- [ ] 2.3.5 Adding bibliography in repository with summary from thesis
+	- [ ] 2.3.6 Change plot functions to be independent 
+- [ ] 2.4 : Code structure tightening and detailed documentation
+    - [ ] 2.4.0 Rework plot functions call and parameters
+    - [ ] 2.4.1 Cleaning remnants and stickig to recommended Python practices
+    - [ ] 2.4.2 Report extra pages with explanations
+    - [ ] 2.4.3 Incorporated documentation
+    - [ ] 2.4.4 Implement the cleaning options to minimize data storage
 - [ ] 3.0 : Improvement of the close S wave estimation
 - [ ] 3.1 : Add S-wave results as a default for real-time and self-sufficient option for catalogue
+
 #### Ideas and discussion
 - **Taking request**
 	- Figures

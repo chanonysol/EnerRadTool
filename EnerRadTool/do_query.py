@@ -52,7 +52,7 @@ def do_query(ev, path, param, current_dist, next_dist, results, rt=False):
         if os.path.exists(datapath): shutil.rmtree(f"{datapath}")
         if os.path.exists(invpath): shutil.rmtree(f"{invpath}")
         os.mkdir(datapath);os.mkdir(invpath)
-        for f in glob(f"{path}/Data/log_*{datapath.split('/')[-1]}.dat"):
+        for f in glob(f"{path}/Data/log_*_{datapath.split('/')[-1]}.dat"):
             os.remove(f)
         sys.stdout.write(f"{Fore.YELLOW + Style.DIM}"
                           +f"\n > Data folder has been reset"
@@ -61,7 +61,7 @@ def do_query(ev, path, param, current_dist, next_dist, results, rt=False):
     if len(glob(f"{datapath}/*[ENZ].mseed"))!=0:
         from data_preprocessing import clean_data
         STARTTIME = time()
-        clean_data(datapath,invpath,ev,param.general.keep_data)
+        clean_data(datapath,invpath,ev,param.general.keep_data,snrlim = param.deviation_correction.snr_max)
         if results : 
             update_results(results, pre_time = time()-STARTTIME)
             update_results(results, data_time = nan)
@@ -100,9 +100,12 @@ def do_query(ev, path, param, current_dist, next_dist, results, rt=False):
                               +f"{Style.RESET_ALL}")
             from data_preprocessing import clean_data, clean_close_data
             if param.waves.S_near and current_dist==0:
-                clean_close_data(datapath,invpath,ev,param.general.keep_data)
+                clean_close_data(datapath,invpath,ev,param.general.keep_data,
+                                 param.deviation_correction.unknown_site_class,
+                                 snrlim = param.deviation_correction.snr_keep)
             else:
-                clean_data(datapath,invpath,ev,param.general.keep_data,ext = "*.MSEED")
+                clean_data(datapath,invpath,ev,param.general.keep_data,
+                           ext = "*.MSEED",snrlim = param.deviation_correction.snr_keep)
         if (len(glob(f"{invpath}/*.xml"))<len(glob(f"{datapath}/*.MSEED"))
             or len(glob(f"{invpath}/*.xml"))!=len(glob(f"{invpath}/*.json"))):
                 sys.stdout.write(f"{Fore.YELLOW + Style.DIM}"
@@ -151,7 +154,7 @@ def do_query(ev, path, param, current_dist, next_dist, results, rt=False):
         sys.stdout.write(f"{Fore.YELLOW} > Looking from {current_dist:2.0f}°"+ 
                          f" until {next_dist-1:2.0f}° distance\n{"":22s} ")
         
-        if param.waves.S_near and current_dist==0:
+        if param.distance.include_near and current_dist==0:
             from data_query import regional_query
             from obspy.geodetics.base import degrees2kilometers,kilometer2degrees
             times = request_val_s_train(['S','time'],ev.depth,
@@ -208,10 +211,13 @@ def do_query(ev, path, param, current_dist, next_dist, results, rt=False):
             sys.stdout.write(f"{Fore.YELLOW + Style.DIM}"
                               +f" > Formating data"
                               +f"{Style.RESET_ALL}\n")
-            if param.waves.S_near and current_dist==0:
-                clean_close_data(datapath,invpath,ev,param.general.keep_data)
+            if param.distance.include_near and current_dist==0:
+                clean_close_data(datapath,invpath,ev,param.general.keep_data,
+                                 param.deviation_correction.unknown_site_class,
+                                 snrlim = param.deviation_correction.snr_keep)
             else:
-                clean_data(datapath,invpath,ev,param.general.keep_data)
+                clean_data(datapath,invpath,ev,param.general.keep_data,
+                           snrlim = param.deviation_correction.snr_keep)
         if results : update_results(results, pre_time = time()-STARTTIME)
         times[1] = time()-STARTTIME
         #times= array(list(results['information']['time'].values()))

@@ -94,7 +94,7 @@ def plot_preprocessed_data_dist(resultpath,st,st_hf,inv,
         plt.savefig(f"{resultpath}/Signals_DistColor_{'all' if not correct else 'selected'}{ext}",
                     dpi = 300, transparent=True)
     
-    plt.show()
+    #plt.show()
     sys.stdout.write(f"\n{Fore.GREEN + Style.BRIGHT}"
                      +" ... Done ")
 
@@ -160,7 +160,7 @@ def plot_preprocessed_data_az(resultpath,st,st_hf,inv,
         plt.savefig(f"{resultpath}/Signals_AzColor_{'all' if not correct else 'selected'}{ext}",
                     dpi = 300, transparent=True)
     
-    plt.show()
+    #plt.show()
     sys.stdout.write(f"\n{Fore.GREEN + Style.BRIGHT}"
                      +" ... Done ")
 

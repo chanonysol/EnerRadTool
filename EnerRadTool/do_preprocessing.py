@@ -19,8 +19,7 @@ from do_estimation import folder_name
 
 
 def do_preprocessing(ev, path, param, current_dist, next_dist, results, rt=False, snrlim = 10):   
-    if snrlim !=5. :
-        sys.stdout.write(f"\n{Back.MAGENTA + Style.DIM + Fore.BLACK}"
+    sys.stdout.write(f"\n{Back.MAGENTA + Style.DIM + Fore.BLACK}"
                          +f"{'Preparation  '.rjust(20):20s}"
                          +f"{Style.RESET_ALL}")
         
@@ -45,10 +44,10 @@ def do_preprocessing(ev, path, param, current_dist, next_dist, results, rt=False
     folder = folder_name(param,rt,close = True if current_dist == 0 else False)
     resultpath = f"{path}/Results/{folder}"
     if glob(f"{datapath}/*d*.mseed") == [] and os.listdir(datapath)!=[]:
-        clean_data(datapath,invpath,ev,param.general.keep_data)
+        clean_data(datapath,invpath,ev,param.general.keep_data,
+                   snrlim = param.deviation_correction.snr_keep)
     
-    if snrlim !=5. :
-        sys.stdout.write(f"{Fore.MAGENTA + Style.DIM}"
+    sys.stdout.write(f"{Fore.MAGENTA + Style.DIM}"
                           +f"> {folder}"
                           +f"{Style.RESET_ALL}")
     
@@ -93,9 +92,9 @@ def do_preprocessing(ev, path, param, current_dist, next_dist, results, rt=False
                     f"{resultpath}/log_keptdata_{datapath.split('/')[-1]}_HF.dat")
         if current_dist != 0. :
             rem_line_log(resultpath,f"log_keptdata_{datapath.split('/')[-1]}_BB",
-                         arange(param.distance.min,param.distance.max,.1))
+                         arange(current_dist,next_dist,.1),init=True)
             rem_line_log(resultpath,f"log_keptdata_{datapath.split('/')[-1]}_HF",
-                         arange(param.distance.min,param.distance.max,.1))
+                         arange(current_dist,next_dist,.1),init=True)
         
         
     sys.stdout.write(f"\n{Back.MAGENTA + Style.DIM + Fore.BLACK}"

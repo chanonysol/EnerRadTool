@@ -9,68 +9,39 @@ Description :
     and automatic personalized parameter file
 """
 import json
-with open("exresp.json","r") as file : test = json.load(file)
+with open("exresp.json","r") as file : test = json.load(file) #response RCET
 
+from obspy import UTCDateTime, read, read_inventory, read_events
+with "C:/Users/solen/Downloads/quakeml.xml" as file : ev = read_events(file)[0] #xml event
 
+with open("template.cmt","r") as file : temp=file.read() #cmt template
 
-def moment_r(M,exponent = None):
-    M = deepcopy(M)
-    if exponent :
-        M*=float(f"1e{exponent}")
-    Mrr,Mtt,Mpp,Mrt,Mrp,Mtp = M
-    M = array([[Mrr,Mrt,Mrp],[Mrt,Mtt,Mtp],[Mrp,Mtp,Mpp]])
-    return norm(M)*2**-0.5
-
-def mw_r(mag):
-    M0 = 10**(3/2*(mag+10.7))
-    exp = round(log10(10**(3/2*(8.1+10.7))),0)
-    M /= 10.**exp
-    exp -=7
-    return
-
-info = lines[0].split()[1:]
-date = concatenate(((array(info[0:6]).astype(
-    float)//1).astype(int), array([int(info[5][3:])*10000])))
-if date[5] == 60:
-    date[5] = 0
-    date[4] += 1
-date = UTCDateTime(date[0], date[1], date[2],
-                   date[3], date[4], date[5], date[6])
-[_, _, _, mb, ms] = array(info[6:11]).astype(float)
-[dt, d2, evla, evlo, evdp] = [
-    float(i.strip().split(":")[-1]) for i in lines[2:7]]
-evid = lines[1].split(':')[-1].strip()
-evname = ''
-for i in info[11:]:
-    evname += ' '+i
-M = {}
-for i in lines[7:]:
-    n, v = i.strip().split(":")
-    M[n] = float(v)
-M = [M[i] for i in M.keys()]
-M = array(M)
-mag = mw(M)
-if mag == 0.:
-    expon = 0
-else:
-    expon = max(floor(log10(abs(M))).astype(int))
-    M /= 10.**expon
-    M.round(3)
-    if expon >21 : expon-=7
-self.lat = evla
-self.lon = evlo
-self.depth = evdp
-self.mag = test["mag"]
-self.moment = M
-# self.moment = dict(mrr=M[0], mtt=M[1], mff=M[2],
-#                    mrt=M[3], mrf=M[4], mtf=M[5])
-self.exponent = expon
-self.name = None
-self.id = test["evid"]
-self.date = UTCDateTime(test['origin_time'])
-self.time_shift = None
-self.trhalf = None
-
-self.plan1, self.plan2 = self.get_planes(M,expon)
-
-self.vector_t, self.vector_n, self.vector_p = self.get_vector(M,expon)
+try : ori = ev.preferred_origin()
+except : ori = ev.origins[0]
+finally :
+    lon,lat,date,dep = ori.longitude, ori.latitude, ori.time, ori.depth
+    temp = temp.replace("@lat",f"{lat:+9.4}"); temp =temp.replace("@lon",f"{lon:+9.4}")
+    temp = temp.replace("@dep",f"{dep*1e-3:5.2f}")
+    temp = temp.replace("@ye",f"{date.year:4.0f}")
+    temp = temp.replace("@mo",f"{date.month:2.0f}"); temp =temp.replace("@da",f"{date.day:2.0f}")
+    temp = temp.replace("@ho",f"{date.hour:2.0f}"); temp =temp.replace("@mi",f"{date.minute:2.0f}")
+    temp = temp.replace("@se",f"{date.second}.{date.microsecond*1e-4:.0f}")
+    idev = str(date).replace("-","").replace(":","").replace("T","")[:-10]
+    temp = temp.replace("@ref",f"{idev:12s}")
+    temp = temp.replace("@region_name",f"{None}")
+    
+from numpy import array
+try : foc = ev.preferred_focal_mechanism()
+except : foc = ev.focal_mechanisms[0]
+finally :
+    mom = array(list(foc.moment_tensor.tensor.values())[::2])*1e7
+    for st,val in zip(["@mrr","@mtt","@mpp","@mrt","@mrp","@mtp"],mom):
+        temp = temp.replace(st,f"{val:+.6e}")
+        
+try : mag = ev.preferred_magnitude()
+except : mag = ev.magnitudes[0]
+finally :
+    temp = temp.replace("@mb",f"{mag.mag:3.1f}")
+        
+with open("C:/Users/solen/Documents/Ener/project/test.cmt","w") as file :
+    file.write(temp)

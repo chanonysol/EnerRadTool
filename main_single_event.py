@@ -27,7 +27,7 @@ from generate_event import Event, moment
 from do_query import do_query
 from do_preprocessing import do_preprocessing, Inventory, Stream, request_val_p_train
 from do_estimation import do_estimations, folder_name
-from results_writing import results_dictionnary_init, update_results, AttribDict
+from results_writing import results_dictionnary_init, update_results, AttribDict, write_rt_cat
 from do_plot import do_plots
 
 from numpy import linspace, concatenate, loadtxt, dtype, nan
@@ -53,11 +53,12 @@ def main(path,stages = 0, real_time=True, new_param=False, show_parameters=False
     path = f"{CODE_PATH}/{path}"
     
     sys.stdout.write(f"\n{Back.CYAN + Style.DIM + Fore.BLACK}"
-                     +f"{('Initialization'+' '*5+str(path.split('/')[-2]).replace('_',' ')).center(65)}"
+                     +f"{('Initialisation'+' '*5+str(path.split('/')[-2]).replace('_',' ')).center(65)}"
                      +f"{Style.RESET_ALL}\n")
     
     if not parameters:
         parameters = Parameters(path, new=new_param, show = show_parameters)
+        skip_s_figures = False #added to manage swaves try that failed #TODO replace with distance functions
         sys.stdout.write("-------> Parameters loaded\n")
 
     ev = Event(path)
@@ -74,7 +75,7 @@ def main(path,stages = 0, real_time=True, new_param=False, show_parameters=False
         file = open(f"{path}/logfile.txt","x")
         file.close()
       
-    if ((parameters.waves.S_near or parameters.distance.include_near) and
+    if ((parameters.distance.include_near) and
             (ev.reg == "SW.Pacific" or not ev.sreg)) :
         sys.stdout.write(f"{Fore.CYAN + Style.DIM}"
                          +"\n > Region out of scope for Swaves. Moving on."
@@ -84,17 +85,18 @@ def main(path,stages = 0, real_time=True, new_param=False, show_parameters=False
     #adapt dist to depth
     parameters.distance.min = find_min_dist(ev,parameters)    
         
-    dist_list = linspace(parameters.distance.min,parameters.distance.max,
-                         int(parameters.distance.totalstep+1),endpoint=True).round(0)
-    
-    if not real_time :
-        dist_list = dist_list[[0,-1]]
-    dist_list[0]=parameters.distance.min
-    
-    # if parameters.distance.include_near and 0. not in dist_list:
-    #     dist_list = concatenate(([0.],dist_list))
-    if dist_list[-1]<= parameters.distance.min:
-        dist_list=dist_list[:-1]
+    if parameters.waves.P_teleseismic or parameters.waves.P_regional:
+        dist_list = linspace(parameters.distance.min,parameters.distance.max,
+                             int(parameters.distance.totalstep+1),endpoint=True).round(0)
+        
+        if not real_time :
+            dist_list = dist_list[[0,-1]]
+        dist_list[0]=parameters.distance.min
+        
+        if dist_list[-1]<= parameters.distance.min:
+            dist_list=dist_list[:-1]
+    else:
+        dist_list = array([])
 
     general_st_bb = Stream()
     general_st_hf = Stream()
@@ -108,6 +110,8 @@ def main(path,stages = 0, real_time=True, new_param=False, show_parameters=False
         parameters.time_max_s=60
     results = results_dictionnary_init(parameters)
     update_results(results,ev=ev)
+    
+    if stages == 42 : return ev, parameters, results, path, dist_list
     
     for (iteration,(current_dist,next_dist)) in enumerate(
             zip(concatenate(([0] if parameters.distance.include_near else [],dist_list[:-1])),
@@ -143,7 +147,8 @@ def main(path,stages = 0, real_time=True, new_param=False, show_parameters=False
                                                 current_dist,
                                                 next_dist, 
                                                 results,rt = iteration 
-                                                if real_time else real_time)
+                                                if real_time else real_time,
+                                                snrlim = parameters.deviation_correction.snr_max)
                 
                 update_results(results, 
                                 pre_time = (results['information']['time']['pre_time'] if 'time' in list(results["information"].keys()) else 0
@@ -152,7 +157,11 @@ def main(path,stages = 0, real_time=True, new_param=False, show_parameters=False
                 general_st_hf += st_hf.copy()
                 general_inv += inv.copy()
             except FileNotFoundError :
-                return
+                if iteration==-1: 
+                    # parameters.distance.include_near = False
+                    skip_s_figures = True
+                    continue
+                else : return
             except Exception:
                 with open(f"{path}/Results/{folder_name(parameters,iteration)}/0.ERROR.log","a") as file:
                     file.write(f"#{str(UTCDateTime().now()):=^60}\n ")
@@ -173,7 +182,9 @@ def main(path,stages = 0, real_time=True, new_param=False, show_parameters=False
             stadist = array([inv.select(station=tr.stats.station)[0][0].extra.station_param.distance
                                   for tr in st ])
             try :
-                if iteration == -1 or (iteration==0 and not parameters.distance.include_near):
+                if iteration == -1 or (iteration==0 and 
+                                       (not parameters.distance.include_near 
+                                        or skip_s_figures)):
                     resultpath, data = do_estimations(ev, path, parameters, 
                                                       st,st_hf,inv, results, 
                                                       stadist, rt=iteration)
@@ -197,58 +208,14 @@ def main(path,stages = 0, real_time=True, new_param=False, show_parameters=False
             else : 
                 if os.path.exists(f"{path}/Results/{folder_name(parameters,iteration)}/0.ERROR.log"):
                     os.remove(f"{path}/Results/{folder_name(parameters,iteration)}/0.ERROR.log")
-                
-                update_results(results,estimate = [iteration, 
-                                                   dist_list[:iteration+2] if iteration!=-1 else array([0,2]),
-                                                   find_az_dist_gap(resultpath if iteration!=-1 else None,
-                                                                    iteration,correct=True,inv=general_inv if iteration==-1 else None),
-                                                    (general_st_bb,general_st_hf),
-                                                    parameters.time_max if iteration!=-1 else parameters.time_max_s])     
             finally : continue
     
-    resultsfile = f"{CODE_PATH}/EnerRadTool/6.database/results.dat"
-    if not os.path.exists(resultsfile):
-        with open(resultsfile,"w") as file:
-           file.write(f"#{'DateTime':19s} {'lat':7s} {'lon':7s} "
-                          +f"{'region':12s} {'zone':12s} "
-                           +f"{'moment':8s} {'mw':4s} "
-                           +f"{'Ebb':8s} {'dbb':3s} {'MeBB':3s} "
-                           +f"{'Ehf':8s} {'dhf':3s} {'Mehf':3s} "
-                           +f"{'Tr':3s} {'lines':3s} {'tacer':3s} "
-                           +f"{'theta':4s}\n" ) 
-    
-    else :
-        evline = (f"{str(ev.date)[:-8]:19s} {ev.lat:+7.2f} {ev.lon:+7.2f} "
-                      +f"{ev.reg:12s} {ev.sreg:12s} "
-                       +f"{moment(ev.moment,ev.exponent):8.2e} {ev.mag:4.2f} ")
-        with open(resultsfile,"r") as file:
-            lines = file.readlines()
-        
-        ind = argwhere(array([l.find(evline) for l in lines])>-1)
-        if ind.size!=0:
-            for i in ind[::-1,0]:
-                lines.pop(i)
-            with open(resultsfile,"w") as file:
-                for l in lines:
-                    file.write(l)  
-
-    with open(resultsfile,"a") as file:
-        res = results["corrected_smooth"]
-        if "dEbb"  not in res.keys():
-            res["dEbb"]=-9999; res["dEhf"]=-9999
-        for k,v in zip(res.keys(),res.values()):
-            if v ==-9999 :
-                res[k]=nan
-        res = AttribDict(res)
-        file.write(f"{str(ev.date)[:-8]:19s} {ev.lat:+7.2f} {ev.lon:+7.2f} "
-                      +f"{ev.reg:12s} {ev.sreg:12s} "
-                       +f"{moment(ev.moment,ev.exponent):8.2e} {ev.mag:4.2f} "
-                       +f"{res.Ebb:8.2e} {res.dEbb:3.2f} {res.MeBB:3.2f} "
-                       +f"{res.Ehf:8.2e} {res.dEhf:3.2f} {res.MeHF:3.2f} "
-                       +f"{res.Tr: 3.0f} {res.Tr_lines: 3.0f} {res.Tr_tacer: 3.0f} "
-                       +f"{res.theta:+4.1f}\n" ) 
+    if stages in [0,2,3,6]:
+        write_rt_cat(ev,results)
     
     if parameters.plot.level and stages in [0,4,6]:
+        if skip_s_figures:
+            parameters.distance.include_near = False
         try :
             do_plots(ev,parameters,resultpath,data)
         except :
@@ -278,6 +245,7 @@ def main(path,stages = 0, real_time=True, new_param=False, show_parameters=False
         sys.stdout.write(f"\n{Back.GREEN + Style.BRIGHT + Fore.BLACK}"
                           +f"{f'FINISHED SUCCESSFULLY'.center(65):65s}"
                           +f"{Style.RESET_ALL}\n")
+    return None,None,None,path,None
 
 # import tarfile
 # import os.path
@@ -302,14 +270,17 @@ if __name__ == "__main__":
     parser.add_argument("-cat", "--catalogue",action="store_true",
                         help='apply calculation for multiple sources in folder')
        
-    parser.add_argument("-stage", choices=[1,2,3,4,5], type=int,default = 0, 
+    parser.add_argument("-stage", choices=[1,2,3,
+                                           #4,
+                                           6,42], type=int,default = 0, 
                         help="separate stages [Default : 0 = do all]"
                         +"\n; 1 = Only do data collections"
                         +"\n; 2 = Only do data processing and calculation"
                         +"\n; 3 = Do both data collection and calculation"
-                        +"\n; 4 = Only do plots"
+                        #+"\n; 4 = Only do plots"
                         +"\n; 6 = Do calculation and plots."
                         +"\n (If necessarry previous steps have not been performed, the path and missing stages will be stored in an error file)"
+                        +"\n; 42 = Load event and parameters and return them for manual testing"
                         )
     
     args = parser.parse_args()
@@ -325,6 +296,6 @@ if __name__ == "__main__":
                   parameters=deepcopy(PARAMETERS))
     
     if not args.catalogue and args.real_time:
-        main(args.path,stages = args.stage,real_time=args.real_time,
+        ev,parameters,results,path,dist_list = main(args.path,stages = args.stage,real_time=args.real_time,
               new_param=args.new_param,show_parameters=args.show_param)
      
