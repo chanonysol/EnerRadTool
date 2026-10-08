@@ -111,17 +111,17 @@ def main(path,stages = 0, real_time=True, new_param=False, show_parameters=False
     results = results_dictionnary_init(parameters)
     update_results(results,ev=ev)
     
-    if stages == 42 : return ev, parameters, results, path, dist_list
+    if stages == 42 : return ev, parameters, results, path, dist_list, None
     
     for (iteration,(current_dist,next_dist)) in enumerate(
             zip(concatenate(([0] if parameters.distance.include_near else [],dist_list[:-1])),
                 concatenate(([2] if parameters.distance.include_near else [],dist_list[1:])))):
         if parameters.distance.include_near : iteration-=1
-        if stages in [0,1,2,3,6]:
+        if stages !=6:
             sys.stdout.write(f"\n{Back.CYAN + Style.DIM + Fore.BLACK}"
                               +f"{f'n°{iteration} iteration'.center(65):65s}"
                               +f"{Style.RESET_ALL}\n")
-        if stages in [0,1,3]:
+        if stages in [0,1,3,5]:
             try :
                 do_query(ev, path, parameters, current_dist, next_dist,
                          results, rt=iteration)
@@ -140,7 +140,7 @@ def main(path,stages = 0, real_time=True, new_param=False, show_parameters=False
             else : 
                 if os.path.exists(f"{path}/Data/0.ERROR.log"):
                     os.remove(f"{path}/Data/0.ERROR.log")
-        if stages in [0,2,3,6]:
+        if stages in [0,2,3,4,5,7]:
             try :
                 STARTTIME = time()
                 st,st_hf,inv = do_preprocessing(ev, path, parameters, 
@@ -151,11 +151,17 @@ def main(path,stages = 0, real_time=True, new_param=False, show_parameters=False
                                                 snrlim = parameters.deviation_correction.snr_max)
                 
                 update_results(results, 
-                                pre_time = (results['information']['time']['pre_time'] if 'time' in list(results["information"].keys()) else 0
-                                            + time() - STARTTIME ))
+                                pre_time = (#results['information']['time']['pre_time'] if 'time' in list(results["information"].keys()) else 0 +
+                                            time() - STARTTIME ))
                 general_st_bb += st.copy()
                 general_st_hf += st_hf.copy()
                 general_inv += inv.copy()
+                
+                update_results(results,estimate = [iteration, 
+                                                   dist_list[:iteration+2] if iteration!=-1 else array([0,2]),
+                                                   find_az_dist_gap(None,iteration,correct=False,inv=general_inv),
+                                                    (general_st_bb,general_st_hf),
+                                                    parameters.time_max if iteration!=-1 else parameters.time_max_s])
             except FileNotFoundError :
                 if iteration==-1: 
                     # parameters.distance.include_near = False
@@ -174,11 +180,7 @@ def main(path,stages = 0, real_time=True, new_param=False, show_parameters=False
                     # file.write(f"{exc_type} : {error}")
                     file.write("\n >>> moving on to another iteration\n")
                     continue
-            update_results(results,estimate = [iteration, 
-                                               dist_list[:iteration+2] if iteration!=-1 else array([0,2]),
-                                               find_az_dist_gap(None,iteration,correct=False,inv=general_inv),
-                                                (general_st_bb,general_st_hf),
-                                                parameters.time_max if iteration!=-1 else parameters.time_max_s])
+        if stages in [0,4,5,7]:
             stadist = array([inv.select(station=tr.stats.station)[0][0].extra.station_param.distance
                                   for tr in st ])
             try :
@@ -210,10 +212,14 @@ def main(path,stages = 0, real_time=True, new_param=False, show_parameters=False
                     os.remove(f"{path}/Results/{folder_name(parameters,iteration)}/0.ERROR.log")
             finally : continue
     
-    if stages in [0,2,3,6]:
+    if stages in [2,3]:
+        data = [general_inv, general_st_bb, general_st_hf]
+        return ev, parameters, results, path, dist_list, data
+    
+    if stages in [0,4,5,7]:
         write_rt_cat(ev,results)
     
-    if parameters.plot.level and stages in [0,4,6]:
+    if parameters.plot.level and stages in [0,6,7]:
         if skip_s_figures:
             parameters.distance.include_near = False
         try :
@@ -245,7 +251,7 @@ def main(path,stages = 0, real_time=True, new_param=False, show_parameters=False
         sys.stdout.write(f"\n{Back.GREEN + Style.BRIGHT + Fore.BLACK}"
                           +f"{f'FINISHED SUCCESSFULLY'.center(65):65s}"
                           +f"{Style.RESET_ALL}\n")
-    return None,None,None,path,None
+    return None,None,None,path,None,None
 
 # import tarfile
 # import os.path
@@ -270,15 +276,17 @@ if __name__ == "__main__":
     parser.add_argument("-cat", "--catalogue",action="store_true",
                         help='apply calculation for multiple sources in folder')
        
-    parser.add_argument("-stage", choices=[1,2,3,
-                                           #4,
-                                           6,42], type=int,default = 0, 
+    parser.add_argument("-stage", choices=[1,2,3,4,5,
+                                           #6,
+                                           7,42], type=int,default = 0, 
                         help="separate stages [Default : 0 = do all]"
                         +"\n; 1 = Only do data collections"
-                        +"\n; 2 = Only do data processing and calculation"
-                        +"\n; 3 = Do both data collection and calculation"
-                        #+"\n; 4 = Only do plots"
-                        +"\n; 6 = Do calculation and plots."
+                        +"\n; 2 = Only do data processing"
+                        +"\n; 3 = Do both data collection and processing"
+                        +"\n; 4 = Do both data processing and calculation"
+                        +"\n; 5 = Do all but figures"
+                        #+"\n; 6 = Only do plots"
+                        +"\n; 7 = Do calculation and plots."
                         +"\n (If necessarry previous steps have not been performed, the path and missing stages will be stored in an error file)"
                         +"\n; 42 = Load event and parameters and return them for manual testing"
                         )
@@ -296,6 +304,8 @@ if __name__ == "__main__":
                   parameters=deepcopy(PARAMETERS))
     
     if not args.catalogue and args.real_time:
-        ev,parameters,results,path,dist_list = main(args.path,stages = args.stage,real_time=args.real_time,
+        ev,parameters,results,path,dist_list,data = main(args.path,stages = args.stage,real_time=args.real_time,
               new_param=args.new_param,show_parameters=args.show_param)
+        if data:
+            inv,st,st_hf = data
      

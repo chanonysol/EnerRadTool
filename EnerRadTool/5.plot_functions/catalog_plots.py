@@ -29,9 +29,8 @@ def mw(m):
 def me(m):
     return (2/3*log10(m)-2.9).round(1)
 
-def select_in_cat(catpath, mag_range = None, date_range = None, s_wave = False):
-    #results                 
-    file = 'all_results_events.dat'
+def load_cat(catpath):
+    file = f'../../{catpath}/all_results_events.dat'
     datatype=open(file,"r").readlines()[0][1:].split()
     vals = ["f8"]*len(datatype)
     # vals[0] = "U25"; vals[11]="U25"
@@ -40,7 +39,7 @@ def select_in_cat(catpath, mag_range = None, date_range = None, s_wave = False):
     mat = loadtxt(file,comments="#",dtype=dty)
 
     #---contribs
-    file ="all_results_contribs.dat"
+    file = f'../../{catpath}/all_results_contribs.dat'
     datatype=open(file,"r").readlines()[0][1:].split()
     vals = ["f8"]*len(datatype)
     # vals[0] = "U25"; vals[11]="U25"
@@ -50,7 +49,7 @@ def select_in_cat(catpath, mag_range = None, date_range = None, s_wave = False):
 
 
     #s results
-    file = 'all_swaves_eventsv4.dat'
+    file = f'../../{catpath}/all_swaves_eventsv4.dat'
     datatype=open(file,"r").readlines()[0][1:].split()
     vals = ["f8"]*len(datatype)
     # vals[0] = "U25"; vals[11]="U25"
@@ -65,7 +64,7 @@ def select_in_cat(catpath, mag_range = None, date_range = None, s_wave = False):
         mat_s[i]["theta"]=log10(mat_s[i]["Ebb"]/mat_s[i]["moment"])
         mat_s[i]["theta_s"]=log10(mat_s[i]["Es"]/mat_s[i]["moment"])
 
-    file = 'all_swaves_events.dat'
+    file = f'../../{catpath}/all_swaves_events.dat'
     datatype=open(file,"r").readlines()[0][1:].split()
     vals = ["f8"]*len(datatype)
     # vals[0] = "U25"; vals[11]="U25"
@@ -82,7 +81,7 @@ def select_in_cat(catpath, mag_range = None, date_range = None, s_wave = False):
 
 
     #s waves stations    
-    file = 'all_swaves_stationsv4.dat'
+    file = f'../../{catpath}/all_swaves_stationsv4.dat'
     datatype=open(file,"r").readlines()[0][1:].split()
     vals = ["f8"]*len(datatype)
     # vals[0] = "U25"; vals[11]="U25"
@@ -118,11 +117,13 @@ def select_in_cat(catpath, mag_range = None, date_range = None, s_wave = False):
     for i in argwhere(mat["region"]=="SW.Pacific")[:,0]:
         mat[i]["zone"] = name_reg_event(mat[i]["lat"],mat[i]["lon"],new_zone=True)[1]
 
-    
-
     mat["mw"]=mw(mat["moment"])
     matxy["mag"]=mat["mw"]
+    return
 
+def select_in_cat(catpath, mag_range = None, date_range = None, s_wave = False):
+    #results                 
+    
 
     nb_event = len(mat["Ebb"])
     no_ener = len(argwhere(isnan(mat["Ebb"])))

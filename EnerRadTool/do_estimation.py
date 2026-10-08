@@ -33,8 +33,9 @@ def folder_name(param,rt,close=False):
     #if not param.general.session_name :
     name = f'W{"p" if param.waves.P_teleseismic else ""}'\
         +f'{"r" if param.waves.P_regional else ""}'\
-        +f'{"s" if param.waves.S_near else ""}'\
-        +f'{"f" if param.waves.network_fixed else ""}_'\
+        +f'{"i" if param.waves.S_near else ""}'\
+        +f'{"f" if param.waves.network_fixed else ""}'\
+        +f'{"s" if param.distance.include_near else ""}_'\
         +f'D[{param.distance.min:.0f}.{param.distance.max:.0f}.{param.distance.totalstep:.0f}]_'\
         +f'T{param.time_max:.0f}'
     if close:
@@ -42,7 +43,7 @@ def folder_name(param,rt,close=False):
             +f'D[{0.:.0f}.{2.:.0f}.{param.distance.totalstep:.0f}]_'\
             +f'T{param.time_max_s:.0f}'
     return (f'{param.general.session_name+"_" if param.general.session_name else ""}'
-            +f'{"RT" if isinstance(rt,int) else "SC"}_{name}')
+            +f'{"SC" if isinstance(rt,bool) else "RT"}_{name}')
 
 def do_estimations(ev, path, param, st_bb, st_hf, inv, results, stadist, rt=False):
     STARTTIME = time()

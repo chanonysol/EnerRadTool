@@ -42,7 +42,7 @@ More details inside each folder and coming in v2.4.3
 │   ├── do_estimation.py
 │   ├── do_correction.py
 │   └── do_plot.py
-├── main_single_event.py
+├── main_EnerRad.py
 ├── license.txt
 └── README.md
 ```
@@ -67,21 +67,21 @@ Python 3.9.1
 ###### For a real time implementation
 
 ```bash
-python main_single_event.py -rt "path2folder"
+python main_EnerRad.py -rt "path2folder"
 ```
 
 ###### For a catalog
 ```bash
-python main_single_event.py "path2folder" -sp -cat
+python main_EnerRad.py "path2folder" -sp -cat
 ```
 ###### For details on arguments
 
 ```bash
-python main_single_event.py -h
+python main_EnerRad.py -h
 ```
 
 ```python
-usage: main_single_event.py [-h] [-rt] [-n] [-sp] [-cat] [-stage {1,2,3,6,42}] path
+usage: main_EnerRad.py [-h] [-rt] [-n] [-sp] [-cat] [-stage {1,2,3,6,42}] path
 
 positional arguments:
   path                path to folder of event or catalog; [if rt] Folder
@@ -109,20 +109,20 @@ options:
 
 > `runfile` is a python command that calls the functions with arguments as an option
 > ```bash
-> python main_single_event.py [-h] [-rt] [-n] [-sp] [-cat] [-stage {1,2,3,6,42}] path
+> python main_EnerRad.py [-h] [-rt] [-n] [-sp] [-cat] [-stage {1,2,3,6,42}] path
 > ```
 > becomes
 > ```python
-> runfile("main_single_event.py",
+> runfile("main_EnerRad.py",
 >       args =  "[-h] [-rt] [-n] [-sp] [-cat] [-stage {1,2,3,6,42}] path"
 >       wdir='./'
 > ```
 
 If executed in console that supports the `runfile` command : 
 ```python
-#{MODULE_DIR} = direction to module folder where main_single_event.py is located
+#{MODULE_DIR} = direction to module folder where main_EnerRad.py is located
 
-runfile('{MODULE_DIR}/main_single_event.py', 
+runfile('{MODULE_DIR}/main_EnerRad.py', 
             args='-rt "RTdata/2026p666955/" -stage 42', 
             wdir='{MODULE_DIR}')
 ```
@@ -168,10 +168,10 @@ parameters = Parameters(folderpath,new=True) #console guide to help build a new 
     - [x] 2.3.0 Parameters rework and more user control 
 	- [ ] 2.3.1 Example folder with description of the process output
 	- [ ] 2.3.2 Catalogue results from the thesis in text-files
-	- [ ] 2.3.3 Add catalogue analysis code and figures maker into the repo as callable functions
 	
 * ============================================> *Repository made public*
 
+	- [ ] 2.3.3 Add catalogue analysis code and figures maker into the repo as callable functions
 	- [ ] 2.3.4 Outline changable parameters/code etc. in code
 	- [ ] 2.3.5 Adding bibliography in repository with summary from thesis
 	- [ ] 2.3.6 Change plot functions to be independent 

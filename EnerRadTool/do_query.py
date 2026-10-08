@@ -81,6 +81,8 @@ def do_query(ev, path, param, current_dist, next_dist, results, rt=False):
             lines = reshape(lines,(1,4))
         # else:
         #     lines=lines[argsort(lines[:,0])]
+        if lines[:,0].min()<param.distance.min:
+            lines[argwhere(lines[:,0]==lines[:,0].min()),0] = param.distance.min
         ind = argwhere(lines[:,1]<=next_dist)
         alld = unique(lines[:,:2])
         
@@ -152,7 +154,7 @@ def do_query(ev, path, param, current_dist, next_dist, results, rt=False):
                           +f"{Style.RESET_ALL}")
         
         sys.stdout.write(f"{Fore.YELLOW} > Looking from {current_dist:2.0f}°"+ 
-                         f" until {next_dist-1:2.0f}° distance\n{"":22s} ")
+                         f" until {next_dist:2.0f}° distance\n{"":22s} ")
         
         if param.distance.include_near and current_dist==0:
             from data_query import regional_query
@@ -234,12 +236,13 @@ def do_query(ev, path, param, current_dist, next_dist, results, rt=False):
             lines = lines[argsort(lines[:,0])]
             if current_dist in lines[:,0] and next_dist in lines[:,1]:
                 ind = argwhere(lines[:,1]<=next_dist)
-                t = [sum(lines[ind,2]),sum(lines[ind,3])]
+                t = [sum(lines[ind[-1,:],2]),sum(lines[ind[-1,:],3])]
             else : 
                 t = array([sum(lines[:,2]),sum(lines[:,3])])//int(param.distance.totalstep)    
             
             update_results(results, data_time = t[0])
             update_results(results, pre_time = t[1])
+            
         else:
             update_results(results, data_time = nan)
             update_results(results, pre_time = nan)
