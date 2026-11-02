@@ -592,7 +592,7 @@ def add_2_log(datapath,resultpath,mindist,maxdist,param):
                        return_mat=True)[:,2].astype(float)
     if any(mat_res>=maxdist) and maxdist!=param.distance.max: return
     if maxdist==param.distance.max and any(mat_res>=mindist): return
-    if abs(mat_res.min()-mindist)<7. : return
+    #if abs(mat_res.min()-mindist)<7. : return
     for freq in ["BB",'HF']:
         lines_res = read_log(resultpath,f"log_keptdata_{datapath.split('/')[-1]}_{freq}", modif=True)
         lines = read_log(datapath+"/../",f"log_keptdata_{datapath.split('/')[-1]}", modif=True)
@@ -602,6 +602,8 @@ def add_2_log(datapath,resultpath,mindist,maxdist,param):
         names = mat[:,0]
         mat = mat[:,1].astype(float)
         ind = argwhere((mat>=mindist) & (mat<maxdist))[:,0]
+        if mat[ind].min()<=mat_res.max(): return
+            
         lines = array(lines)[ind]; names = names[ind]
         lines = lines[argsort(names)]
         
@@ -616,12 +618,18 @@ def preprocessing(datapath,invpath,resultpath,ev,tmax,tmax_s,
     #snrlim = 10.
     
     st= Stream()
-    for d in arange(mindist,maxdist).astype(int):
+    if maxdist<5.:
+        x = arange(degrees2kilometers(mindist),degrees2kilometers(maxdist)).astype(int)
+    else :
+        x = arange(mindist,maxdist).astype(int)
+    
+    for d in x:
         try:
-            st+=read(f"{datapath}/*d{d:02d}*.mseed")
+            if maxdist<5.:
+                st+=read(f"{datapath}/*d{d:03d}*.mseed")
+            else:
+                st+=read(f"{datapath}/*d{d:02d}*.mseed")
         except : continue
-    if maxdist<=2.:
-        st = read(f"{datapath}/*.mseed")
     st.sort(["network","station"])
     names = [tr.id for tr in st]
     inv = Inventory()
@@ -639,7 +647,7 @@ def preprocessing(datapath,invpath,resultpath,ev,tmax,tmax_s,
     names = [tr.id for tr in st]
     inv = add_attribute_xml(inv,None,st,datapath,invpath,returninv=True)
     
-    if maxdist<=2.:
+    if maxdist<5.:
         if param.deviation_correction.unknown_site_class == None:
             classes = [list(sta.extra.site_class.values())[0] for net in inv for sta in net]
             ind = argwhere(array(classes)==None)

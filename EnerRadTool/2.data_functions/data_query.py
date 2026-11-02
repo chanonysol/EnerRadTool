@@ -211,12 +211,12 @@ def selected_query(ev,path,minrad,maxrad,startime,endtime,channels):
                          +f"{Style.RESET_ALL}"
                          +f" (lasted {time()-STARTTIME: 3.0f}s) \n")
 
-def regional_query(ev,path,startime,endtime,channels):
+def regional_query(ev,path,mindist,maxdist,startime,endtime,channels):
     from obspy.geodetics.base import degrees2kilometers,kilometer2degrees
     origin_time = ev.date
 
     domain = CircularDomain(latitude=ev.lat, longitude=ev.lon,minradius=0,
-                            maxradius=kilometer2degrees(200))
+                            maxradius=maxdist)
     
     globals()['ROOT'] = f"{path}Data/CloseRecords/"
     # if not os.path.exists(globals()['ROOT']):

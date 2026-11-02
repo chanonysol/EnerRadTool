@@ -737,10 +737,9 @@ def make_report(resultpath,correct=False):
     for i in ["top","bottom","right","left"]:
         ax2.spines[i].set_visible(False)
         
-    p.close()
-    
-    p.update(1)
 
+    p.update(1)
+    p.close()
     with PdfPages(f'{resultpath}/../../report_{resultpath.split('/')[-1]}_new.pdf') as pdf:
         pdf.savefig(fig2,
                      bbox_inches="tight",dpi=600,pad_inches=0.1)

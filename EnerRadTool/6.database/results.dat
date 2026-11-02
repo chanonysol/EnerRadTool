@@ -1,2 +1,11 @@
 #DateTime            lat     lon     region       zone         moment   mw   Ebb      dbb MeBB Ehf      dhf Mehf Tr  lines tacer theta
-2016-11-13T11:02:56  -42.03 +173.85 S.Pacific    NZ-S.Island  6.77e+20 7.80 1.14e+16 nan 7.80 8.30e+14 nan 7.45  108  119  97 -4.8
+2026-09-02T06:57:15  -44.29 +168.67 S.Pacific    NZ-S.Island  2.63e+17 5.50      nan nan nan      nan nan nan  nan  nan  nan +nan
+2026-07-30T05:08:30  -28.72 -176.30 S.Pacific    Kermadec     5.43e+17 5.80 1.16e+13 nan 5.81 3.76e+12 nan 5.89  38  49  27 -4.7
+2026-09-04T18:34:01  -40.74 +174.68 S.Pacific    NZ-N.Island  6.99e+15 4.50      nan 1.70 nan 1.75e+12 1.29 5.66  34  35  34 +nan
+1994-06-02T18:17:37  +10.41 +112.93 None         None         2.83e+20 7.60 4.03e+14 3.86 6.84 4.73e+13 2.69 6.62  161  167  155 -5.8
+1996-02-21T12:51:04   -9.95  -80.23 None         None         2.23e+20 7.50 2.86e+14 13.75 6.74 2.07e+13 10.89 6.38  65  76  54 -5.9
+2006-07-17T08:19:28  -10.28 +107.78 None         None         4.61e+20 7.70 9.64e+14 25.04 7.09 1.59e+14 18.85 6.97  109  134  84 -5.7
+2010-10-25T14:42:22   -3.71  +99.32 None         None         6.77e+20 7.80 1.92e+15 11.31 7.29 3.34e+14 10.05 7.18  83  96  71 -5.5
+2004-12-26T00:58:50   +3.09  +94.26 None         None         3.95e+22 9.00      nan nan nan      nan nan nan  nan  nan  nan +nan
+2009-09-29T17:48:11  -15.13 -171.97 SW.Pacific   Samoa-Tonga  1.68e+21 8.10      nan nan nan      nan nan nan  nan  nan  nan +nan
+2016-11-13T11:02:56  -42.03 +173.85 S.Pacific    NZ-S.Island  6.77e+20 7.80      nan nan nan      nan nan nan  nan  nan  nan +nan

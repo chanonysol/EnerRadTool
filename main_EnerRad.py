@@ -31,7 +31,7 @@ from results_writing import results_dictionnary_init, update_results, AttribDict
 from do_plot import do_plots
 
 from numpy import linspace, concatenate, loadtxt, dtype, nan
-from data_utils import find_min_dist, find_az_dist_gap
+from data_utils import find_min_dist, find_az_dist_gap, kilometers2degrees
 from obspy import UTCDateTime
 from copy import deepcopy
 
@@ -97,6 +97,10 @@ def main(path,stages = 0, real_time=True, new_param=False, show_parameters=False
             dist_list=dist_list[:-1]
     else:
         dist_list = array([])
+    
+    if not parameters.distance.max_S:
+        parameters.distance.max_S = 200
+    parameters.distance.max_S = round(kilometers2degrees(parameters.distance.max_S),2)
 
     general_st_bb = Stream()
     general_st_hf = Stream()
@@ -111,11 +115,14 @@ def main(path,stages = 0, real_time=True, new_param=False, show_parameters=False
     results = results_dictionnary_init(parameters)
     update_results(results,ev=ev)
     
-    if stages == 42 : return ev, parameters, results, path, dist_list, None
+    if stages == 42 : return ev, parameters, results, path, dist_list, None, None
     
     for (iteration,(current_dist,next_dist)) in enumerate(
             zip(concatenate(([0] if parameters.distance.include_near else [],dist_list[:-1])),
-                concatenate(([2] if parameters.distance.include_near else [],dist_list[1:])))):
+                concatenate(([#2 if not parameters.distance.max_S  else 
+                              parameters.distance.max_S] 
+                             if parameters.distance.include_near else [],dist_list[1:])))):
+        
         if parameters.distance.include_near : iteration-=1
         if stages !=6:
             sys.stdout.write(f"\n{Back.CYAN + Style.DIM + Fore.BLACK}"
@@ -141,6 +148,7 @@ def main(path,stages = 0, real_time=True, new_param=False, show_parameters=False
                 if os.path.exists(f"{path}/Data/0.ERROR.log"):
                     os.remove(f"{path}/Data/0.ERROR.log")
         if stages in [0,2,3,4,5,7]:
+            resultpath=None
             try :
                 STARTTIME = time()
                 st,st_hf,inv = do_preprocessing(ev, path, parameters, 
@@ -169,7 +177,7 @@ def main(path,stages = 0, real_time=True, new_param=False, show_parameters=False
                     continue
                 else : return
             except Exception:
-                with open(f"{path}/Results/{folder_name(parameters,iteration)}/0.ERROR.log","a") as file:
+                with open(f"{path}/Results/{folder_name(parameters,iteration,close = True if iteration==-1 else False)}/0.ERROR.log","a") as file:
                     file.write(f"#{str(UTCDateTime().now()):=^60}\n ")
                     file.write("Error occured in the preprocessing phase -")
                     file.write(correct_message(format_exc()))
@@ -197,7 +205,7 @@ def main(path,stages = 0, real_time=True, new_param=False, show_parameters=False
                                                       results, stadist, rt=iteration)
                     data[0] = general_inv.copy();data[1]+=st_bb;data[2]+=st_hf
             except Exception:
-                with open(f"{path}/Results/{folder_name(parameters,iteration)}/0.ERROR.log","a") as file:
+                with open(f"{path}/Results/{folder_name(parameters,iteration,close = True if iteration==-1 else False)}/0.ERROR.log","a") as file:
                     file.write(f"#{str(UTCDateTime().now()):=^60}\n ")
                     file.write("Error occured in energy estimation phase : ")
                     file.write(correct_message(format_exc()))
@@ -208,13 +216,13 @@ def main(path,stages = 0, real_time=True, new_param=False, show_parameters=False
                     # file.write(f"{exc_type} : {error}")
                     file.write("\n >>> moving on to another iteration\n")
             else : 
-                if os.path.exists(f"{path}/Results/{folder_name(parameters,iteration)}/0.ERROR.log"):
-                    os.remove(f"{path}/Results/{folder_name(parameters,iteration)}/0.ERROR.log")
+                if os.path.exists(f"{path}/Results/{folder_name(parameters,iteration,close = True if iteration==-1 else False)}/0.ERROR.log"):
+                    os.remove(f"{path}/Results/{folder_name(parameters,iteration,close = True if iteration==-1 else False)}/0.ERROR.log")
             finally : continue
     
-    if stages in [2,3]:
+    if stages in [2,3,4]:
         data = [general_inv, general_st_bb, general_st_hf]
-        return ev, parameters, results, path, dist_list, data
+        return ev, parameters, results, path, dist_list, data, resultpath 
     
     if stages in [0,4,5,7]:
         write_rt_cat(ev,results)
@@ -228,7 +236,7 @@ def main(path,stages = 0, real_time=True, new_param=False, show_parameters=False
             sys.stdout.write(f"\n{Back.GREEN + Style.DIM + Fore.BLACK}"
                               +"Cannot do figures - verify data and results"
                               +f"{Style.RESET_ALL}")
-            with open(f"{path}/Results/{folder_name(parameters,iteration)}/0.ERROR.log","a") as file:
+            with open(f"{path}/Results/{folder_name(parameters,iteration,close = True if iteration==-1 else False)}/0.ERROR.log","a") as file:
                 file.write(f"#{str(UTCDateTime().now()):=^60}\n ")
                 file.write("Cannot do figures - verify data and results : ")
                 file.write(correct_message(format_exc()))
@@ -241,17 +249,19 @@ def main(path,stages = 0, real_time=True, new_param=False, show_parameters=False
             
             sys.stdout.write("\n >>> finishing estimation\n")
         else : 
-            if os.path.exists(f"{path}/Results/{folder_name(parameters,iteration)}/0.ERROR.log"):
-                os.remove(f"{path}/Results/{folder_name(parameters,iteration)}/0.ERROR.log")
+            if os.path.exists(f"{path}/Results/{folder_name(parameters,iteration,close = True if iteration==-1 else False)}/0.ERROR.log"):
+                os.remove(f"{path}/Results/{folder_name(parameters,iteration,close = True if iteration==-1 else False)}/0.ERROR.log")
             
     
     if (not os.path.exists(f"{path}/Data/0.ERROR.log")
-        and not os.path.exists(f"{path}/Results/{folder_name(parameters,iteration)}/0.ERROR.log")):
+        and not os.path.exists(f"{path}/Results/{folder_name(parameters,iteration,close = True if iteration==-1 else False)}/0.ERROR.log")):
     # if not os.path.exists(f"{path}/Results/{folder_name(parameters,iteration)}/0.ERROR.log"):
         sys.stdout.write(f"\n{Back.GREEN + Style.BRIGHT + Fore.BLACK}"
                           +f"{f'FINISHED SUCCESSFULLY'.center(65):65s}"
                           +f"{Style.RESET_ALL}\n")
-    return None,None,None,path,None,None
+    
+    return None,None,None,path,None,None, None
+        
 
 # import tarfile
 # import os.path
@@ -304,8 +314,11 @@ if __name__ == "__main__":
                   parameters=deepcopy(PARAMETERS))
     
     if not args.catalogue and args.real_time:
-        ev,parameters,results,path,dist_list,data = main(args.path,stages = args.stage,real_time=args.real_time,
-              new_param=args.new_param,show_parameters=args.show_param)
+        (ev,parameters,results,\
+         path,dist_list,data,resultpath) = main(args.path,stages = args.stage,
+                                                 real_time=args.real_time,
+                                                 new_param=args.new_param,
+                                                 show_parameters=args.show_param)
         if data:
             inv,st,st_hf = data
      

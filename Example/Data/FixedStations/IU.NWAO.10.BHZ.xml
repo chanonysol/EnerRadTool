@@ -1,0 +1,279 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<FDSNStationXML xmlns="http://www.fdsn.org/xml/station/1" schemaVersion="1.2">
+  <Source>EarthScope,SeisComP</Source>
+  <Sender>ANU-RSES,EarthScope</Sender>
+  <Module>ObsPy 1.4.2</Module>
+  <ModuleURI>https://www.obspy.org</ModuleURI>
+  <Created>2026-10-01T15:29:40.983394Z</Created>
+  <Network code="IU" startDate="1988-01-01T00:00:00.000000Z" restrictedStatus="open">
+    <Description>Global Seismograph Network (GSN - IRIS/USGS) (GSN)</Description>
+    <Identifier type="DOI">10.7914/SN/IU
+   </Identifier>
+    <TotalNumberStations>115</TotalNumberStations>
+    <SelectedNumberStations>1</SelectedNumberStations>
+    <Station code="NWAO" startDate="1991-11-25T00:00:00.000000Z" restrictedStatus="open">
+      <Description>(GSN) IRIS/USGS (IU) and Geoscience Australia</Description>
+      <Latitude unit="DEGREES">-32.9277</Latitude>
+      <Longitude unit="DEGREES">117.239</Longitude>
+      <Elevation>380.0</Elevation>
+      <Site>
+        <Name>Narrogin, Australia</Name>
+      </Site>
+      <CreationDate>1991-11-25T00:00:00.000000Z</CreationDate>
+      <TotalNumberChannels>277</TotalNumberChannels>
+      <SelectedNumberChannels>2</SelectedNumberChannels>
+      <Channel code="BHZ" startDate="2016-01-18T02:00:00.000000Z" restrictedStatus="open" locationCode="10">
+        <Comment>
+          <Value>[SENSOR::STS-2::89307], [LOGGER::Q330HR::4408]</Value>
+          <BeginEffectiveTime>2016-01-18T02:00:00.000000Z</BeginEffectiveTime>
+        </Comment>
+        <Latitude unit="DEGREES">-32.9277</Latitude>
+        <Longitude unit="DEGREES">117.239</Longitude>
+        <Elevation>380.0</Elevation>
+        <Depth>0.0</Depth>
+        <Azimuth unit="DEGREES">0.0</Azimuth>
+        <Dip unit="DEGREES">-90.0</Dip>
+        <Type>CONTINUOUS</Type>
+        <Type>GEOPHYSICAL</Type>
+        <SampleRate unit="SAMPLES/S">40.0</SampleRate>
+        <Sensor>
+          <Type>STRECKEISEN</Type>
+          <Description>Velocity Sensor</Description>
+          <Manufacturer>STRECKEISEN</Manufacturer>
+          <Model>STS-2</Model>
+          <SerialNumber>89307</SerialNumber>
+        </Sensor>
+        <DataLogger>
+          <Type>QUANTERRA</Type>
+          <Manufacturer>QUANTERRA</Manufacturer>
+          <Model>Q330HR</Model>
+          <SerialNumber>4408</SerialNumber>
+        </DataLogger>
+        <Response>
+          <InstrumentSensitivity>
+            <Value>2447800000.0</Value>
+            <Frequency>0.02</Frequency>
+            <InputUnits>
+              <Name>m/s</Name>
+              <Description>Velocity in meters per second</Description>
+            </InputUnits>
+            <OutputUnits>
+              <Name>counts</Name>
+              <Description>Digital Count in Digital counts</Description>
+            </OutputUnits>
+          </InstrumentSensitivity>
+          <Stage number="1">
+            <PolesZeros name="ASL_STS2gen1">
+              <Description>Calibrations from US.WVOR and IU.NWAO</Description>
+              <InputUnits>
+                <Name>m/s</Name>
+                <Description>Velocity in meters per second</Description>
+              </InputUnits>
+              <OutputUnits>
+                <Name>V</Name>
+                <Description>Voltage in Volts</Description>
+              </OutputUnits>
+              <PzTransferFunctionType>LAPLACE (RADIANS/SECOND)</PzTransferFunctionType>
+              <NormalizationFactor>6369190000000000.0</NormalizationFactor>
+              <NormalizationFrequency unit="HERTZ">0.02</NormalizationFrequency>
+              <Zero number="0">
+                <Real>0.0</Real>
+                <Imaginary>0.0</Imaginary>
+              </Zero>
+              <Zero number="1">
+                <Real>0.0</Real>
+                <Imaginary>0.0</Imaginary>
+              </Zero>
+              <Zero number="2">
+                <Real>-8.48625</Real>
+                <Imaginary>0.0</Imaginary>
+              </Zero>
+              <Zero number="3">
+                <Real>-245.636</Real>
+                <Imaginary>0.0</Imaginary>
+              </Zero>
+              <Zero number="4">
+                <Real>-398.031</Real>
+                <Imaginary>-489.767</Imaginary>
+              </Zero>
+              <Zero number="5">
+                <Real>-398.031</Real>
+                <Imaginary>489.767</Imaginary>
+              </Zero>
+              <Pole number="0">
+                <Real>-0.0371864</Real>
+                <Imaginary>-0.0369685</Imaginary>
+              </Pole>
+              <Pole number="1">
+                <Real>-0.0371864</Real>
+                <Imaginary>0.0369685</Imaginary>
+              </Pole>
+              <Pole number="2">
+                <Real>-9.01881</Real>
+                <Imaginary>0.0</Imaginary>
+              </Pole>
+              <Pole number="3">
+                <Real>-176.702</Real>
+                <Imaginary>0.0</Imaginary>
+              </Pole>
+              <Pole number="4">
+                <Real>-253.551</Real>
+                <Imaginary>0.0</Imaginary>
+              </Pole>
+              <Pole number="5">
+                <Real>-102.871</Real>
+                <Imaginary>-421.81</Imaginary>
+              </Pole>
+              <Pole number="6">
+                <Real>-102.871</Real>
+                <Imaginary>421.81</Imaginary>
+              </Pole>
+              <Pole number="7">
+                <Real>-453.48</Real>
+                <Imaginary>-391.484</Imaginary>
+              </Pole>
+              <Pole number="8">
+                <Real>-453.48</Real>
+                <Imaginary>391.484</Imaginary>
+              </Pole>
+              <Pole number="9">
+                <Real>-13798.0</Real>
+                <Imaginary>0.0</Imaginary>
+              </Pole>
+              <Pole number="10">
+                <Real>-13798.0</Real>
+                <Imaginary>0.0</Imaginary>
+              </Pole>
+            </PolesZeros>
+            <Decimation>
+              <InputSampleRate unit="HERTZ">40.0</InputSampleRate>
+              <Factor>1</Factor>
+              <Offset>0</Offset>
+              <Delay>0.0</Delay>
+              <Correction>0.0</Correction>
+            </Decimation>
+            <StageGain>
+              <Value>1459.0</Value>
+              <Frequency>0.02</Frequency>
+            </StageGain>
+          </Stage>
+          <Stage number="2">
+            <PolesZeros name="AnaPAZ_IUV_NZ0_NP0_PHd41d8cd_AN1_FN1::NRL:Gain_SG1_FN1">
+              <Description>IRIS-NRL</Description>
+              <InputUnits>
+                <Name>V</Name>
+                <Description>Voltage in Volts</Description>
+              </InputUnits>
+              <OutputUnits>
+                <Name>V</Name>
+                <Description>Voltage in Volts</Description>
+              </OutputUnits>
+              <PzTransferFunctionType>LAPLACE (RADIANS/SECOND)</PzTransferFunctionType>
+              <NormalizationFactor>1.0</NormalizationFactor>
+              <NormalizationFrequency unit="HERTZ">0.02</NormalizationFrequency>
+            </PolesZeros>
+            <Decimation>
+              <InputSampleRate unit="HERTZ">40.0</InputSampleRate>
+              <Factor>1</Factor>
+              <Offset>0</Offset>
+              <Delay>0.0</Delay>
+              <Correction>0.0</Correction>
+            </Decimation>
+            <StageGain>
+              <Value>1.0</Value>
+              <Frequency>1.0</Frequency>
+            </StageGain>
+          </Stage>
+          <Stage number="3">
+            <Coefficients>
+              <InputUnits>
+                <Name>V</Name>
+                <Description>Voltage in Volts</Description>
+              </InputUnits>
+              <OutputUnits>
+                <Name>counts</Name>
+                <Description>Digital Count in Digital counts</Description>
+              </OutputUnits>
+              <CfTransferFunctionType>DIGITAL</CfTransferFunctionType>
+            </Coefficients>
+            <Decimation>
+              <InputSampleRate unit="HERTZ">40.0</InputSampleRate>
+              <Factor>1</Factor>
+              <Offset>0</Offset>
+              <Delay>0.0</Delay>
+              <Correction>0.0</Correction>
+            </Decimation>
+            <StageGain>
+              <Value>1677720.0</Value>
+              <Frequency>1.0</Frequency>
+            </StageGain>
+          </Stage>
+          <Stage number="4">
+            <FIR name="Dec_IR40_OR40_NS1-DC39-1_NHd6c4b46_1">
+              <Description>IRIS-NRL</Description>
+              <InputUnits>
+                <Name>counts</Name>
+                <Description>Digital Count in Digital counts</Description>
+              </InputUnits>
+              <OutputUnits>
+                <Name>counts</Name>
+                <Description>Digital Count in Digital counts</Description>
+              </OutputUnits>
+              <Symmetry>NONE</Symmetry>
+              <NumeratorCoefficient i="1">-2.47694e-15</NumeratorCoefficient>
+              <NumeratorCoefficient i="2">9.04224e-10</NumeratorCoefficient>
+              <NumeratorCoefficient i="3">6.73861e-09</NumeratorCoefficient>
+              <NumeratorCoefficient i="4">8.69479e-08</NumeratorCoefficient>
+              <NumeratorCoefficient i="5">7.86642e-07</NumeratorCoefficient>
+              <NumeratorCoefficient i="6">5.08156e-06</NumeratorCoefficient>
+              <NumeratorCoefficient i="7">-1.49962e-05</NumeratorCoefficient>
+              <NumeratorCoefficient i="8">0.000722663</NumeratorCoefficient>
+              <NumeratorCoefficient i="9">0.000197456</NumeratorCoefficient>
+              <NumeratorCoefficient i="10">-0.0038141</NumeratorCoefficient>
+              <NumeratorCoefficient i="11">0.00311093</NumeratorCoefficient>
+              <NumeratorCoefficient i="12">-0.00309252</NumeratorCoefficient>
+              <NumeratorCoefficient i="13">-0.000782171</NumeratorCoefficient>
+              <NumeratorCoefficient i="14">0.00690297</NumeratorCoefficient>
+              <NumeratorCoefficient i="15">-0.0150219</NumeratorCoefficient>
+              <NumeratorCoefficient i="16">0.0218697</NumeratorCoefficient>
+              <NumeratorCoefficient i="17">-0.023714</NumeratorCoefficient>
+              <NumeratorCoefficient i="18">0.0160467</NumeratorCoefficient>
+              <NumeratorCoefficient i="19">0.00477501</NumeratorCoefficient>
+              <NumeratorCoefficient i="20">-0.0412112</NumeratorCoefficient>
+              <NumeratorCoefficient i="21">0.0947838</NumeratorCoefficient>
+              <NumeratorCoefficient i="22">-0.174563</NumeratorCoefficient>
+              <NumeratorCoefficient i="23">0.346457</NumeratorCoefficient>
+              <NumeratorCoefficient i="24">0.803985</NumeratorCoefficient>
+              <NumeratorCoefficient i="25">-0.0121791</NumeratorCoefficient>
+              <NumeratorCoefficient i="26">-0.0585339</NumeratorCoefficient>
+              <NumeratorCoefficient i="27">0.0721549</NumeratorCoefficient>
+              <NumeratorCoefficient i="28">-0.0627521</NumeratorCoefficient>
+              <NumeratorCoefficient i="29">0.0432412</NumeratorCoefficient>
+              <NumeratorCoefficient i="30">-0.0219741</NumeratorCoefficient>
+              <NumeratorCoefficient i="31">0.00441733</NumeratorCoefficient>
+              <NumeratorCoefficient i="32">0.00658508</NumeratorCoefficient>
+              <NumeratorCoefficient i="33">-0.0109843</NumeratorCoefficient>
+              <NumeratorCoefficient i="34">0.0100424</NumeratorCoefficient>
+              <NumeratorCoefficient i="35">-0.00683302</NumeratorCoefficient>
+              <NumeratorCoefficient i="36">0.00240991</NumeratorCoefficient>
+              <NumeratorCoefficient i="37">-0.000596748</NumeratorCoefficient>
+              <NumeratorCoefficient i="38">-0.00273635</NumeratorCoefficient>
+              <NumeratorCoefficient i="39">0.00109524</NumeratorCoefficient>
+            </FIR>
+            <Decimation>
+              <InputSampleRate unit="HERTZ">40.0</InputSampleRate>
+              <Factor>1</Factor>
+              <Offset>0</Offset>
+              <Delay>0.475</Delay>
+              <Correction>0.475</Correction>
+            </Decimation>
+            <StageGain>
+              <Value>1.0</Value>
+              <Frequency>0.0</Frequency>
+            </StageGain>
+          </Stage>
+        </Response>
+      </Channel>
+    </Station>
+  </Network>
+</FDSNStationXML>

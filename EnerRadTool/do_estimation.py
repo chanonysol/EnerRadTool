@@ -40,7 +40,7 @@ def folder_name(param,rt,close=False):
         +f'T{param.time_max:.0f}'
     if close:
         name = f'W{"s" if param.distance.include_near else ""}_'\
-            +f'D[{0.:.0f}.{2.:.0f}.{param.distance.totalstep:.0f}]_'\
+            +f'D[{0.:.0f}.{2. if not param.distance.max_S else param.distance.max_S :.0f}.{param.distance.totalstep:.0f}]_'\
             +f'T{param.time_max_s:.0f}'
     return (f'{param.general.session_name+"_" if param.general.session_name else ""}'
             +f'{"SC" if isinstance(rt,bool) else "RT"}_{name}')
@@ -48,7 +48,7 @@ def folder_name(param,rt,close=False):
 def do_estimations(ev, path, param, st_bb, st_hf, inv, results, stadist, rt=False):
     STARTTIME = time()
     #selecting the right results folder
-    folder = folder_name(param,rt,close = True if all(stadist<2.) else False)
+    folder = folder_name(param,rt,close = True if all(stadist<5.) else False)
     resultpath = f"{path}/Results/{folder}"
     resname=f"{folder[(len(param.general.session_name)+1 if param.general.session_name else 0):][:2]}{rt}"
     if isinstance(param.general.search_data,bool) :
@@ -72,7 +72,7 @@ def do_estimations(ev, path, param, st_bb, st_hf, inv, results, stadist, rt=Fals
         return resultpath, [inv, st_bb, st_hf]       
         
     else :
-        if isinstance(rt,int) and not (param.distance.include_near and all(stadist<=2.)):
+        if isinstance(rt,int) and not (param.distance.include_near and all(stadist<5.)):
             ener_sta=None
             ener_sta_names = [],[]
             file_bb = f"{resultpath}/ener_all_bb.dat"
@@ -205,7 +205,7 @@ def do_estimations(ev, path, param, st_bb, st_hf, inv, results, stadist, rt=Fals
             
             
             
-        elif (param.distance.include_near and all(stadist<=2.)):
+        elif (param.distance.include_near and all(stadist<=5.)):
             
             ener_bb,ener_hf = calc_ener_S(st_bb,st_hf,inv,param,ev)
             

@@ -1,0 +1,261 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+ <FDSNStationXML xmlns="http://www.fdsn.org/xml/station/1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:iris="http://www.fdsn.org/xml/station/1/iris" xsi:schemaLocation="http://www.fdsn.org/xml/station/1 http://www.fdsn.org/xml/station/fdsn-station-1.1.xsd" schemaVersion="1.1">
+  <Source>EarthScope</Source>
+  <Sender>EarthScope</Sender>
+  <Module>EarthScope WEB SERVICE: fdsnws-station | version: 1.1.58</Module>
+  <ModuleURI></ModuleURI>
+  <Created>2026-10-01T15:30:08.5889</Created>
+  <Network code="G" startDate="1982-01-01T00:00:00.0000" alternateCode="GEOSCOPE" restrictedStatus="open">
+   <Description>GEOSCOPE - French Global Network of Seismological Broadband Stations (GEOSCOPE)</Description>
+   <Identifier type="DOI">10.18715/GEOSCOPE.G
+   </Identifier>
+   <TotalNumberStations>58</TotalNumberStations>
+   <SelectedNumberStations>1</SelectedNumberStations>
+   <Station code="AIS" startDate="1993-12-25T00:00:00.0000" restrictedStatus="open" iris:alternateNetworkCodes="_FDSN,_FDSN-ALL,.UNRESTRICTED">
+    <Comment>
+     <Value>Sensors responses contain nominal values.</Value>
+     <BeginEffectiveTime>1993-12-25T00:00:00.0000</BeginEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>Error on sensors poles may reach 2 percent.</Value>
+     <BeginEffectiveTime>1993-12-25T00:00:00.0000</BeginEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>Maintenance in progress.</Value>
+     <BeginEffectiveTime>2017-04-11T04:00:00.0000</BeginEffectiveTime>
+     <EndEffectiveTime>2017-04-13T12:00:00.0000</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>The station is temporarily interrupted</Value>
+     <BeginEffectiveTime>2021-04-16T12:00:00.0000</BeginEffectiveTime>
+     <EndEffectiveTime>2021-09-15T07:00:00.0000</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>Maintenance in progress-Disruptions due to human intervention in the vault</Value>
+     <BeginEffectiveTime>2023-04-09T04:00:00.0000</BeginEffectiveTime>
+     <EndEffectiveTime>2023-04-10T12:00:00.0000</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>Maintenance in progress-Disruptions due to human intervention in the vault</Value>
+     <BeginEffectiveTime>2024-04-05T08:00:00.0000</BeginEffectiveTime>
+     <EndEffectiveTime>2024-04-10T23:00:00.0000</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>The station is temporarily interrupted</Value>
+     <BeginEffectiveTime>2024-04-26T00:00:00.0000</BeginEffectiveTime>
+     <EndEffectiveTime>2024-07-16T00:00:00.0000</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>Due to the fire on the Ansterdam Island the station is temporarily interrupted</Value>
+     <BeginEffectiveTime>2025-02-01T00:00:00.0000</BeginEffectiveTime>
+     <EndEffectiveTime>2025-12-17T00:00:00.0000</EndEffectiveTime>
+    </Comment>
+    <Comment>
+     <Value>Complete reinstallation of the station</Value>
+     <BeginEffectiveTime>2025-12-16T00:00:00.0000</BeginEffectiveTime>
+     <EndEffectiveTime>2025-12-17T00:00:00.0000</EndEffectiveTime>
+    </Comment>
+    <Latitude>-37.79635</Latitude>
+    <Longitude>77.569186</Longitude>
+    <Elevation>35.9</Elevation>
+    <Site>
+     <Name>Nouvelle-Amsterdam - TAAF, France</Name>
+    </Site>
+    <CreationDate>1993-12-25T00:00:00.0000</CreationDate>
+    <TotalNumberChannels>57</TotalNumberChannels>
+    <SelectedNumberChannels>1</SelectedNumberChannels>
+    <Channel code="BHZ" locationCode="00" startDate="2013-04-02T13:18:00.0000" endDate="2024-04-28T09:00:00.0000" restrictedStatus="open">
+     <Comment>
+      <Value>Channel is down</Value>
+      <BeginEffectiveTime>2013-09-18T10:37:39.0000</BeginEffectiveTime>
+      <EndEffectiveTime>2013-11-20T13:13:58.0000</EndEffectiveTime>
+     </Comment>
+     <Latitude>-37.79635</Latitude>
+     <Longitude>77.569186</Longitude>
+     <Elevation>35.9</Elevation>
+     <Depth>3</Depth>
+     <Azimuth>0</Azimuth>
+     <Dip>-90</Dip>
+     <Type>CONTINUOUS</Type>
+     <Type>GEOPHYSICAL</Type>
+     <SampleRate>2E01</SampleRate>
+     <ClockDrift>5E-06</ClockDrift>
+     <CalibrationUnits>
+      <Name>M/S</Name>
+      <Description>Velocity in Meters Per Second</Description>
+     </CalibrationUnits>
+     <Sensor>
+      <Description>STRECKEISEN STS2</Description>
+     </Sensor>
+     <Response>
+     <InstrumentSensitivity>
+       <Value>2.51661E9</Value>
+       <Frequency>0.02</Frequency>
+       <InputUnits>
+         <Name>m/s</Name>
+         <Description>Velocity in Meters Per Second</Description>
+       </InputUnits>
+       <OutputUnits>
+         <Name>counts</Name>
+         <Description>DIGITAL UNIT in Counts</Description>
+       </OutputUnits>
+     </InstrumentSensitivity>
+      <Stage number="1">
+      <PolesZeros>
+        <InputUnits>
+          <Name>m/s</Name>
+          <Description>Velocity in Meters Per Second</Description>
+        </InputUnits>
+        <OutputUnits>
+          <Name>V</Name>
+          <Description>Volts</Description>
+        </OutputUnits>
+        <PzTransferFunctionType>LAPLACE (RADIANS/SECOND)</PzTransferFunctionType>
+        <NormalizationFactor>1.01496</NormalizationFactor>
+        <NormalizationFrequency unit="HERTZ">0.02</NormalizationFrequency>
+        <Zero number="0">
+          <Real minusError="0.0" plusError="0.0">0.0</Real>
+          <Imaginary minusError="0.0" plusError="0.0">0.0</Imaginary>
+        </Zero>
+        <Zero number="1">
+          <Real minusError="0.0" plusError="0.0">0.0</Real>
+          <Imaginary minusError="0.0" plusError="0.0">0.0</Imaginary>
+        </Zero>
+        <Pole number="0">
+          <Real minusError="0.0" plusError="0.0">-0.0370239</Real>
+          <Imaginary minusError="0.0" plusError="0.0">-0.0370239</Imaginary>
+        </Pole>
+        <Pole number="1">
+          <Real minusError="0.0" plusError="0.0">-0.0370239</Real>
+          <Imaginary minusError="0.0" plusError="0.0">0.0370239</Imaginary>
+        </Pole>
+      </PolesZeros>
+      <StageGain>
+        <Value>1500.0</Value>
+        <Frequency>0.02</Frequency>
+      </StageGain>
+
+      </Stage>
+      <Stage number="2">
+      <Coefficients>
+        <InputUnits>
+          <Name>V</Name>
+          <Description>Volts</Description>
+        </InputUnits>
+        <OutputUnits>
+          <Name>counts</Name>
+          <Description>DIGITAL UNIT in Counts</Description>
+        </OutputUnits>
+        <CfTransferFunctionType>DIGITAL</CfTransferFunctionType>
+      </Coefficients>
+      <Decimation>
+        <InputSampleRate unit="HERTZ">20.0</InputSampleRate>
+        <Factor>1</Factor>
+        <Offset>0</Offset>
+        <Delay>0.0</Delay>
+        <Correction>0.0</Correction>
+      </Decimation>
+      <StageGain>
+        <Value>1677720.0</Value>
+        <Frequency>0.0</Frequency>
+      </StageGain>
+
+      </Stage>
+      <Stage number="3">
+      <FIR>
+        <InputUnits>
+          <Name>counts</Name>
+          <Description>DIGITAL UNIT in Counts</Description>
+        </InputUnits>
+        <OutputUnits>
+          <Name>counts</Name>
+          <Description>DIGITAL UNIT in Counts</Description>
+        </OutputUnits>
+        <Symmetry>NONE</Symmetry>
+        <NumeratorCoefficient>3.771622E-17</NumeratorCoefficient>
+        <NumeratorCoefficient>-1.6971263E-10</NumeratorCoefficient>
+        <NumeratorCoefficient>1.7183769E-8</NumeratorCoefficient>
+        <NumeratorCoefficient>-2.4396441E-7</NumeratorCoefficient>
+        <NumeratorCoefficient>2.5825193E-7</NumeratorCoefficient>
+        <NumeratorCoefficient>1.5608987E-6</NumeratorCoefficient>
+        <NumeratorCoefficient>-1.8170374E-6</NumeratorCoefficient>
+        <NumeratorCoefficient>2.4137647E-6</NumeratorCoefficient>
+        <NumeratorCoefficient>-3.7049074E-6</NumeratorCoefficient>
+        <NumeratorCoefficient>8.7327567E-7</NumeratorCoefficient>
+        <NumeratorCoefficient>3.6423511E-5</NumeratorCoefficient>
+        <NumeratorCoefficient>-2.4683311E-4</NumeratorCoefficient>
+        <NumeratorCoefficient>-3.9359882E-4</NumeratorCoefficient>
+        <NumeratorCoefficient>6.5596116E-4</NumeratorCoefficient>
+        <NumeratorCoefficient>-0.001020252</NumeratorCoefficient>
+        <NumeratorCoefficient>0.0012305107</NumeratorCoefficient>
+        <NumeratorCoefficient>-0.0010604299</NumeratorCoefficient>
+        <NumeratorCoefficient>2.8861329E-4</NumeratorCoefficient>
+        <NumeratorCoefficient>0.0012268313</NumeratorCoefficient>
+        <NumeratorCoefficient>-0.0034585489</NumeratorCoefficient>
+        <NumeratorCoefficient>0.0061462784</NumeratorCoefficient>
+        <NumeratorCoefficient>-0.0087582095</NumeratorCoefficient>
+        <NumeratorCoefficient>0.010517854</NumeratorCoefficient>
+        <NumeratorCoefficient>-0.010495466</NumeratorCoefficient>
+        <NumeratorCoefficient>0.0077688228</NumeratorCoefficient>
+        <NumeratorCoefficient>-0.0016282018</NumeratorCoefficient>
+        <NumeratorCoefficient>-0.0076409597</NumeratorCoefficient>
+        <NumeratorCoefficient>0.019894414</NumeratorCoefficient>
+        <NumeratorCoefficient>-0.038761941</NumeratorCoefficient>
+        <NumeratorCoefficient>0.055104411</NumeratorCoefficient>
+        <NumeratorCoefficient>-0.071369635</NumeratorCoefficient>
+        <NumeratorCoefficient>0.08330357</NumeratorCoefficient>
+        <NumeratorCoefficient>-0.086719458</NumeratorCoefficient>
+        <NumeratorCoefficient>0.062876883</NumeratorCoefficient>
+        <NumeratorCoefficient>0.88995076</NumeratorCoefficient>
+        <NumeratorCoefficient>0.1670017</NumeratorCoefficient>
+        <NumeratorCoefficient>-0.12868654</NumeratorCoefficient>
+        <NumeratorCoefficient>0.10072625</NumeratorCoefficient>
+        <NumeratorCoefficient>-0.075500737</NumeratorCoefficient>
+        <NumeratorCoefficient>0.051595197</NumeratorCoefficient>
+        <NumeratorCoefficient>-0.031114641</NumeratorCoefficient>
+        <NumeratorCoefficient>0.011006032</NumeratorCoefficient>
+        <NumeratorCoefficient>4.7617321E-4</NumeratorCoefficient>
+        <NumeratorCoefficient>-0.0082388155</NumeratorCoefficient>
+        <NumeratorCoefficient>0.012421118</NumeratorCoefficient>
+        <NumeratorCoefficient>-0.013133279</NumeratorCoefficient>
+        <NumeratorCoefficient>0.01144166</NumeratorCoefficient>
+        <NumeratorCoefficient>-0.0084523488</NumeratorCoefficient>
+        <NumeratorCoefficient>0.0051364373</NumeratorCoefficient>
+        <NumeratorCoefficient>-0.0022056665</NumeratorCoefficient>
+        <NumeratorCoefficient>6.4757742E-5</NumeratorCoefficient>
+        <NumeratorCoefficient>0.0011723495</NumeratorCoefficient>
+        <NumeratorCoefficient>-0.0016096229</NumeratorCoefficient>
+        <NumeratorCoefficient>0.0014835919</NumeratorCoefficient>
+        <NumeratorCoefficient>-0.0010652902</NumeratorCoefficient>
+        <NumeratorCoefficient>5.90532E-4</NumeratorCoefficient>
+        <NumeratorCoefficient>-2.7357644E-4</NumeratorCoefficient>
+        <NumeratorCoefficient>-3.2148402E-4</NumeratorCoefficient>
+        <NumeratorCoefficient>3.9851542E-5</NumeratorCoefficient>
+        <NumeratorCoefficient>1.0833027E-6</NumeratorCoefficient>
+        <NumeratorCoefficient>-4.642973E-6</NumeratorCoefficient>
+        <NumeratorCoefficient>2.8844792E-6</NumeratorCoefficient>
+        <NumeratorCoefficient>-1.6208104E-6</NumeratorCoefficient>
+        <NumeratorCoefficient>1.3161658E-6</NumeratorCoefficient>
+        <NumeratorCoefficient>4.7251905E-7</NumeratorCoefficient>
+        <NumeratorCoefficient>-3.2963658E-7</NumeratorCoefficient>
+        <NumeratorCoefficient>2.7142341E-8</NumeratorCoefficient>
+      </FIR>
+      <Decimation>
+        <InputSampleRate unit="HERTZ">20.0</InputSampleRate>
+        <Factor>1</Factor>
+        <Offset>0</Offset>
+        <Delay>1.7</Delay>
+        <Correction>1.7</Correction>
+      </Decimation>
+      <StageGain>
+        <Value>1.0</Value>
+        <Frequency>0.0</Frequency>
+      </StageGain>
+
+      </Stage>
+     </Response>
+    </Channel>
+   </Station>
+  </Network>
+ </FDSNStationXML>

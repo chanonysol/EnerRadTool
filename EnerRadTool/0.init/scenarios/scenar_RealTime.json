@@ -31,7 +31,7 @@
         "P_regional": true,
         "S_near": false
     },
-    "time_max": null,
+    "time_max": 180,
     "time_max_s":60,
     "time_stop": false,
     "time_eval_method": "both",
@@ -39,6 +39,7 @@
         "min": 5.0,
         "max": 80.0,
         "include_near": false,
+        "max_S":200,
         "totalstep": 4.0
     },
     "channel_code": [

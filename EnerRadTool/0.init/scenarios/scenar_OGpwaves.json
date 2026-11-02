@@ -39,6 +39,7 @@
         "min": 30.0,
         "max": 80.0,
         "include_near": false,
+        "max_S":200,
         "totalstep": 1.0
     },
     "channel_code": [

@@ -1,0 +1,17 @@
+{
+  "station_param": {
+    "distance": 1.39,
+    "az": 236.66,
+    "baz": 57.72
+  },
+  "ray_param": {
+    "s_time": 41.9,
+    "s_incident": 48.4,
+    "s_takeoff": 48.6
+  },
+  "site_class": {
+    "class": "B",
+    "k": 0.016,
+    "beta": 1.0
+  }
+}

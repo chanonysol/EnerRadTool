@@ -81,7 +81,7 @@ def do_query(ev, path, param, current_dist, next_dist, results, rt=False):
             lines = reshape(lines,(1,4))
         # else:
         #     lines=lines[argsort(lines[:,0])]
-        if lines[:,0].min()<param.distance.min:
+        if lines[:,0].min()<min(param.distance.min,current_dist) :
             lines[argwhere(lines[:,0]==lines[:,0].min()),0] = param.distance.min
         ind = argwhere(lines[:,1]<=next_dist)
         alld = unique(lines[:,:2])
@@ -109,7 +109,8 @@ def do_query(ev, path, param, current_dist, next_dist, results, rt=False):
                 clean_data(datapath,invpath,ev,param.general.keep_data,
                            ext = "*.MSEED",snrlim = param.deviation_correction.snr_keep)
         if (len(glob(f"{invpath}/*.xml"))<len(glob(f"{datapath}/*.MSEED"))
-            or len(glob(f"{invpath}/*.xml"))!=len(glob(f"{invpath}/*.json"))):
+            or len(glob(f"{invpath}/*.xml"))!=len(glob(f"{invpath}/*.json"))
+            and next_dist>=5.):
                 sys.stdout.write(f"{Fore.YELLOW + Style.DIM}"
                                   +f" > Deteted problem in inventory - restart"
                                   +f"{Style.RESET_ALL}")
@@ -160,9 +161,9 @@ def do_query(ev, path, param, current_dist, next_dist, results, rt=False):
             from data_query import regional_query
             from obspy.geodetics.base import degrees2kilometers,kilometer2degrees
             times = request_val_s_train(['S','time'],ev.depth,
-                                        array([kilometer2degrees(200)]),
+                                        array([next_dist,4.54]),
                                         model_name="iasp91")[0]
-            regional_query(ev,path,0,times[0][-1] + 460,
+            regional_query(ev,path,current_dist,next_dist,0,times[0][-1] + 460,
                            [f"{code}N,{code}E" for code in param.channel_code])
         
         elif param.waves.network_fixed :

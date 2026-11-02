@@ -1,0 +1,236 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+ <FDSNStationXML xmlns="http://www.fdsn.org/xml/station/1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:iris="http://www.fdsn.org/xml/station/1/iris" xsi:schemaLocation="http://www.fdsn.org/xml/station/1 http://www.fdsn.org/xml/station/fdsn-station-1.1.xsd" schemaVersion="1.1">
+  <Source>EarthScope</Source>
+  <Sender>EarthScope</Sender>
+  <Module>EarthScope WEB SERVICE: fdsnws-station | version: 1.1.58</Module>
+  <ModuleURI></ModuleURI>
+  <Created>2026-10-01T15:28:38.6979</Created>
+  <Network code="AU" startDate="1994-01-01T00:00:00.0000" restrictedStatus="open">
+   <Description>Australian National Seismograph Network (ANSN)</Description>
+   <Identifier type="DOI">10.26186/144675
+   </Identifier>
+   <TotalNumberStations>259</TotalNumberStations>
+   <SelectedNumberStations>1</SelectedNumberStations>
+   <Station code="EIDS" startDate="2003-06-23T00:00:00.0000" restrictedStatus="open" iris:alternateNetworkCodes="_FDSN-ALL,.UNRESTRICTED">
+    <Latitude>-25.369101</Latitude>
+    <Longitude>151.081696</Longitude>
+    <Elevation>216.0</Elevation>
+    <Site>
+     <Name>Eidsvold, QLD</Name>
+     <Country>Australia</Country>
+    </Site>
+    <CreationDate>2003-06-23T00:00:00.0000</CreationDate>
+    <TotalNumberChannels>30</TotalNumberChannels>
+    <SelectedNumberChannels>1</SelectedNumberChannels>
+    <Channel code="BHZ" locationCode="" startDate="2007-07-13T00:00:00.0000" endDate="2025-05-30T23:59:59.0000" restrictedStatus="open">
+     <Latitude>-25.368963</Latitude>
+     <Longitude>151.0801</Longitude>
+     <Elevation>216</Elevation>
+     <Depth>3</Depth>
+     <Azimuth>0</Azimuth>
+     <Dip>-90</Dip>
+     <SampleRate>4E01</SampleRate>
+     <Sensor resourceId="NRL/Sensor/Streckeisen_STS-2_EG3_SG1500_LP120_STgroundVel">
+      <Type>BB</Type>
+      <Description>Streckeisen; STS-2; Electronics_Generation 3; Sensitivity 1500 V/m/s; Long-Period_Corner 120 s; Sensor_Type groundVel</Description>
+      <Manufacturer>Streckeisen</Manufacturer>
+      <Model>STS-2</Model>
+      <SerialNumber>40629</SerialNumber>
+     </Sensor>
+     <DataLogger resourceId="NRL/Datalogger/Quanterra_Q330HR_PG1_FR40_ADHR_LRbelow100_DENone">
+      <Type>Quanterra Q330HR</Type>
+      <Description>Quanterra; Q330HR; Preamp_Gain 1; Final_Sample_Rate 40 Hz; ADC_Type HR; Linear_Filter_Rates below100; Decimation_Filter None</Description>
+      <Manufacturer>Quanterra</Manufacturer>
+      <Model>Q330HR</Model>
+      <SerialNumber>2279C</SerialNumber>
+     </DataLogger>
+     <Response>
+     <InstrumentSensitivity>
+       <Value>2.51658E9</Value>
+       <Frequency>1.0</Frequency>
+       <InputUnits>
+         <Name>m/s</Name>
+         <Description>Velocity in Meters Per Second</Description>
+       </InputUnits>
+       <OutputUnits>
+         <Name>COUNTS</Name>
+       </OutputUnits>
+     </InstrumentSensitivity>
+      <Stage number="1">
+      <PolesZeros resourceId="NRL/ResponsePAZ/Streckeisen_STS-2_EG3_SG1500_LP120_STgroundVel/0" name="NRL/ResponsePAZ/Streckeisen_STS-2_EG3_SG1500_LP120_STgroundVel/0">
+        <InputUnits>
+          <Name>m/s</Name>
+          <Description>Velocity in Meters Per Second</Description>
+        </InputUnits>
+        <OutputUnits>
+          <Name>V</Name>
+        </OutputUnits>
+        <PzTransferFunctionType>LAPLACE (RADIANS/SECOND)</PzTransferFunctionType>
+        <NormalizationFactor>3.4684E17</NormalizationFactor>
+        <NormalizationFrequency>1.0</NormalizationFrequency>
+        <Zero number="0">
+          <Real>0.0</Real>
+          <Imaginary>0.0</Imaginary>
+        </Zero>
+        <Zero number="1">
+          <Real>0.0</Real>
+          <Imaginary>0.0</Imaginary>
+        </Zero>
+        <Zero number="2">
+          <Real>-15.15</Real>
+          <Imaginary>0.0</Imaginary>
+        </Zero>
+        <Zero number="3">
+          <Real>-176.6</Real>
+          <Imaginary>0.0</Imaginary>
+        </Zero>
+        <Zero number="4">
+          <Real>-463.1</Real>
+          <Imaginary>-430.5</Imaginary>
+        </Zero>
+        <Zero number="5">
+          <Real>-463.1</Real>
+          <Imaginary>430.5</Imaginary>
+        </Zero>
+        <Pole number="0">
+          <Real>-0.037</Real>
+          <Imaginary>-0.037</Imaginary>
+        </Pole>
+        <Pole number="1">
+          <Real>-0.037</Real>
+          <Imaginary>0.037</Imaginary>
+        </Pole>
+        <Pole number="2">
+          <Real>-15.64</Real>
+          <Imaginary>0.0</Imaginary>
+        </Pole>
+        <Pole number="3">
+          <Real>-97.34</Real>
+          <Imaginary>-400.7</Imaginary>
+        </Pole>
+        <Pole number="4">
+          <Real>-97.34</Real>
+          <Imaginary>400.7</Imaginary>
+        </Pole>
+        <Pole number="5">
+          <Real>-255.097</Real>
+          <Imaginary>0.0</Imaginary>
+        </Pole>
+        <Pole number="6">
+          <Real>-374.8</Real>
+          <Imaginary>0.0</Imaginary>
+        </Pole>
+        <Pole number="7">
+          <Real>-520.3</Real>
+          <Imaginary>0.0</Imaginary>
+        </Pole>
+        <Pole number="8">
+          <Real>-10530.0</Real>
+          <Imaginary>-10050.0</Imaginary>
+        </Pole>
+        <Pole number="9">
+          <Real>-10530.0</Real>
+          <Imaginary>10050.0</Imaginary>
+        </Pole>
+        <Pole number="10">
+          <Real>-13300.0</Real>
+          <Imaginary>0.0</Imaginary>
+        </Pole>
+      </PolesZeros>
+      <StageGain>
+        <Value>1500.0</Value>
+        <Frequency>1.0</Frequency>
+      </StageGain>
+
+      </Stage>
+      <Stage number="2">
+      <Coefficients>
+        <InputUnits>
+          <Name>V</Name>
+        </InputUnits>
+        <OutputUnits>
+          <Name>COUNTS</Name>
+        </OutputUnits>
+        <CfTransferFunctionType>DIGITAL</CfTransferFunctionType>
+      </Coefficients>
+      <Decimation>
+        <InputSampleRate>40.0</InputSampleRate>
+        <Factor>1</Factor>
+        <Offset>0</Offset>
+        <Delay>0.0</Delay>
+        <Correction>0.0</Correction>
+      </Decimation>
+      <StageGain>
+        <Value>1677720.0</Value>
+        <Frequency>0.0</Frequency>
+      </StageGain>
+
+      </Stage>
+      <Stage number="3">
+      <FIR resourceId="NRL/ResponseFIR/Quanterra_Q330HR_PG1_FR40_ADHR_LRbelow100_DENone/0" name="NRL/ResponseFIR/Quanterra_Q330HR_PG1_FR40_ADHR_LRbelow100_DENone/0">
+        <InputUnits>
+          <Name>COUNTS</Name>
+        </InputUnits>
+        <OutputUnits>
+          <Name>COUNTS</Name>
+        </OutputUnits>
+        <Symmetry>NONE</Symmetry>
+        <NumeratorCoefficient>-2.47694E-15</NumeratorCoefficient>
+        <NumeratorCoefficient>9.042241E-10</NumeratorCoefficient>
+        <NumeratorCoefficient>6.738606E-9</NumeratorCoefficient>
+        <NumeratorCoefficient>8.694795E-8</NumeratorCoefficient>
+        <NumeratorCoefficient>7.866416E-7</NumeratorCoefficient>
+        <NumeratorCoefficient>5.081562E-6</NumeratorCoefficient>
+        <NumeratorCoefficient>-1.499615E-5</NumeratorCoefficient>
+        <NumeratorCoefficient>7.226635E-4</NumeratorCoefficient>
+        <NumeratorCoefficient>1.974555E-4</NumeratorCoefficient>
+        <NumeratorCoefficient>-0.003814096</NumeratorCoefficient>
+        <NumeratorCoefficient>0.003110929</NumeratorCoefficient>
+        <NumeratorCoefficient>-0.003092521</NumeratorCoefficient>
+        <NumeratorCoefficient>-7.82171E-4</NumeratorCoefficient>
+        <NumeratorCoefficient>0.006902967</NumeratorCoefficient>
+        <NumeratorCoefficient>-0.01502188</NumeratorCoefficient>
+        <NumeratorCoefficient>0.02186972</NumeratorCoefficient>
+        <NumeratorCoefficient>-0.02371402</NumeratorCoefficient>
+        <NumeratorCoefficient>0.01604675</NumeratorCoefficient>
+        <NumeratorCoefficient>0.004775011</NumeratorCoefficient>
+        <NumeratorCoefficient>-0.04121115</NumeratorCoefficient>
+        <NumeratorCoefficient>0.09478379</NumeratorCoefficient>
+        <NumeratorCoefficient>-0.1745628</NumeratorCoefficient>
+        <NumeratorCoefficient>0.3464572</NumeratorCoefficient>
+        <NumeratorCoefficient>0.8039848</NumeratorCoefficient>
+        <NumeratorCoefficient>-0.01217913</NumeratorCoefficient>
+        <NumeratorCoefficient>-0.05853387</NumeratorCoefficient>
+        <NumeratorCoefficient>0.07215486</NumeratorCoefficient>
+        <NumeratorCoefficient>-0.0627521</NumeratorCoefficient>
+        <NumeratorCoefficient>0.0432412</NumeratorCoefficient>
+        <NumeratorCoefficient>-0.02197407</NumeratorCoefficient>
+        <NumeratorCoefficient>0.004417329</NumeratorCoefficient>
+        <NumeratorCoefficient>0.006585075</NumeratorCoefficient>
+        <NumeratorCoefficient>-0.01098428</NumeratorCoefficient>
+        <NumeratorCoefficient>0.01004239</NumeratorCoefficient>
+        <NumeratorCoefficient>-0.006833016</NumeratorCoefficient>
+        <NumeratorCoefficient>0.002409909</NumeratorCoefficient>
+        <NumeratorCoefficient>-5.967484E-4</NumeratorCoefficient>
+        <NumeratorCoefficient>-0.002736346</NumeratorCoefficient>
+        <NumeratorCoefficient>0.001095237</NumeratorCoefficient>
+      </FIR>
+      <Decimation>
+        <InputSampleRate>40.0</InputSampleRate>
+        <Factor>1</Factor>
+        <Offset>0</Offset>
+        <Delay>0.475</Delay>
+        <Correction>0.475</Correction>
+      </Decimation>
+      <StageGain>
+        <Value>1.0</Value>
+        <Frequency>0.0</Frequency>
+      </StageGain>
+
+      </Stage>
+     </Response>
+    </Channel>
+   </Station>
+  </Network>
+ </FDSNStationXML>

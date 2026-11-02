@@ -60,7 +60,10 @@ def read_results_file(filepath,correct = True):
     dic['method']=method
     return AttribDict(dic)    
 
-def plot_correct_staflux(resultpath, rt= False, correct = False, savefile= False, ext =".png", redo=False):
+def plot_correct_staflux(resultpath, rt= False, correct = False, savefile= False, ext =".png", 
+                         show=False,redo=False):
+    if not show and not savefile :
+        return
     sys.stdout.write(f"\n{Fore.GREEN + Style.BRIGHT}"
                      +f"> Showing stations energy flux - iteration {rt}")
     
@@ -240,7 +243,9 @@ def plot_correct_staflux(resultpath, rt= False, correct = False, savefile= False
     sys.stdout.write(f"\n{Fore.GREEN + Style.BRIGHT}"
                      +" ... Done ")
 
-def plot_growth(resultpath, correct = False, rt= False,savefile= False, ext =".png", redo=False):
+def plot_growth(resultpath, correct = False, rt= False,savefile= False, ext =".png", show=False,redo=False):
+    if not show and not savefile :
+        return
     sys.stdout.write(f"\n{Fore.GREEN + Style.BRIGHT}"
                      +f"> Showing {'corrected ' if correct else ''}results graphics - iteration {rt}")
     
@@ -390,7 +395,9 @@ from matplotlib import colormaps
 def mw(M):
     return (2/3*log10(M)-10.73).round(1)
 
-def result_in_cat(resultpath,ev,correct = False, savefile= False, ext =".png", redo=False):
+def result_in_cat(resultpath,ev,correct = False, savefile= False, ext =".png", show=False,redo=False):
+    if not show and not savefile :
+        return
     sys.stdout.write(f"\n{Fore.GREEN + Style.BRIGHT}"
                      +"> Showing other results in sector")
     if os.path.exists(f"{resultpath}/Res2Cat_{'raw' if not correct else 'corrected'}{ext}") and not redo :
@@ -419,13 +426,14 @@ def result_in_cat(resultpath,ev,correct = False, savefile= False, ext =".png", r
         plt.scatter(log10(mat["M0"])[ind],log10(mat["Ebb"])[ind],s=40,c=mat["delta"][ind],
                     cmap="inferno",alpha=0.6,edgecolor="gray",vmin=-6, vmax = -3,
                     label="The region")
+    
     ax.scatter(log10(moment(ev.moment,ev.exponent)),
                 log10(res.Ebb),
                 s=200,marker ="*",c=res.theta,
                 cmap="magma",edgecolor="k",vmin=-6, vmax = -3,label="This event")
     
-    x = array([log10(mat["M0"]).min(),log10(mat["M0"]).max()]).round(1)
-    y = array([log10(mat["Ebb"]).min()-.5,log10(mat["Ebb"]).max()+.5]).round(0)
+    x = array([log10(mat["M0"]).min()-.2,log10(mat["M0"]).max()+.2]).round(1)
+    y = array([log10(mat["Ebb"]).min()-.5,log10(mat["Ebb"]).max()+.5]).round(1)
     for i in range(3,7):
         ax.plot(x,x-i,"--",color="silver",zorder = -5)
         xi = 16.5 + i
@@ -459,7 +467,9 @@ def result_in_cat(resultpath,ev,correct = False, savefile= False, ext =".png", r
 
 
 def plot_theta_depth_apparent(resultpath,ev,correct = False,
-                              savefile= False, ext =".png", redo=False):
+                              savefile= False, ext =".png", show=False,redo=False):
+    if not show and not savefile :
+        return
     sys.stdout.write(f"\n{Fore.GREEN + Style.BRIGHT}"
                      +"> Showing apparent stress comparison")
     if os.path.exists(f"{resultpath}/apparentStress_{'raw' if not correct else 'corrected'}{ext}") and not redo:
@@ -528,7 +538,9 @@ def plot_theta_depth_apparent(resultpath,ev,correct = False,
     sys.stdout.write(f"\n{Fore.GREEN + Style.BRIGHT}"
                      +" ... Done ")
     
-def plot_s_int(resultpath,ev,savefile= False, ext =".png",redo=False):
+def plot_s_int(resultpath,ev,savefile= False, ext =".png",show=False,redo=False):
+    if not show and not savefile :
+        return
     sys.stdout.write(f"\n{Fore.GREEN + Style.BRIGHT}"
                      +"> S waves integrals")
     if os.path.exists(f"{resultpath}/integral_contribs{ext}") and not redo:
@@ -596,7 +608,9 @@ def plot_s_int(resultpath,ev,savefile= False, ext =".png",redo=False):
     sys.stdout.write(f"\n{Fore.GREEN + Style.BRIGHT}"
                      +" ... Done ")
     
-def plot_s_map(resultpath,ev,savefile= False, ext =".png",redo=False): 
+def plot_s_map(resultpath,ev,savefile= False, ext =".png",show=False,redo=False):
+    if not show and not savefile :
+        return
     sys.stdout.write(f"\n{Fore.GREEN + Style.BRIGHT}"
                      +"> S waves map")
     if os.path.exists(f"{resultpath}/stations_map{ext}") and not redo:
@@ -631,7 +645,7 @@ def plot_s_map(resultpath,ev,savefile= False, ext =".png",redo=False):
     
     fig = pygmt.Figure()
     # # projection azimuthale equidistant lon0/lat0/distance max/resolution
-    fig.basemap(region="g", projection=f"E%f/%f/{int(kilometer2degrees(250))}/13c" %
+    fig.basemap(region="g", projection=f"E%f/%f/{int(kilometer2degrees(450))}/13c" %
                 (ev.lon,ev.lat), frame=["af10", f"WSne"])
     fig.coast(shorelines="0.15p,black", land=None,resolution='h')  # coastlines
     # PLOT
@@ -665,7 +679,7 @@ def plot_s_map(resultpath,ev,savefile= False, ext =".png",redo=False):
                                     for s,c,k in zip(symb.values(),cols.values(),cols.keys())
                                     if k in stas["site"]]+
                                     [f"S 0.4 t .3 white .5p,black .8 'k evaluated'"]))
-    fig.legend(spec=legend,position="jBL+o.5c/.5c",box="+p.2p+gwhite")
+    fig.legend(spec=legend,position="jBR+o.5c/.5c",box="+p.2p+gwhite")
     fig.plot(x=ev.lon,y=ev.lat,fill="black",
               style="a.5c", pen='1p,black')
     if savefile:

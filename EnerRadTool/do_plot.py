@@ -28,7 +28,7 @@ def do_plots(ev,param,resultpath,data):
     if param.distance.include_near :
         stadist = array([inv.select(station=tr.stats.station)[0][0].extra.station_param.distance
                               for tr in st_bb])
-        ind = argwhere(stadist<=2.)[:,0]
+        ind = argwhere(stadist<5.)[:,0]
         st_bb_close,st_hf_close = st_bb[:ind[-1]+1],st_hf[:ind[-1]+1]
         st_bb,st_hf = st_bb[ind[-1]+1:],st_hf[ind[-1]+1:]
         close_folder = folder_name(param,-1,close = True)
@@ -112,11 +112,12 @@ def do_plots(ev,param,resultpath,data):
     
     if (param.plot.level in ["report","all"] or param.plot.details.map_sta_dev) :
         from map_plots import plot_stations_contrib_map
-        plot_stations_contrib_map(resultpath, ev, inv, st_bb, st_hf, correct = correct,
-                savefile= True if (param.plot.level in ["report","all"] 
-                               or param.plot.details.cat_region_results) else False,
-                ext = param.general.do_plot,
-                redo=param.redoing_results.force_plot)
+        if param.waves.P_teleseismic:
+            plot_stations_contrib_map(resultpath, ev, inv, st_bb, st_hf, correct = correct,
+                    savefile= True if (param.plot.level in ["report","all"] 
+                                   or param.plot.details.cat_region_results) else False,
+                    ext = param.general.do_plot,
+                    redo=param.redoing_results.force_plot)
         if param.distance.include_near :
             plot_s_map(close_folder,ev,
                        savefile= True if (param.plot.level in ["minimum","report","all"] 
@@ -124,7 +125,7 @@ def do_plots(ev,param,resultpath,data):
                        ext = param.general.do_plot, 
                        redo=param.redoing_results.force_plot)
     
-    if param.general.do_report:
+    if param.general.do_report and param.waves.P_teleseismic:
         sys.stdout.write(f"\n{Back.GREEN + Style.DIM + Fore.BLACK}"
                          +f"{'Compiling a report  '.rjust(30):30s}"
                          +f"{Style.RESET_ALL}")

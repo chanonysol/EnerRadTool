@@ -125,7 +125,9 @@ def radar_factory(num_vars, frame='circle'):
     return theta
 
 def certain_rt(resultpath,ev,correct = True, rt= False,savefile= False, 
-                    ext =".png", redo=False):
+                    ext =".png", show=False,redo=False):
+    if not show and not savefile :
+        return
     sys.stdout.write(f"\n{Fore.GREEN + Style.BRIGHT}"
                      +f"> Fiability evaluation - iteration {rt}")
     
@@ -217,7 +219,9 @@ def certain_rt(resultpath,ev,correct = True, rt= False,savefile= False,
                      +" ... Done ")
 
 def certain_report(resultpath,ev,correct = True, rt= False, multi = False,
-                  savefile= False, ext =".png", redo=False):
+                  savefile= False, ext =".png", show=False,redo=False):
+    if not show and not savefile :
+        return
     sys.stdout.write(f"\n{Fore.GREEN + Style.BRIGHT}"
                      +f"> Fiability evaluation {f'- iteration {rt}' if not multi else 'all'}")
     

@@ -1,0 +1,22 @@
+{
+  "station_param": {
+    "distance": 43.9,
+    "az": 301.81,
+    "baz": 139.77
+  },
+  "ray_param": {
+    "p_time": 485.2,
+    "p_incident": 24.8,
+    "p_takeoff": 24.9,
+    "pp_time": 485.2,
+    "pp_incident": 24.8,
+    "pp_takeoff": 24.9,
+    "sp_time": 485.2,
+    "sp_incident": 24.8,
+    "sp_takeoff": 24.9
+  },
+  "correction": {
+    "ray": 1.78372248846612,
+    "ener": 7.986619050432523e+22
+  }
+}

@@ -111,8 +111,18 @@ import pygmt
 
 def plot_stations_contrib_map(resultpath, ev, inv, st_bb,st_hf, 
                               correct = False, savefile = False, ext = ".png",
-                              redo=False):
+                              show=False,redo=False):
+    if not show and not savefile :
+        return
     
+    sys.stdout.write(f"\n{Fore.GREEN + Style.BRIGHT}"
+                     +"> Map stations contribution")
+    if (os.path.exists(f"{resultpath}/station_contrib_map_BB.{ext}") 
+        and os.path.exists(f"{resultpath}/station_contrib_map_HF.{ext}")
+        and not redo):
+        sys.stdout.write(f"\n{Fore.GREEN + Style.BRIGHT}"
+                     +" ... Already Done ")
+        return
     
     zones = {"S.Pacific" : {"Puysegur":[159, 166, -51, -46], 
                         "NZ-S.Island":[166, 176, -48, -41], 
@@ -127,14 +137,6 @@ def plot_stations_contrib_map(resultpath, ev, inv, st_bb,st_hf,
                          "Salomon-Isl.":[160,168,-14,-10],
                          "None":[155,190,-25,-10]},
          "None":{"None":None}}
-    sys.stdout.write(f"\n{Fore.GREEN + Style.BRIGHT}"
-                     +"> Map stations contribution")
-    if (os.path.exists(f"{resultpath}/station_contrib_map_BB.{ext}") 
-        and os.path.exists(f"{resultpath}/station_contrib_map_HF.{ext}")
-        and not redo):
-        sys.stdout.write(f"\n{Fore.GREEN + Style.BRIGHT}"
-                     +" ... Already Done ")
-        return
     
     bar = tqdm(total = 3, desc = "Making map")
     

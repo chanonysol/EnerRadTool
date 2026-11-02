@@ -1,0 +1,92 @@
+#======================================
+#		         RESULTS
+#======================================
+
+#----------- Raw estimation -----------
+Ebb = 1.66e+16J ; MeBB = 7.91 ; dEbb = 8.5%
+Ehf = 7.70e+14J ; MeHF = 7.43 ; dEhf = 7.0%
+
+Tr = 122s; theta = -4.6
+(Tr_tacer = 112s)
+(Tr_lines = 132s)
+
+E_HF/Tr3 = 4.24e+08J
+E_HF/E_BB =  4.6%
+
+#smoothed
+Ebb = 1.62e+16J ; MeBB = 7.91 ; dEbb = 4.4%
+Ehf = 7.24e+14J ; MeHF = 7.41 ; dEhf = 6.0%
+
+Tr = 113s; theta = -4.6
+(Tr_tacer = 106s)
+(Tr_lines = 120s)
+
+E_HF/Tr3 = 5.02e+08J
+E_HF/E_BB =  4.5%
+
+#-------- Corrected estimation --------
+Ebb = 1.66e+16J ; MeBB = 7.91 ; dEbb = 8.5%
+Ehf = 7.70e+14J ; MeHF = 7.43 ; dEhf = 7.0%
+
+Tr = 122s; theta = -4.6
+(Tr_tacer = 112s)
+(Tr_lines = 132s)
+
+E_HF/Tr3 = 4.24e+08J
+E_HF/E_BB =  4.6%
+
+#smoothed
+Ebb = 1.62e+16J ; MeBB = 7.91 ; dEbb = 4.4%
+Ehf = 7.24e+14J ; MeHF = 7.41 ; dEhf = 6.0%
+
+Tr = 113s; theta = -4.6
+(Tr_tacer = 106s)
+(Tr_lines = 120s)
+
+E_HF/Tr3 = 5.02e+08J
+E_HF/E_BB =  4.5%
+
+#------------ S waves near ------------
+Ebb = -1.00e+04J ; MeBB = -9999.00 
+#Pwaves-comparison
+dEp =  +nan ; dMep = -10006.91
+
+theta = -9999.0
+
+#======================================
+#	          INFORMATION
+#======================================
+
+#---------- Event information ---------
+# 2016-11-13T11:02:56.300000Z
+# Magnitude 7.8 Mw
+# Moment 6.77e+20 (N.m)
+# -42.03 +173.85 19
+# Region : S.Pacific      
+# Subregion : NZ-S.Island    
+
+#------- Estimation information -------
+# v2.3.RT
+# iteration n°0 : 10-28
+# network azimuthal gap : 160°
+# network distance gap :  12°
+# BB : 22 stations [['HHT', 'BHZ', 'HHZ']]
+# HF : 22 stations [['HHT', 'BHZ', 'HHZ']]
+# Time after P-waves : 180s
+# reference used for mEhf : 25%
+
+#----------- Estimation time ----------
+# Data collection : -9999s
+# Preprocessing :   0s
+# Energy estimation :  10s
+# TOTAL :  11s
+#----------- Certainty level ----------
+#----- 0 highest - 6 or 34 lowest -----
+# Theta reg fit     :  0 GREAT
+# station az gap    :  0 GREAT
+# TR variation      :  1 GOOD 
+# Ebb variation     :  0 GREAT
+# Ehf variation     :  1 GOOD 
+# TR theorique      :  3 LIMIT
+# station dist gap  :  2 OK   
+# CONFIDENCE LEVEL  :  7 GOOD 

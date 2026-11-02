@@ -1,0 +1,37 @@
+#======================================
+#		         RESULTS
+#======================================
+
+#------------ S waves near ------------
+Ebb = 5.33e+15J ; MeBB = 7.58 
+#Pwaves-comparison
+
+theta = -5.1
+
+#======================================
+#	          INFORMATION
+#======================================
+
+#---------- Event information ---------
+# 2016-11-13T11:02:56.300000Z
+# Magnitude 7.8 Mw
+# Moment 6.77e+20 (N.m)
+# -42.03 +173.85 19
+# Region : S.Pacific      
+# Subregion : NZ-S.Island    
+
+#------- Estimation information -------
+# v2.3.RT
+# iteration n°-1 :  0- 2
+# network azimuthal gap : 160°
+# network distance gap :   0°
+# BB :  9 stations [['HHT']]
+# HF :  9 stations [['HHT']]
+# Time after P-waves : 120s
+# reference used for mEhf : 25%
+
+#----------- Estimation time ----------
+# Data collection :  20s
+# Preprocessing :   4s
+# Energy estimation :   4s
+# TOTAL :  28s

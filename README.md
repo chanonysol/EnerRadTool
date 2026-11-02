@@ -5,8 +5,6 @@ EnerRad is a python3 code for real-time estimation of radiated seismic energy,
 given a CMT file of the seismic source focal mechanism, using a combination of 
 state-of-the-art algorithms that have been adapted for the South-West Pacific .
 
-*Under writting*
-
 DOI : *Submitted to SRL special edition in July 2026*
 
 ### This file table of content
@@ -44,7 +42,21 @@ More details inside each folder and coming in v2.4.3
 │   └── do_plot.py
 ├── main_EnerRad.py
 ├── license.txt
-└── README.md
+├── README.md
+├── catalogue/
+│   ├── all_contribs_corrected.dat '# station contribution per event'
+│   ├── all_events_corrected.dat '# results per events'
+│   ├── all_psmeca_corrected.dat '# psmeca per events'
+│   └── all_xy_corrected.dat '# XY coordinates for ternary diagrams'
+├── Example/ #2016 Kaikoura 4 iterations + S waves
+│   ├── Data/ '# saved data used in the calculation'
+│   ├── Results/ '# Result folders for different parameters'
+│   ├── meca.dat 
+│   ├── 201611131102A.cmt 
+│   ├── param_rt_example.json 
+│   ├── report_Example_folder_RT_Wprfs_D[10.80.4]_T120_new.pdf 
+│   └── Chap7.pdf '# Chapter from my PhD (coming later)'
+└─
 ```
 
 ##### Input
@@ -81,29 +93,32 @@ python main_EnerRad.py -h
 ```
 
 ```python
-usage: main_EnerRad.py [-h] [-rt] [-n] [-sp] [-cat] [-stage {1,2,3,6,42}] path
+usage: main_enerrad.py [-h] [-rt] [-n] [-sp] [-cat] [-stage {1,2,3,4,5,7,42}]
+                       path
 
 positional arguments:
-  path                path to folder of event or catalog; [if rt] Folder
-                      contains the cmt file and parameter file of the source;
-                      [if cat] Folder contains parameters file and one
-                      separate folder per source with the corresponding cmt
-                      file
+  path                  path to folder of event or catalog; [if rt] Folder
+                        contains the cmt file and parameter file of the
+                        source; [if cat] Folder contains parameters file and
+                        one separate folder per source with the corresponding
+                        cmt file
 
 options:
-  -h, --help           show this help message and exit
-  -rt, --real_time     apply the real time code or one source
-  -n, --new_param      change parameter file
-  -sp, --show_param    print the code and source parameters for verification
-  -cat, --catalogue    apply calculation for multiple sources in folder
-  -stage {1,2,3,6,42}  separate stages [Default : 0 = do all] ; 1 = Only do
-                       data collections ; 2 = Only do data processing and
-                       calculation ; 3 = Do both data collection and
-                       calculation ; 6 = Do calculation and plots. (If
-                       necessarry previous steps have not been performed, the
-                       path and missing stages will be stored in an error
-                       file) ; 42 = Load event and parameters and return them
-                       for manual testing
+  -h, --help            show this help message and exit
+  -rt, --real_time      apply the real time code or one source
+  -n, --new_param       change parameter file
+  -sp, --show_param     print the code and source parameters for verification
+  -cat, --catalogue     apply calculation for multiple sources in folder
+  -stage {1,2,3,4,5,7,42}
+                        separate stages [Default : 0 = do all] ; 1 = Only do
+                        data collections ; 2 = Only do data processing ; 3 =
+                        Do both data collection and processing ; 4 = Do both
+                        data processing and calculation ; 5 = Do all but
+                        figures ; 7 = Do calculation and plots. (If necessarry
+                        previous steps have not been performed, the path and
+                        missing stages will be stored in an error file) ; 42 =
+                        Load event and parameters and return them for manual
+                        testing
 ```
 ###### For input parameters gestion inside console / Debug mode
 
@@ -151,7 +166,7 @@ parameters = Parameters(folderpath,new=True) #console guide to help build a new 
 ```
 ---
 ## Roadmap
-#### Current version : 2.3.1
+#### Current version : 2.3.2
 #### Planed version
 - [x] 2.0 : Added the S-wave iteration into the real-time code
 	- [x] 2.0.X Minor corrections and adaptation for the RCET Kafka server
@@ -166,8 +181,8 @@ parameters = Parameters(folderpath,new=True) #console guide to help build a new 
 	- [x] 2.2.2 Automatic building of catalog by stocking real-time results in the future
 - [ ] 2.3 : Accessibility of the repository
     - [x] 2.3.0 Parameters rework and more user control 
-	- [ ] 2.3.1 Example folder with description of the process output
-	- [ ] 2.3.2 Catalogue results from the thesis in text-files
+	- [x] 2.3.1 Example folder with description of the process output
+	- [x] 2.3.2 Catalogue results from the thesis in text-files
 	
 * ============================================> *Repository made public*
 

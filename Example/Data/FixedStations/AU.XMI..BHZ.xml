@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+ <FDSNStationXML xmlns="http://www.fdsn.org/xml/station/1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:iris="http://www.fdsn.org/xml/station/1/iris" xsi:schemaLocation="http://www.fdsn.org/xml/station/1 http://www.fdsn.org/xml/station/fdsn-station-1.1.xsd" schemaVersion="1.1">
+  <Source>EarthScope</Source>
+  <Sender>EarthScope</Sender>
+  <Module>EarthScope WEB SERVICE: fdsnws-station | version: 1.1.58</Module>
+  <ModuleURI></ModuleURI>
+  <Created>2026-10-01T15:29:47.5677</Created>
+  <Network code="AU" startDate="1994-01-01T00:00:00.0000" restrictedStatus="open">
+   <Description>Australian National Seismograph Network (ANSN)</Description>
+   <Identifier type="DOI">10.26186/144675
+   </Identifier>
+   <TotalNumberStations>259</TotalNumberStations>
+   <SelectedNumberStations>1</SelectedNumberStations>
+   <Station code="XMI" startDate="2007-11-19T00:00:00.0000" restrictedStatus="open" iris:alternateNetworkCodes="_FDSN-ALL,.UNRESTRICTED">
+    <Latitude>-10.4501</Latitude>
+    <Longitude>105.6884</Longitude>
+    <Elevation>252.0</Elevation>
+    <Site>
+     <Name>Christmas Island Airport</Name>
+    </Site>
+    <TotalNumberChannels>21</TotalNumberChannels>
+    <SelectedNumberChannels>1</SelectedNumberChannels>
+    <Channel code="BHZ" locationCode="" startDate="2008-10-14T00:00:00.0000" endDate="2021-10-31T12:00:00.0000" restrictedStatus="open">
+     <Latitude>-10.4501</Latitude>
+     <Longitude>105.6884</Longitude>
+     <Elevation>252</Elevation>
+     <Depth>3</Depth>
+     <Azimuth>0</Azimuth>
+     <Dip>-90</Dip>
+     <SampleRate>4E01</SampleRate>
+     <ClockDrift>2.5E-04</ClockDrift>
+     <Sensor resourceId="Sensor/20210903023909.492847.17841">
+      <Type>BB</Type>
+      <Description>Streckeisen STS-2/Quanterra 330HR Linear Phase Bel</Description>
+      <Manufacturer>Streckeisen STS-2</Manufacturer>
+      <Model>Streckeisen STS-2</Model>
+     </Sensor>
+     <DataLogger resourceId="Datalogger/20210903023909.492814.17840">
+      <Type>Quanterra Q330 Quanterra Q330</Type>
+      <Description>Quanterra Q330</Description>
+      <Manufacturer>Quanterra Q330</Manufacturer>
+      <Model>Quanterra Q330</Model>
+     </DataLogger>
+     <Response>
+     <InstrumentSensitivity>
+       <Value>2.506550908E9</Value>
+       <Frequency>5.0</Frequency>
+       <InputUnits>
+         <Name>M/S</Name>
+         <Description>velocity in meters per second</Description>
+       </InputUnits>
+       <OutputUnits>
+         <Name>COUNTS</Name>
+       </OutputUnits>
+     </InstrumentSensitivity>
+      <Stage number="1">
+      <PolesZeros resourceId="ResponsePAZ/20210903023908.655631.64" name="ResponsePAZ/20210903023908.655631.64">
+        <InputUnits>
+          <Name>M/S</Name>
+          <Description>velocity in meters per second</Description>
+        </InputUnits>
+        <OutputUnits>
+          <Name>V</Name>
+        </OutputUnits>
+        <PzTransferFunctionType>LAPLACE (RADIANS/SECOND)</PzTransferFunctionType>
+        <NormalizationFactor>5.94361E7</NormalizationFactor>
+        <NormalizationFrequency>5.0</NormalizationFrequency>
+        <Zero number="5">
+          <Real>0.0</Real>
+          <Imaginary>0.0</Imaginary>
+        </Zero>
+        <Zero number="6">
+          <Real>0.0</Real>
+          <Imaginary>0.0</Imaginary>
+        </Zero>
+        <Pole number="0">
+          <Real>-0.03701</Real>
+          <Imaginary>0.03701</Imaginary>
+        </Pole>
+        <Pole number="1">
+          <Real>-0.03701</Real>
+          <Imaginary>-0.03701</Imaginary>
+        </Pole>
+        <Pole number="2">
+          <Real>-251.3</Real>
+          <Imaginary>0.0</Imaginary>
+        </Pole>
+        <Pole number="3">
+          <Real>-131.0</Real>
+          <Imaginary>467.3</Imaginary>
+        </Pole>
+        <Pole number="4">
+          <Real>-131.0</Real>
+          <Imaginary>-467.3</Imaginary>
+        </Pole>
+      </PolesZeros>
+      <StageGain>
+        <Value>1494.04</Value>
+        <Frequency>5.0</Frequency>
+      </StageGain>
+
+      </Stage>
+      <Stage number="2">
+      <Coefficients>
+        <InputUnits>
+          <Name>V</Name>
+        </InputUnits>
+        <OutputUnits>
+          <Name>COUNTS</Name>
+        </OutputUnits>
+        <CfTransferFunctionType>DIGITAL</CfTransferFunctionType>
+      </Coefficients>
+      <Decimation>
+        <InputSampleRate>40.0</InputSampleRate>
+        <Factor>1</Factor>
+        <Offset>0</Offset>
+        <Delay>0.0</Delay>
+        <Correction>0.0</Correction>
+      </Decimation>
+      <StageGain>
+        <Value>1677700.0</Value>
+        <Frequency>0.0</Frequency>
+      </StageGain>
+
+      </Stage>
+      <Stage number="3">
+      <FIR resourceId="ResponseFIR/20210903023908.655749.65" name="ResponseFIR/20210903023908.655749.65">
+        <InputUnits>
+          <Name>COUNTS</Name>
+        </InputUnits>
+        <OutputUnits>
+          <Name>COUNTS</Name>
+        </OutputUnits>
+        <Symmetry>NONE</Symmetry>
+        <NumeratorCoefficient>-5.09997E-8</NumeratorCoefficient>
+        <NumeratorCoefficient>-2.63324E-8</NumeratorCoefficient>
+        <NumeratorCoefficient>3.21041E-7</NumeratorCoefficient>
+        <NumeratorCoefficient>-1.2548E-5</NumeratorCoefficient>
+        <NumeratorCoefficient>-1.56874E-6</NumeratorCoefficient>
+        <NumeratorCoefficient>6.33072E-4</NumeratorCoefficient>
+        <NumeratorCoefficient>4.67293E-4</NumeratorCoefficient>
+        <NumeratorCoefficient>-0.00375769</NumeratorCoefficient>
+        <NumeratorCoefficient>0.00242649</NumeratorCoefficient>
+        <NumeratorCoefficient>-0.00181103</NumeratorCoefficient>
+        <NumeratorCoefficient>-0.00255789</NumeratorCoefficient>
+        <NumeratorCoefficient>0.00852735</NumeratorCoefficient>
+        <NumeratorCoefficient>-0.0154895</NumeratorCoefficient>
+        <NumeratorCoefficient>0.0199414</NumeratorCoefficient>
+        <NumeratorCoefficient>-0.0183877</NumeratorCoefficient>
+        <NumeratorCoefficient>0.00706362</NumeratorCoefficient>
+        <NumeratorCoefficient>0.0161458</NumeratorCoefficient>
+        <NumeratorCoefficient>-0.0509218</NumeratorCoefficient>
+        <NumeratorCoefficient>0.095284</NumeratorCoefficient>
+        <NumeratorCoefficient>-0.166693</NumeratorCoefficient>
+        <NumeratorCoefficient>0.266723</NumeratorCoefficient>
+        <NumeratorCoefficient>0.837233</NumeratorCoefficient>
+        <NumeratorCoefficient>0.0500619</NumeratorCoefficient>
+        <NumeratorCoefficient>-0.0891913</NumeratorCoefficient>
+        <NumeratorCoefficient>0.0853716</NumeratorCoefficient>
+        <NumeratorCoefficient>-0.0651036</NumeratorCoefficient>
+        <NumeratorCoefficient>0.0395074</NumeratorCoefficient>
+        <NumeratorCoefficient>-0.0158729</NumeratorCoefficient>
+        <NumeratorCoefficient>-0.00144455</NumeratorCoefficient>
+        <NumeratorCoefficient>0.0107821</NumeratorCoefficient>
+        <NumeratorCoefficient>-0.0131202</NumeratorCoefficient>
+        <NumeratorCoefficient>0.0104801</NumeratorCoefficient>
+        <NumeratorCoefficient>-0.00623193</NumeratorCoefficient>
+        <NumeratorCoefficient>0.00152521</NumeratorCoefficient>
+        <NumeratorCoefficient>2.05709E-4</NumeratorCoefficient>
+        <NumeratorCoefficient>-0.00314123</NumeratorCoefficient>
+        <NumeratorCoefficient>0.00102921</NumeratorCoefficient>
+        <NumeratorCoefficient>3.30318E-4</NumeratorCoefficient>
+        <NumeratorCoefficient>4.18952E-13</NumeratorCoefficient>
+      </FIR>
+      <Decimation>
+        <InputSampleRate>40.0</InputSampleRate>
+        <Factor>1</Factor>
+        <Offset>0</Offset>
+        <Delay>0.43046</Delay>
+        <Correction>0.43046</Correction>
+      </Decimation>
+      <StageGain>
+        <Value>1.0</Value>
+        <Frequency>5.0</Frequency>
+      </StageGain>
+
+      </Stage>
+     </Response>
+    </Channel>
+   </Station>
+  </Network>
+ </FDSNStationXML>

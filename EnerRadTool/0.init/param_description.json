@@ -39,6 +39,7 @@
         "min": "- float minimum epicentral distance (min 5°)",
         "max": "- float maximum epicentral distance (max 80°)",
         "include_near": "-true add iteration for close S waves\n false will do only p waves",
+        "max_S":"- int in kilometers of the maximum distance to include close S-wave recordings (max 500)",
         "totalstep": "- float of how many iterations to do for p waves (min 1.0)"
     },
 

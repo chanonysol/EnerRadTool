@@ -1,0 +1,61 @@
+{
+    "general": {
+        "session_name": "Example_folder",
+        "search_data": true,
+        "keep_data": "used",
+        "saved_results": "all",
+        "do_plot": ".png",
+        "do_report": true
+    },
+    "plot": {
+        "level": "all",
+        "report_details": false,
+        "step": "all",
+        "details": {
+            "ener_growth": false,
+            "ener_growth_corrected": false,
+            "sta_ener_flux": false,
+            "sta_ener_flux_deviation": false,
+            "sta_map_dev": false,
+            "cat_region_results": false,
+            "confidence_radar": false,
+            "apparent_stress": false,
+            "signal_dist": false,
+            "signal_az": false,
+            "stream_list": false
+        }
+    },
+    "waves": {
+        "network_fixed": true,
+        "P_teleseismic": true,
+        "P_regional": true,
+        "S_near": false
+    },
+    "time_max": null,
+    "time_max_s": 120.0,
+    "time_stop": false,
+    "time_eval_method": "both",
+    "distance": {
+        "min": 10.0,
+        "max": 80.0,
+        "include_near": false,
+        "max_S":400,
+        "totalstep": 4.0
+    },
+    "channel_code": [
+        "BH",
+        "HH"
+    ],
+    "deviation_correction": {
+        "snr_keep": 5.0,
+        "snr_max": 10.0,
+        "unknown_site_class": null,
+        "type": "result",
+        "threshold": 1.0
+    },
+    "redoing_results": {
+        "force_signal": false,
+        "force_results": false,
+        "force_plot": false
+    }
+}

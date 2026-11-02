@@ -44,7 +44,7 @@ def get_time_p_train(argum):
 
     """
     depth,distance,model = argum
-    if distance>kilometers2degrees(215):
+    if distance>kilometers2degrees(510):
         arrivals = model.get_travel_times(source_depth_in_km=depth,
                                             distance_in_degree=distance,
                                             phase_list = ['P', 'pP', 'sP', "S"])
@@ -63,7 +63,7 @@ def get_time_p_train(argum):
                                 "i0":  arr.takeoff_angle.round(2),
                                 "ih":  arr.incident_angle.round(2)}
       
-        if distance>kilometers2degrees(210.):
+        if distance>kilometers2degrees(510.):
             origin_time = dic["P"]['t0']
             end_time = dic["S"]['t0'] - origin_time
             for k in [d for d in dic.keys() if d[-1]!="P"]:
@@ -85,7 +85,7 @@ def get_time_p_train(argum):
                                         for k in dic.keys()]).max()-origin_time,2)}}
         dic = d2 | dic     
     except : 
-        if distance>kilometers2degrees(215.):
+        if distance>kilometers2degrees(510.):
             dic = {"Ptrain":{'tmin':nan, 'tmax':nan,'dt':nan}}    
         else : 
             dic = {"Strain":{'tmin':nan, 'tmax':nan,'dt':nan}}   
@@ -135,10 +135,10 @@ def precalc_time_p_train(min_depth,max_depth,min_dist=3.,max_dist=82.,model_name
         if d1>max_depth: d1=max_depth
         if d0<min_depth: d0=min_depth
         depths = arange(d0,d1+1,1).astype(int)
-        distances = arange(3. if min_dist > kilometers2degrees(200.) else 0.,
-                           kilometers2degrees(200.)+.1 
-                           if min_dist < kilometers2degrees(200.) else 82.1,
-                           .1 if min_dist > kilometers2degrees(200.)
+        distances = arange(3. if min_dist > kilometers2degrees(500.) else 0.,
+                           kilometers2degrees(500.)+.1 
+                           if min_dist < kilometers2degrees(500.) else 82.1,
+                           .1 if min_dist > kilometers2degrees(500.)
                            else 0.045).round(2)
         
         if os.path.exists(filepath):
@@ -161,15 +161,15 @@ def precalc_time_p_train(min_depth,max_depth,min_dist=3.,max_dist=82.,model_name
             test2 = loadtxt(filepath,dtype=dty)
             test = concatenate((test,test2))
             test = test[lexsort((test['dist'],test['depth']))]
-        if min_dist > kilometers2degrees(200.) :
+        if min_dist > kilometers2degrees(500.) :
             savetxt(filepath,test,fmt="%3.0f %04.1f %6s %4s %6.1f") 
         else :
             savetxt(filepath,test,fmt="%3.0f %04.2f %6s %4s %6.1f") 
         sleep(5)
     
-if __name__ == "__main__":
-    # precalc_time_p_train(0,50,0,kilometers2degrees(200.),model_name="iasp91")
-    precalc_time_p_train(0,10,3.,82.,model_name="iasp91")
+# if __name__ == "__main__":
+#     precalc_time_p_train(0,60,0,kilometers2degrees(500.),model_name="iasp91")
+    #precalc_time_p_train(0,10,3.,82.,model_name="iasp91")
     # precalc_time_p_train(10,70,3.,82.,model_name="prem")
     # precalc_time_p_train(10,70,3.,82.,model_name="jb")
     # precalc_time_p_train(10,70,3.,82.,model_name="1066b")
@@ -206,7 +206,7 @@ def find_depth_dist_ind(depth,distance,model_name='iasp91'):
     
     ind=len(distance)
     depth = round(depth)
-    if all(distance> kilometers2degrees(200)):
+    if all(distance> kilometers2degrees(500)):
         dist = "tel"
         sortdist = sortdist.round(1)
     else:

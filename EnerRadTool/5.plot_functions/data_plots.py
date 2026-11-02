@@ -32,10 +32,17 @@ from results_plots import read_results_file, glob
 from results_writing import read_results_sta, read_sta_log, read_results, Me
 
 # colormap angular distance
-def plot_preprocessed_data_dist(resultpath,st,st_hf,inv,
-                                correct = False, savefile= False, ext =".png"):
+def plot_preprocessed_data_dist(resultpath,st,st_hf,inv,correct = False, 
+                                savefile= False, ext =".png",show=False,redo=False):
+    if not show and not savefile :
+        return 
     sys.stdout.write(f"\n{Fore.GREEN + Style.BRIGHT}"
                      +"> Signals plot by distance")
+    
+    if os.path.exists(f"{resultpath}/Signals_DistColor_{'all' if not correct else 'selected'}{ext}") and not redo:
+        sys.stdout.write(f"\n{Fore.GREEN + Style.BRIGHT}"
+                     +" ... Already Done ")
+        return
     cmap_dist = ListedColormap(colormaps["tab20c_r"](linspace(0., 1., 80)))
     col_dist = cmap_dist.colors
     
@@ -99,9 +106,17 @@ def plot_preprocessed_data_dist(resultpath,st,st_hf,inv,
                      +" ... Done ")
 
 def plot_preprocessed_data_az(resultpath,st,st_hf,inv,
-                              correct = False, savefile= False, ext =".png"):
+                              correct = False, savefile= False, ext =".png",show=False,redo=False):
+    if not show and not savefile :
+        return 
     sys.stdout.write(f"\n{Fore.GREEN + Style.BRIGHT}"
                      +"> by azimuth")
+    
+    if os.path.exists(f"{resultpath}/Signals_AzColor_{'all' if not correct else 'selected'}{ext}") and not redo:
+        sys.stdout.write(f"\n{Fore.GREEN + Style.BRIGHT}"
+                     +" ... Already Done ")
+        return
+    
     cmap_az = ListedColormap(colormaps["tab20b_r"](linspace(0.2, 1, 360))[44::45])
     col_az = cmap_az.colors
     
