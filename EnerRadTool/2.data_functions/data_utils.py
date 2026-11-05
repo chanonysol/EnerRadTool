@@ -206,7 +206,7 @@ def find_depth_dist_ind(depth,distance,model_name='iasp91'):
     
     ind=len(distance)
     depth = round(depth)
-    if all(distance> kilometers2degrees(500)):
+    if any(distance> kilometers2degrees(505)) and distance.min()>=3.:
         dist = "tel"
         sortdist = sortdist.round(1)
     else:
